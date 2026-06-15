@@ -1,8 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import process from "process";
-import { checkJwt } from "./middleware/auth.middleware";
-import { AppErrorsMessage } from "./enum/AppErrorsMessage";
+import admin from "./routes/admin";
 
 dotenv.config();
 
@@ -14,19 +13,17 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello, World!" });
 });
 
-// Route protetta — richiede JWT Auth0 valido
-app.get("/protected", checkJwt, (req, res) => {
-  res.json({ message: "Accesso autorizzato." });
-});
+// Route protette
+app.use("/api", admin);
 
-// Gestione errori Auth0
+// Error handler Auth0
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err.status === 401) {
-    return res.status(401).json({ error: AppErrorsMessage.INVALID_JWT_TOKEN });
+    return res.status(401).json({ error: "Token non valido." });
   }
-  return res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+  return res.status(500).json({ error: "Errore server." });
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("Server is running on http://localhost:3000");
+  console.log("Server running on http://localhost:3000");
 });
