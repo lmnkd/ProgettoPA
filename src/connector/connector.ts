@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import process from "process";
-
+import {initModels} from "../model/Init_models";
 
 
 /**
@@ -24,6 +24,7 @@ export class SequelizeConnector {
         dialect: "postgres",
       }
     );
+    initModels(this.sequelize);
   }
 
     public static getInstance(): SequelizeConnector {   
@@ -33,6 +34,11 @@ export class SequelizeConnector {
 
     return SequelizeConnector.instance;
   }
+
+  public getSequelize(): Sequelize {
+    return this.sequelize;
+ }
+
 }
 
 

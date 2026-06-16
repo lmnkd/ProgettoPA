@@ -5,9 +5,9 @@
 
 export interface IDao<T> {
     create(item: T): Promise<T>;
-    read(item: T | string | T): Promise<T | null>;
-    update(item: T, updatedItem: T): Promise<T | null>;
-    delete(item: T): Promise<boolean>;
+    read(item: T): Promise<T | null>;
+    update(item: Partial<T>, updatedItem: Partial<T>): Promise<T | null>;
+    delete(id: number): Promise<boolean>;
     findAll(): Promise<T[]>;
 }
 
