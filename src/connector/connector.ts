@@ -19,7 +19,7 @@ export class SequelizeConnector {
       process.env.POSTGRES_USER || "postgres",
       process.env.POSTGRES_PASSWORD || "password",
       {
-        host: process.env.POSTGRES_HOST || "localhost",
+        host: process.env.POSTGRES_HOST || "postgres",
         port: Number(process.env.POSTGRES_PORT) || 5432,
         dialect: "postgres",
       }
