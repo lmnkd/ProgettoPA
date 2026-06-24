@@ -4,8 +4,7 @@ import {AppErrorsName} from "../enum/AppErrorsName";
 interface CreateVaccinoInput {
     id: number;
     nome: string;
-    disponibilita: number;
-    scadenza: Date;   
+    durataCopertura: number;
 }
 
 export class VaccinoService {
@@ -20,8 +19,7 @@ export class VaccinoService {
         return vaccinoDao.create({
             id: data.id,
             nome: data.nome,
-            disponibilita: data.disponibilita,
-            scadenza: data.scadenza
+            durataCopertura: data.durataCopertura
         });
     }   
 
