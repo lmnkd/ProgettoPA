@@ -11,6 +11,7 @@ export class AuthController {
             const token = await authService.login(email, password);
             res.status(200).json({ token });
         } catch (error: any) {
+            console.error("Errore durante il login:", error);
             if (error.name === AppErrorsName.INVALID_CREDENTIALS) {
                 res.status(401).json({ error: AppErrorsMessage.INVALID_CREDENTIALS });
             } else {
