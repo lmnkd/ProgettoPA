@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  cf SERIAL PRIMARY KEY,
+  cf VARCHAR(16) PRIMARY KEY,
   email VARCHAR UNIQUE,
   passwordHash VARCHAR,
   role VARCHAR,
