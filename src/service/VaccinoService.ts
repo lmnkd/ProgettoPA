@@ -61,12 +61,23 @@ export class VaccinoService {
             err.name = AppErrorsName.PERMISSION_DENIED;
             throw err;
         }
+
+        if (updatedData.nome) {
+            const existingByNome = await vaccinoDao.findByNome(updatedData.nome);
+            if (existingByNome && existingByNome.id !== targetId) {
+                const err = new Error("Vaccino already exists");
+                err.name = AppErrorsName.VACCINO_ALREADY_EXISTS;
+                throw err;
+            }
+        }
+
         const updatedVaccino = await vaccinoDao.update({ id: targetId }, updatedData);
         if (!updatedVaccino) {
             const err = new Error("Vaccino not found");
             err.name = AppErrorsName.VACCINO_NOT_FOUND;
             throw err;
         }
+
         return updatedVaccino;
     }
 
