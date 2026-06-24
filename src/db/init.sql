@@ -3,6 +3,7 @@ CREATE TABLE users (
   email VARCHAR UNIQUE,
   passwordHash VARCHAR,
   role VARCHAR,
+  token INTEGER NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

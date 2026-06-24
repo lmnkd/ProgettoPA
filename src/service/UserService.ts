@@ -9,7 +9,7 @@ interface CreateUserInput {
     name: string;
     email: string;
     password: string;
-    role: 'user' | 'operator' | 'both';
+    role: 'admin' | 'user' | 'operator' | 'both';
 }
 
 export class UserService {
@@ -59,7 +59,7 @@ export class UserService {
         requesterCf: string,
         isOperator: boolean,
         targetCf: string,
-        data: Partial<{ name: string; email: string; role: 'user' | 'operator' | 'both' }>
+        data: Partial<{ name: string; email: string; role: 'admin' | 'user' | 'operator' | 'both' }>
     ) {
         if (!isOperator && requesterCf !== targetCf) {
             const err = new Error("Permission denied");

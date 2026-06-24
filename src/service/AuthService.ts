@@ -5,7 +5,7 @@ import { AppJwtPayload } from "../types/jwt-payload";
 import { userDao } from "../dao/UserDao";
 import { AppErrorsName } from "../enum/AppErrorsName";
 
-function toRolesArray(role: 'user' | 'operator' | 'both'): ("user" | "operator")[] {
+function toRolesArray(role: 'admin' | 'user' | 'operator' | 'both'): ("admin" | "user" | "operator")[] {
     if (role === 'both') return ['user', 'operator'];
     return [role];
 }

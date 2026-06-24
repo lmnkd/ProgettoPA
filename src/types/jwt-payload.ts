@@ -1,4 +1,4 @@
 export interface AppJwtPayload {
     cf: string;
-    roles: ("user" | "operator" | "both")[];
+    roles: ("admin" | "user" | "operator" | "both")[];
 }

@@ -6,17 +6,19 @@ export interface UserAttributes {
     name: string;
     email: string;
     passwordHash: string;
-    role: 'user' | 'operator' | 'both';
+    token:number;
+    role: 'admin' | 'user' | 'operator' | 'both';
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'cf'> { }
+export interface UserCreationAttributes extends Optional<UserAttributes, 'cf' | 'token'> { }
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public cf!: string;
     public name!: string;
     public email!: string;
     public passwordHash!: string;
-    public role!: 'user' | 'operator' | 'both';
+    token!: number;
+    public role!: 'admin'| 'user' | 'operator' | 'both';
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -42,8 +44,16 @@ export function initUserModel(sequelize: Sequelize.Sequelize): typeof User {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
+            token: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 1,
+                validate: {
+                    min: 1,
+                },
+            },
             role: {
-                type: DataTypes.ENUM('user', 'operator', 'both'),
+                type: DataTypes.ENUM('admin','user', 'operator', 'both'),
                 allowNull: false,
             },
         },

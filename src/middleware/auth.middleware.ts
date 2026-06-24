@@ -27,7 +27,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
     }
 }
 
-export function requireRole(role: "user" | "operator") {
+export function requireRole(role: "user" | "operator" | "admin") {
     return (req: Request, res: Response, next: NextFunction): void => {
         const user = (req as any).user as AppJwtPayload;
 
