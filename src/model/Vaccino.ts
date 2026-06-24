@@ -4,20 +4,28 @@ import { DataTypes, Optional, Model } from 'sequelize';
 export interface VaccinoAttributes {
     id: number;
     nome: string;
-    disponibilita: number;
-    scadenza: Date;
+    durataCopertura: number;
 }
 
-export interface VaccinoCreationAttributes extends Optional<VaccinoAttributes, 'id'> { }
+export interface VaccinoCreationAttributes
+    extends Optional<VaccinoAttributes, 'id'> {}
 
-export class Vaccino extends Model<VaccinoAttributes, VaccinoCreationAttributes> implements VaccinoAttributes {
+export class Vaccino
+    extends Model<VaccinoAttributes, VaccinoCreationAttributes>
+    implements VaccinoAttributes {
+
     public id!: number;
     public nome!: string;
-    public disponibilita!: number;
-    public scadenza!: Date;
+    public durataCopertura!: number;
+
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
-export function initVaccinoModel(sequelize: Sequelize.Sequelize): typeof Vaccino {
+export function initVaccinoModel(
+    sequelize: Sequelize.Sequelize
+): typeof Vaccino {
+
     Vaccino.init(
         {
             id: {
@@ -25,27 +33,23 @@ export function initVaccinoModel(sequelize: Sequelize.Sequelize): typeof Vaccino
                 autoIncrement: true,
                 primaryKey: true,
             },
-            nome: { 
+
+            nome: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },  
-            disponibilita: {
+            },
+
+            durataCopertura: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            scadenza: {
-                type: DataTypes.DATE,
-                allowNull: false,
-            },
-        },  
-
+        },
         {
             sequelize,
             tableName: 'vaccini',
             timestamps: true,
         }
- );
+    );
+
     return Vaccino;
 }
-
-
