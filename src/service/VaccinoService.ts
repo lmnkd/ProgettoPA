@@ -2,7 +2,7 @@ import {vaccinoDao} from "../dao/VaccinoDao";
 import {AppErrorsName} from "../enum/AppErrorsName";
 
 interface CreateVaccinoInput {
-    id: number;
+    id?: number;
     nome: string;
     durataCopertura: number;
 }
@@ -10,16 +10,26 @@ interface CreateVaccinoInput {
 export class VaccinoService {
 
     async createVaccino(data: CreateVaccinoInput) {
-        const existing = await vaccinoDao.findById(data.id);
-        if (existing) {
+        if (data.id) {
+            const existingById = await vaccinoDao.findById(data.id);
+            if (existingById) {
+                const err = new Error("Vaccino already exists");
+                err.name = AppErrorsName.VACCINO_ALREADY_EXISTS;
+                throw err;
+            }
+        }
+
+        const existingByNome = await vaccinoDao.findByNome(data.nome);
+        if (existingByNome) {
             const err = new Error("Vaccino already exists");
             err.name = AppErrorsName.VACCINO_ALREADY_EXISTS;
             throw err;
         }
+
         return vaccinoDao.create({
             id: data.id,
             nome: data.nome,
-            durataCopertura: data.durataCopertura
+            durataCopertura: data.durataCopertura,
         });
     }   
 
@@ -66,6 +76,7 @@ export class VaccinoService {
             err.name = AppErrorsName.PERMISSION_DENIED;
             throw err;
         }
+
         const deleted = await vaccinoDao.delete(targetId);
         if (!deleted) {
             const err = new Error("Vaccino not found");
