@@ -1,36 +1,32 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Optional, Model } from 'sequelize';
 
-
 export interface UserAttributes {
-    id: number;
+    cf: string;
     name: string;
     email: string;
-    role: 'admin' | 'user';
+    passwordHash: string;
+    role: 'user' | 'operator' | 'both';
 }
 
-
-/**
- * Interfaccia dato che id è incrementato naturalmente e così non mi dà errore
- */
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
+export interface UserCreationAttributes extends Optional<UserAttributes, 'cf'> { }
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-    public id!: number;
+    public cf!: string;
     public name!: string;
     public email!: string;
-    public role!: 'admin' | 'user';
+    public passwordHash!: string;
+    public role!: 'user' | 'operator' | 'both';
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-}       
+}
 
 export function initUserModel(sequelize: Sequelize.Sequelize): typeof User {
     User.init(
-        {   
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
+        {
+            cf: {
+                type: DataTypes.STRING,
                 primaryKey: true,
             },
             name: {
@@ -39,16 +35,20 @@ export function initUserModel(sequelize: Sequelize.Sequelize): typeof User {
             },
             email: {
                 type: DataTypes.STRING,
-                allowNull: false,   
+                allowNull: false,
                 unique: true,
             },
-            role: {
-                type: DataTypes.ENUM('admin', 'user'),  
+            passwordHash: {
+                type: DataTypes.STRING,
                 allowNull: false,
-            },  
+            },
+            role: {
+                type: DataTypes.ENUM('user', 'operator', 'both'),
+                allowNull: false,
+            },
         },
         {
-            sequelize,      
+            sequelize,
             tableName: 'users',
             timestamps: true,
         }

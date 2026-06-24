@@ -8,8 +8,8 @@ export class UserDao implements IDao<User> {
         return await User.create(item);
     }
 
-    async findById(id: number): Promise<User | null> {
-        return await User.findByPk(id);
+    async findById(cf: string): Promise<User | null> {
+        return await User.findByPk(cf);
     }
 
     async findAll(): Promise<User[]> {
@@ -17,7 +17,7 @@ export class UserDao implements IDao<User> {
     }
 
     async update(item: Partial<UserAttributes>, updatedItem: Partial<UserAttributes>): Promise<User | null> {
-        const user = await User.findByPk(item.id);
+        const user = await User.findByPk(item.cf);
         if (user) {
             await user.update(updatedItem);
             return user;
@@ -26,8 +26,8 @@ export class UserDao implements IDao<User> {
         }
     }
 
-    async delete(id: number): Promise<boolean> {
-        const user = await User.findByPk(id);
+    async delete(cf: string): Promise<boolean> {
+        const user = await User.findByPk(cf);
         if (user) {
             await user.destroy();
             return true;
@@ -37,7 +37,7 @@ export class UserDao implements IDao<User> {
     }
 
     async read(item: UserAttributes): Promise<User | null> {
-        return await User.findByPk(item.id);
+        return await User.findByPk(item.cf);
     }
 
     async findByEmail(email: string): Promise<User | null> {

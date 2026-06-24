@@ -1,7 +1,7 @@
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  auth0_id VARCHAR UNIQUE,
+  cf SERIAL PRIMARY KEY,
   email VARCHAR UNIQUE,
+  passwordHash VARCHAR,
   role VARCHAR,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

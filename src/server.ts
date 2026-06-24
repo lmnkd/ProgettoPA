@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import process from "process";
 import { sequelize } from "./connector/connector";
+import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import adminRoutes from "./routes/admin";
 import { AppErrorsMessage } from "./enum/AppErrorsMessage";
@@ -25,12 +26,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello, World!" });
 });
 
-// Route protette
+// Route protette e pubbliche
+app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", adminRoutes);
 
 // Error handler globale
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.log("ERRORE COMPLETO:", err);
   if (err.status === 401) {
     return res.status(401).json({ error: AppErrorsMessage.INVALID_JWT_TOKEN });
   }

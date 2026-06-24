@@ -17,5 +17,8 @@ export enum AppErrorsMessage {
     PASSWORD_MISMATCH = 'Le password non corrispondono.',
     EMAIL_ALREADY_EXISTS = 'Un account con questo indirizzo email esiste già.',
     INVALID_JWT_TOKEN = 'Il token fornito non è valido o è scaduto.', 
-    JWT_TOKENS_CREATION_FAILED = 'La creazione dei token JWT è fallita.'
+    JWT_TOKENS_CREATION_FAILED = 'La creazione dei token JWT è fallita.',
+    MISSING_TOKEN = "MISSING_TOKEN",
+    TOKEN_EXPIRED = "TOKEN_EXPIRED",
+    INVALID_TOKEN = "INVALID_TOKEN"
 }       

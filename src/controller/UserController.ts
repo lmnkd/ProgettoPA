@@ -3,10 +3,10 @@ import { userService } from "../service/UserService";
 import { AppErrorsName } from "../enum/AppErrorsName";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 import { AppSuccessMessage } from "../enum/AppSuccessMessage";
+import { AppJwtPayload } from "../types/jwt-payload";
 
 export class UserController {
 
-    // POST /api/users
     async createUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await userService.createUser(req.body);
@@ -20,21 +20,25 @@ export class UserController {
         }
     }
 
-    // GET /api/users/:id
+    // GET /api/users/:id — operator vede tutti, user solo se stesso (CF)
     async getUserById(req: Request, res: Response): Promise<void> {
         try {
-            const user = await userService.getUserById(Number(req.params.id));
+            const requester = (req as any).user as AppJwtPayload;
+            const isOperator = requester.roles.includes("operator");
+
+            const user = await userService.getUserByCf(requester.cf, isOperator, req.params.cf);
             res.status(200).json(user);
         } catch (error: any) {
             if (error.name === AppErrorsName.USER_NOT_FOUND) {
                 res.status(404).json({ error: AppErrorsMessage.USER_NOT_FOUND });
+            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
+                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
             } else {
                 res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
             }
         }
     }
 
-    // GET /api/users
     async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
             const users = await userService.getAllUsers();
@@ -44,24 +48,32 @@ export class UserController {
         }
     }
 
-    // PUT /api/users/:id
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
-            const user = await userService.updateUser({ id: Number(req.params.id) }, req.body);
+            const requester = (req as any).user as AppJwtPayload;
+            const isOperator = requester.roles.includes("operator");
+
+            const user = await userService.updateUser(
+                requester.cf,
+                isOperator,
+                req.params.cf,
+                req.body
+            );
             res.status(200).json({ message: AppSuccessMessage.USER_UPDATED, user });
         } catch (error: any) {
             if (error.name === AppErrorsName.USER_NOT_FOUND) {
                 res.status(404).json({ error: AppErrorsMessage.USER_NOT_FOUND });
+            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
+                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
             } else {
                 res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
             }
         }
     }
 
-    // DELETE /api/users/:id
     async deleteUser(req: Request, res: Response): Promise<void> {
         try {
-            await userService.deleteUser(Number(req.params.id));
+            await userService.deleteUser(req.params.cf);
             res.status(200).json({ message: AppSuccessMessage.USER_DELETED });
         } catch (error: any) {
             if (error.name === AppErrorsName.USER_NOT_FOUND) {

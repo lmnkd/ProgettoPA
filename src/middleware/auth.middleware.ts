@@ -1,13 +1,40 @@
-import { auth } from "express-oauth2-jwt-bearer";
-import dotenv from "dotenv";
-import process from "process";
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { publicKey } from "../config/keys";
+import { AppJwtPayload } from "../types/jwt-payload";
+import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
-/**
- * Middleware Auth0 — verifica il JWT Bearer token.
- * Da applicare alle route che richiedono autenticazione.
- */
-export const checkJwt = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
-  tokenSigningAlg: "RS256",
-});
+export function authenticate(req: Request, res: Response, next: NextFunction): void {
+    const header = req.headers.authorization;
+
+    if (!header || !header.startsWith("Bearer ")) {
+        res.status(401).json({ error: AppErrorsMessage.MISSING_TOKEN });
+        return;
+    }
+
+    const token = header.split(" ")[1];
+
+    try {
+        const payload = jwt.verify(token, publicKey, { algorithms: ["RS256"] }) as AppJwtPayload;
+        (req as any).user = payload;
+        next();
+    } catch (error: any) {
+        if (error.name === "TokenExpiredError") {
+            res.status(401).json({ error: AppErrorsMessage.TOKEN_EXPIRED });
+        } else {
+            res.status(401).json({ error: AppErrorsMessage.INVALID_TOKEN });
+        }
+    }
+}
+
+export function requireRole(role: "user" | "operator") {
+    return (req: Request, res: Response, next: NextFunction): void => {
+        const user = (req as any).user as AppJwtPayload;
+
+        if (!user || !user.roles.includes(role)) {
+            res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
+            return;
+        }
+        next();
+    };
+}

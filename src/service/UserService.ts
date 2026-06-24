@@ -1,49 +1,89 @@
-import { userDao } from "../dao/UserDao";
-import { User, UserCreationAttributes, UserAttributes } from "../model/User";
-import { AppLogicError } from "../errors/App_Logic_Error";
+import bcrypt from "bcrypt";
+import { userDao } from "../dao/UserDao"; // adatta il path al tuo
 import { AppErrorsName } from "../enum/AppErrorsName";
 
+const SALT_ROUNDS = 10;
+
+interface CreateUserInput {
+    cf: string;
+    name: string;
+    email: string;
+    password: string;
+    role: 'user' | 'operator' | 'both';
+}
 
 export class UserService {
 
-    // Crea utente — controlla prima se email esiste già
-    async createUser(data: UserCreationAttributes): Promise<User> {
+    async createUser(data: CreateUserInput) {
         const existing = await userDao.findByEmail(data.email);
-        if (existing) throw new AppLogicError(AppErrorsName.EMAIL_ALREADY_EXISTS);
-        return await userDao.create(data);
+        if (existing) {
+            const err = new Error("Email already exists");
+            err.name = AppErrorsName.EMAIL_ALREADY_EXISTS;
+            throw err;
+        }
+
+        const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
+
+        return userDao.create({
+            cf: data.cf,
+            name: data.name,
+            email: data.email,
+            passwordHash,
+            role: data.role,
+        });
     }
 
-    // Legge utente — lancia errore se non esiste
-    async getUserById(id: number): Promise<User> {
-        const user = await userDao.findById(id);
-        if (!user) throw new AppLogicError(AppErrorsName.USER_NOT_FOUND);
+    // requesterCf/isOperator: chi sta chiedendo; targetCf: chi si vuole leggere
+    async getUserByCf(requesterCf: string, isOperator: boolean, targetCf: string) {
+        if (!isOperator && requesterCf !== targetCf) {
+            const err = new Error("Permission denied");
+            err.name = AppErrorsName.PERMISSION_DENIED;
+            throw err;
+        }
+
+        const user = await userDao.findById(targetCf);
+        if (!user) {
+            const err = new Error("User not found");
+            err.name = AppErrorsName.USER_NOT_FOUND;
+            throw err;
+        }
+
         return user;
     }
 
-    // Ritorna tutti gli utentiid
-    async getAllUsers(): Promise<User[]> {
-        return await userDao.findAll();
+    async getAllUsers() {
+        return userDao.findAll();
     }
 
-    // Aggiorna utente — controlla se esiste
-    async updateUser( data: Partial<UserAttributes>, updatedData: Partial<UserAttributes>): Promise<User> {
-        const user = await userDao.update(data, updatedData);
-        if (!user) throw new AppLogicError(AppErrorsName.USER_NOT_FOUND);
-        return user;
+    async updateUser(
+        requesterCf: string,
+        isOperator: boolean,
+        targetCf: string,
+        data: Partial<{ name: string; email: string; role: 'user' | 'operator' | 'both' }>
+    ) {
+        if (!isOperator && requesterCf !== targetCf) {
+            const err = new Error("Permission denied");
+            err.name = AppErrorsName.PERMISSION_DENIED;
+            throw err;
+        }
+
+        const updated = await userDao.update({ cf: targetCf }, data);
+        if (!updated) {
+            const err = new Error("User not found");
+            err.name = AppErrorsName.USER_NOT_FOUND;
+            throw err;
+        }
+
+        return updated;
     }
 
-    // Elimina utente — controlla se esiste
-    async deleteUser(id: number): Promise<boolean> {
-        const deleted = await userDao.delete(id);
-        if (!deleted) throw new AppLogicError(AppErrorsName.USER_NOT_FOUND);
-        return true;
-    }
-
-    // Legge utente per email — lancia errore se non esiste
-    async getUserByEmail(email: string): Promise<User> {
-        const user = await userDao.findByEmail(email);
-        if (!user) throw new AppLogicError(AppErrorsName.USER_NOT_FOUND);
-        return user;
+    async deleteUser(cf: string) {
+        const deleted = await userDao.delete(cf);
+        if (!deleted) {
+            const err = new Error("User not found");
+            err.name = AppErrorsName.USER_NOT_FOUND;
+            throw err;
+        }
     }
 }
 
