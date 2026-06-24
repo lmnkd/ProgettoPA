@@ -8,5 +8,8 @@ export enum AppSuccessMessage {
   LOGIN_SUCCESSFUL = 'Login effettuato con successo.',
   LOGOUT_SUCCESSFUL = 'Logout effettuato con successo.',
   PASSWORD_CHANGED = 'Password modificata con successo.',
-  EMAIL_SENT = 'Email inviata correttamente.'
+  EMAIL_SENT = 'Email inviata correttamente.',
+  VACCINO_CREATED = "VACCINO_CREATED",
+  VACCINO_UPDATED = "VACCINO_UPDATED",
+  VACCINO_DELETED = "VACCINO_DELETED"
 }

@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { userDao } from "../dao/UserDao"; // adatta il path al tuo
+import { userDao } from "../dao/UserDao"; 
 import { AppErrorsName } from "../enum/AppErrorsName";
 
 const SALT_ROUNDS = 10;
