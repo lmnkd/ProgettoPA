@@ -13,7 +13,6 @@ export class AdminController{
     async increaseUserTokens(req: Request, res: Response): Promise<void> {
         try {
             const requester = (req as any).user as AppJwtPayload;
-            
             // Verifica che l'utente sia admin
             if (!requester.roles.includes("admin")) {
                 res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });

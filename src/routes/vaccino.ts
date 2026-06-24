@@ -4,10 +4,10 @@ import { authenticate, requireRole } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.post("/creavaccino", authenticate, vaccinoController.createVaccino)
-router.get(":id", authenticate, vaccinoController.getVaccinoById);
-router.get("/", authenticate, vaccinoController.getAllVaccini);
-router.delete(":id", authenticate, vaccinoController.deleteVaccino)
-router.put(":id", authenticate, vaccinoController.updateVaccino)
+router.post("/creavaccino", authenticate, requireRole("operator"), vaccinoController.createVaccino);
+router.get("/readAllVaccini", authenticate, requireRole("operator"), vaccinoController.getAllVaccini);
+router.get("/:id", authenticate, requireRole("operator"), vaccinoController.getVaccinoById);
+router.put("/:id", authenticate, requireRole("operator"), vaccinoController.updateVaccino);
+router.delete("/:id", authenticate, requireRole("operator"), vaccinoController.deleteVaccino);
 
 export default router

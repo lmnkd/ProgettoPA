@@ -9,6 +9,15 @@ export class VaccinoController {
 
     async createVaccino(req: Request, res: Response): Promise<void> {
         try {
+
+            const requester = (req as any).user as AppJwtPayload;
+            
+            // Verifica che l'utente sia operator
+            if (!requester.roles.includes("operator")) {
+                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
+                return;
+            }
+
             const vaccino = await vaccinoService.createVaccino(req.body);
             res.status(201).json({ message: AppSuccessMessage.VACCINO_CREATED, vaccino });
         } catch (error: any) {
