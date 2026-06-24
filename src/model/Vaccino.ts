@@ -37,6 +37,7 @@ export function initVaccinoModel(
             nome: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                unique: true,
             },
 
             durataCopertura: {

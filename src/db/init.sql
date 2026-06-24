@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 CREATE TABLE vaccini (
   id SERIAL PRIMARY KEY,
-  nome VARCHAR NOT NULL,
+  nome VARCHAR NOT NULL UNIQUE,
   durataCopertura INTEGER NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

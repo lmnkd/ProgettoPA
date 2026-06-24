@@ -13,6 +13,10 @@ export class VaccinoDao implements IDao<Vaccino> {
         return Vaccino.create(vaccino);
     }
 
+    async findByNome(nome: string): Promise<Vaccino | null> {
+        return Vaccino.findOne({ where: { nome } });
+    }
+
     async findById(id: number): Promise<Vaccino | null> {
         return Vaccino.findByPk(id);
     }
