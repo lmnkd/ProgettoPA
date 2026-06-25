@@ -47,6 +47,24 @@ export class VaccinoController {
         }
     }   
 
+    async getVaccinoByNome(req: Request, res: Response): Promise<void> {
+        try {
+            const requester = (req as any).user as AppJwtPayload;
+            const isOperator = requester.roles.includes("operator");
+            const targetId = Number(req.params.id);
+            const vaccino = await vaccinoService.getVaccinoById(requester.cf, isOperator, targetId);
+            res.status(200).json(vaccino);
+        } catch (error: any) {
+            if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {
+                res.status(404).json({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
+            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
+                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
+            } else {
+                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+            }
+        }
+    }   
+
     async getAllVaccini(req: Request, res: Response): Promise<void> {
         try {
             const requester = (req as any).user as AppJwtPayload;

@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import adminRoutes from "./routes/admin";
 import vaccinoRoutes from "./routes/vaccino";
+import lottoVaccinoRoutes from "./routes/lottovaccino";
 import { AppErrorsMessage } from "./enum/AppErrorsMessage";
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", vaccinoRoutes)
+app.use("/api", lottoVaccinoRoutes);
 
 // Error handler globale
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
