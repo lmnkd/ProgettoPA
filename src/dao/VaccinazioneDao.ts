@@ -40,6 +40,13 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
             return Vaccinazione.findByPk(id);
         }
     
+    async findLastByUserAndVaccino(userCf: string, vaccinoId: number): Promise<Vaccinazione | null> {
+        return Vaccinazione.findOne({
+            where: { userCf, vaccinoId },
+            order: [["dataVaccinazione", "DESC"]],
+        });
+    }   
+    
 }
 
 export const vaccinazioneDao = new VaccinazioneDao();

@@ -11,7 +11,7 @@ VALUES
 
 
 -- VACCINI
-INSERT INTO vaccini (nome, durataCopertura)
+INSERT INTO vaccini (nome, durata_copertura)
 VALUES
 ('Pfizer', 365),
 ('Moderna', 365),
