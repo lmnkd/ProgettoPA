@@ -4,6 +4,8 @@ import { LottoVaccino } from "../model/LottoVaccino";
 
 export class LottoVaccinoDao implements IDao<LottoVaccino> {
 
+    // Dao di lotto vaccino con i metodi di default
+
     async create(item: any): Promise<LottoVaccino> {
         return await LottoVaccino.create(item);
     }

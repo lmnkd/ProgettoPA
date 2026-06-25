@@ -40,6 +40,8 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
             return Vaccinazione.findByPk(id);
         }
     
+        // Dao normale ma con metodo per trovare una vaccinazione dato un user e una tipologia di vaccino
+    
     async findLastByUserAndVaccino(userCf: string, vaccinoId: number): Promise<Vaccinazione | null> {
         return Vaccinazione.findOne({
             where: { userCf, vaccinoId },

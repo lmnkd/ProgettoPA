@@ -19,4 +19,12 @@ router.get(
     (req, res) => lottoVaccinoController.getLottiByVaccino(req, res)
 );
 
+// UPDATE
+
+
+// DELETE
+
+
+
+
 export default router;

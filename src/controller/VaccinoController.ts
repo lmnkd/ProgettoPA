@@ -7,12 +7,16 @@ import { AppJwtPayload } from "../types/jwt-payload";
 
 export class VaccinoController {
 
+// Possibilità di rimuovere alcuni controlli che aggiungeremo nelle rotte
+
+
     async createVaccino(req: Request, res: Response): Promise<void> {
+
         try {
 
             const requester = (req as any).user as AppJwtPayload;
             
-            // Verifica che l'utente sia operator
+            // Verifica che l'utente sia operator, si può levare ma abbiamo tenuto per maggiore sicurezza che non ci sfugga il controlo del ruolo
             if (!requester.roles.includes("operator")) {
                 res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
                 return;
@@ -31,10 +35,15 @@ export class VaccinoController {
 
     async getVaccinoById(req: Request, res: Response): Promise<void> {
         try {
+
             const requester = (req as any).user as AppJwtPayload;
+
+            // Anche qui si può levare
+
             const isOperator = requester.roles.includes("operator");
             const targetId = Number(req.params.id);
             const vaccino = await vaccinoService.getVaccinoById(requester.cf, isOperator, targetId);
+
             res.status(200).json(vaccino);
         } catch (error: any) {
             if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {

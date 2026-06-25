@@ -5,6 +5,8 @@ import { Op, literal } from "sequelize";
 
 export class UserDao implements IDao<User> {
 
+    // Anche qua metodi classici ma in più ci sono i metodi che riguardano i token
+
     async create(item: UserCreationAttributes): Promise<User> {
         return await User.create(item);
     }

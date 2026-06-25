@@ -12,6 +12,7 @@ function toRolesArray(role: 'admin' | 'user' | 'operator' | 'both'): ("admin" | 
 
 export class AuthService {
 
+    // Funzione login che evita email sbagliata, controlla password e crea un JWT token all'avvenuto accesso
     async login(email: string, password: string): Promise<string> {
         const user = await userDao.findByEmail(email);
         if (!user) {
