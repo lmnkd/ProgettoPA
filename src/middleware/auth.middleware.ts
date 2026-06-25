@@ -4,6 +4,9 @@ import { publicKey } from "../config/keys";
 import { AppJwtPayload } from "../types/jwt-payload";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
+
+// Funzione per scremare nelle rotte tramite autenticazione JWT
+
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
     const header = req.headers.authorization;
 
@@ -26,6 +29,8 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
         }
     }
 }
+
+// Funzione per autenticazione con ruoli
 
 export function requireRole(role: "user" | "operator" | "admin") {
     return (req: Request, res: Response, next: NextFunction): void => {

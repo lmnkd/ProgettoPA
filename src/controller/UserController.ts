@@ -48,6 +48,7 @@ export class UserController {
         }
     }
 
+    // Anche per update potremmo aggiornare il codice
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
             const requester = (req as any).user as AppJwtPayload;

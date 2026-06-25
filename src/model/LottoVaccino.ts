@@ -1,6 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Optional, Model } from 'sequelize';
 
+// Interfaccia per  attributi vaccino
+
 export interface LottoVaccinoAttributes {
     id: number;
 
@@ -15,8 +17,13 @@ export interface LottoVaccinoAttributes {
     dataScadenza: Date;
 }
 
+// Interfaccia per creazione attributi vaccino
+
+
 export interface LottoVaccinoCreationAttributes
     extends Optional<LottoVaccinoAttributes, 'id'> {}
+
+// Model classe lottovaccino che estende le due interfaccie
 
 export class LottoVaccino
     extends Model<

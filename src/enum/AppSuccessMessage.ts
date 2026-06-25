@@ -9,11 +9,11 @@ export enum AppSuccessMessage {
   LOGOUT_SUCCESSFUL = 'Logout effettuato con successo.',
   PASSWORD_CHANGED = 'Password modificata con successo.',
   EMAIL_SENT = 'Email inviata correttamente.',
-  VACCINO_CREATED = "VACCINO_CREATED",
-  VACCINO_UPDATED = "VACCINO_UPDATED",
-  VACCINO_DELETED = "VACCINO_DELETED",
-  TOKENS_UPDATED = "TOKENS_UPDATED",
-  VACCINAZIONE_UPDATED = "VACCINAZIONE_UPDATED",
-  VACCINAZIONE_DELETED = "VACCINAZIONE_DELETED",
-  VACCINAZIONE_CREATED = "VACCINAZIONE_CREATED"
+  VACCINO_CREATED = "Vaccino creato correttamente",
+  VACCINO_UPDATED = "Vaccino aggiornato correttamente",
+  VACCINO_DELETED = "Vaccino cancellato correttamente",
+  TOKENS_UPDATED = "Token aggiornato correttamente",
+  VACCINAZIONE_UPDATED = "Vaccizazione aggiornata correttamente",
+  VACCINAZIONE_DELETED = "Vaccinazione cancellatta correttamente",
+  VACCINAZIONE_CREATED = "Vaccinazione creata correttamente"
 }

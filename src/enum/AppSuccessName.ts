@@ -1,11 +1,11 @@
 
 
 export enum AppSuccessName {
-    USER_CREATED = 'USER_CREATED',
-    USER_UPDATED = 'USER_UPDATED',
-    USER_DELETED = 'USER_DELETED',
-    LOGIN_SUCCESSFUL = 'LOGIN_SUCCESSFUL',
-    LOGOUT_SUCCESSFUL = 'LOGOUT_SUCCESSFUL',
-    PASSWORD_CHANGED = 'PASSWORD_CHANGED',
-    EMAIL_SENT = 'EMAIL_SENT'
+    USER_CREATED = 'User creato con successo',
+    USER_UPDATED = 'User aggiornato con successo',
+    USER_DELETED = 'User cancellato con successo',
+    LOGIN_SUCCESSFUL = 'Login effettuato con successo',
+    LOGOUT_SUCCESSFUL = 'Logout effettutato con successo',
+    PASSWORD_CHANGED = 'Password cambiata',
+    EMAIL_SENT = 'Email mandata'
 }

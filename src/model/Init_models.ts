@@ -6,6 +6,9 @@ import { initVaccinoModel, Vaccino } from "./Vaccino";
 import { initLottoVaccinoModel, LottoVaccino } from "./LottoVaccino";
 import { initVaccinazioneModel, Vaccinazione } from "./Vaccinazione";
 
+
+// Inizializzazione modelli tramite Sequelize
+
 export function initModels(sequelize: Sequelize.Sequelize) {
 
     // =========================

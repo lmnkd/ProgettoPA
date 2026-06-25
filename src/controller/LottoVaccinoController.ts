@@ -5,11 +5,11 @@ import { AppJwtPayload } from "../types/jwt-payload";
 export class LottoVaccinoController {
 
     async createLotto(req: Request, res: Response): Promise<void> {
-
-        console.log("=== CREATE LOTTO ===");
-
         try {
             const requester = (req as any).user as AppJwtPayload;
+
+
+            // Probabile cancellazione 
 
             if (!requester.roles.includes("operator")) {
                 res.status(403).json({ error: "PERMISSION_DENIED" });
@@ -23,10 +23,8 @@ export class LottoVaccinoController {
                 req.body
             );
 
-            console.log("RISULTATO CREATE:", lotto);
-
             res.status(201).json(lotto);
-
+            // Dobbiamo decidere se inserire middleware nelle rotte anche per lotto
         } catch (error: any) {
 
             if (error.message === "VACCINO_NOT_FOUND") {
