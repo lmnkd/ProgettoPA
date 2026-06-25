@@ -8,6 +8,7 @@ import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 // Funzione per scremare nelle rotte tramite autenticazione JWT
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
+
     const header = req.headers.authorization;
 
     if (!header || !header.startsWith("Bearer ")) {

@@ -23,10 +23,7 @@ export class UserController {
     // GET /api/users/:id — operator vede tutti, user solo se stesso (CF)
     async getUserById(req: Request, res: Response): Promise<void> {
         try {
-            const requester = (req as any).user as AppJwtPayload;
-            const isOperator = requester.roles.includes("operator");
-
-            const user = await userService.getUserByCf(requester.cf, isOperator, req.params.cf);
+            const user = await userService.getUserByCf(req.params.cf);
             res.status(200).json(user);
         } catch (error: any) {
             if (error.name === AppErrorsName.USER_NOT_FOUND) {

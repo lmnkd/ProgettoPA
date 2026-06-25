@@ -35,7 +35,7 @@ app.use("/api/users", userRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", vaccinoRoutes)
 app.use("/api", lottoVaccinoRoutes);
-app.use("/api", vaccinazioneRoutes )
+app.use("/api/vaccinazioni", vaccinazioneRoutes)
 
 // Error handler globale
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

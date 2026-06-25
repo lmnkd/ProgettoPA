@@ -89,7 +89,7 @@ async getVaccinazioneById(req: Request, res: Response): Promise<void> {
 
             const targetId = Number(req.params.id);
             await vaccinazioneService.deleteVaccinazione(targetId);
-            
+
             res.status(200).json({ message: AppSuccessMessage.VACCINAZIONE_DELETED });
         } catch (error: any) {
             if (error.name === AppErrorsName.VACCINAZIONE_NOT_FOUND) {
@@ -102,6 +102,58 @@ async getVaccinazioneById(req: Request, res: Response): Promise<void> {
         }
     }
 
+// metodo per creazione PDF, se il requester ha il ruolo admin, posso inserire nella richiesta il CF, altrimenti il CF usato sarà quello di chi ha fatto la richiesta
+
+    async pdfVaccinazione(req: Request, res: Response): Promise<void> {
+    try {
+
+        const requester = (req as any).user as AppJwtPayload;
+
+        const roles = requester.roles ?? [];
+        const isAdmin = roles.includes("admin");
+
+       
+
+        let targetCf: string;
+
+        if (isAdmin) {
+            const cfParam = req.query.cf as string;
+
+            if (!cfParam) {
+                res.status(400).json({
+                    error: AppErrorsMessage.MISSING_DATA
+                });
+                return;
+            }
+
+            targetCf = cfParam;
+        } else {
+            targetCf = requester.cf;
+        }
+
+        const pdfBuffer =
+            await vaccinazioneService.generatePdfReport(targetCf);
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="vaccinazioni_${targetCf}.pdf"`
+        );
+
+        res.status(200).send(pdfBuffer);
+
+    } catch (error: any) {
+        if (error.name === AppErrorsName.USER_NOT_FOUND) {
+            res.status(404).json({
+                error: AppErrorsMessage.USER_NOT_FOUND
+            });
+        } else {
+            res.status(500).json({
+                error: AppErrorsMessage.SERVER_ERROR
+            });
+        }
+    }
+}
 }
 
 export const vaccinazioneController = new VaccinazioneController();

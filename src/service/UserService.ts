@@ -34,13 +34,7 @@ export class UserService {
     }
 
     // requesterCf/isOperator: chi sta chiedendo; targetCf: chi si vuole leggere
-    async getUserByCf(requesterCf: string, isOperator: boolean, targetCf: string) {
-        if (!isOperator && requesterCf !== targetCf) {
-            const err = new Error("Permission denied");
-            err.name = AppErrorsName.PERMISSION_DENIED;
-            throw err;
-        }
-
+    async getUserByCf(targetCf: string) {
         const user = await userDao.findById(targetCf);
         if (!user) {
             const err = new Error("User not found");

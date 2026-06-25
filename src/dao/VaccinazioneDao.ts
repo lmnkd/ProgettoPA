@@ -48,6 +48,14 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
             order: [["dataVaccinazione", "DESC"]],
         });
     }   
+
+
+    async findAllByUserCf(userCf: string): Promise<Vaccinazione[]> {
+        return Vaccinazione.findAll({
+            where: { userCf },
+            order: [["dataVaccinazione", "DESC"]],
+        });
+    }
     
 }
 

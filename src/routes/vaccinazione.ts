@@ -32,5 +32,7 @@ router.put('/vaccinazioni/:id', authenticate, requireRole("operator"), checkUser
 // cancellazione vaccinazione
 router.delete('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.deleteVaccinazione);
 
+// creazione pdf admin richiederà con /pdf?cf=codicefiscaleuser
+router.get("/pdf", authenticate, vaccinazioneController.pdfVaccinazione);
 
 export default router;
