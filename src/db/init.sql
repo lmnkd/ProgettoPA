@@ -1,7 +1,8 @@
 CREATE TABLE users (
-  cf SERIAL PRIMARY KEY,
+  cf VARCHAR(16) PRIMARY KEY,
+  name VARCHAR NOT NULL,
   email VARCHAR UNIQUE,
-  passwordHash VARCHAR,
+  password_hash VARCHAR,
   role VARCHAR,
   token INTEGER NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT NOW(),
