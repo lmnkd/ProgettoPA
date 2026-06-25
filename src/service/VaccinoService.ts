@@ -42,6 +42,10 @@ export class VaccinoService {
         return vaccinoDao.findById(targetId);
     }   
 
+    async searchVaccini(filters: any) {
+        return vaccinoDao.searchVaccini(filters);
+    }
+
     async getAllVaccini(requesterCf: string, isOperator: boolean) {
         if (!isOperator) {
             const err = new Error("Permission denied");

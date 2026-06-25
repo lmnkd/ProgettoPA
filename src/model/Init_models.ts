@@ -33,7 +33,8 @@ export function initModels(sequelize: Sequelize.Sequelize) {
 
     // VACCINO -> LOTTI (1:N)
     Vaccino.hasMany(LottoVaccino, {
-        foreignKey: "vaccinoId"
+        foreignKey: "vaccinoId",
+        as: "lotti"
     });
 
     LottoVaccino.belongsTo(Vaccino, {
