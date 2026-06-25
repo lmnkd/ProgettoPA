@@ -22,6 +22,9 @@ export class SequelizeConnector {
         host: process.env.POSTGRES_HOST || "postgres",
         port: Number(process.env.POSTGRES_PORT) || 5432,
         dialect: "postgres",
+        define: {
+          underscored: true,
+        },
       }
     );
     initModels(this.sequelize);

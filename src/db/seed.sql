@@ -1,11 +1,14 @@
 -- USERS
-INSERT INTO users (cf, email, passwordHash, role)
+INSERT INTO users (cf, name, email, password_hash, role)
 VALUES
-('RSSMRA80A01H501U', 'mario.rossi@email.it', '$2a$10$hash1', 'operator'),
-('VRDLGI85B15F205X', 'luigi.verdi@email.it', '$2a$10$hash2', 'user'),
-('BNCMRA90C20D612Y', 'maria.bianchi@email.it', '$2a$10$hash3', 'user'),
-('MEDCST75D10H501Z', 'medico@asl.it', '$2a$10$hash4', 'operator'),
-('ADMINA70E01F205K', 'admin@asl.it', '$2a$10$hash5', 'admin');
+('RSSMRA80A01H501U', 'Mario Rossi', 'mario.rossi@email.it', '$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2', 'operator'),
+('VRDLGI85B15F205X', 'Luigi Verdi', 'luigi.verdi@email.it', '$2b$10$pPXutCsGb/Vaoyto2C.Qp.wZxchN5RttaXFIBEp7EEM8Al1pyIs8y', 'user'),
+('BNCMRA90C20D612Y', 'Maria Bianchi', 'maria.bianchi@email.it', '$2b$10$CwpdO6zGxmDJQYiEeT5Usuas0mugPONiDrL4F9Xcg.5nlG5BI9rCS', 'user'),
+('MEDCST75D10H501Z', 'Medico ASL', 'medico@asl.it', '$2b$10$7uNLFip.05rvheTchcHw/.9XvtTNWWk4XBJPu3qn5s5F/D9HnXc0', 'operator'),
+('ADMINA70E01F205K', 'Admin ASL', 'admin@asl.it', '$2b$10$VLiUg/jNoOEszDmde4kBS.OmC4UWM/ciB22WMeRUf.iDZBIPsOWLu', 'admin');
+
+-- password123 mario rossi
+
 
 -- VACCINI
 INSERT INTO vaccini (nome, durataCopertura)
