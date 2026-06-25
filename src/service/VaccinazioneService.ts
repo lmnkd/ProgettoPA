@@ -198,6 +198,29 @@ export class VaccinazioneService {
     });
 }
 
+async getFilteredVaccinazioni(cf: string, filters: {
+    nomeVaccino?: string;
+    dataGt?: string;
+    dataLt?: string;
+    dataMin?: string;
+    dataMax?: string;
+}) {
+    const user = await userDao.findById(cf);
+    if (!user) {
+        const err = new Error("User not found");
+        err.name = AppErrorsName.USER_NOT_FOUND;
+        throw err;
+    }
+
+    return vaccinazioneDao.findFilteredByUserCf(cf, {
+        nomeVaccino: filters.nomeVaccino,
+        dataGt: filters.dataGt ? new Date(filters.dataGt) : undefined,
+        dataLt: filters.dataLt ? new Date(filters.dataLt) : undefined,
+        dataMin: filters.dataMin ? new Date(filters.dataMin) : undefined,
+        dataMax: filters.dataMax ? new Date(filters.dataMax) : undefined,
+    });
+}
+
 }
 
 export const vaccinazioneService = new VaccinazioneService();

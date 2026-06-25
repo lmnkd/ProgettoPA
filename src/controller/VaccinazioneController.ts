@@ -154,6 +154,44 @@ async getVaccinazioneById(req: Request, res: Response): Promise<void> {
         }
     }
 }
+
+async getFilteredVaccinazioni(req: Request, res: Response): Promise<void> {
+    try {
+        const requester = (req as any).user as AppJwtPayload;
+        const isAdmin = requester.roles.includes("admin");
+
+        let targetCf: string;
+        if (isAdmin) {
+            const cfParam = req.query.cf as string;
+            if (!cfParam) {
+                res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });
+                return;
+            }
+            targetCf = cfParam;
+        } else {
+            targetCf = requester.cf;
+        }
+
+        const { nomeVaccino, dataGt, dataLt, dataMin, dataMax } = req.query;
+
+        const vaccinazioni = await vaccinazioneService.getFilteredVaccinazioni(targetCf, {
+            nomeVaccino: nomeVaccino as string,
+            dataGt: dataGt as string,
+            dataLt: dataLt as string,
+            dataMin: dataMin as string,
+            dataMax: dataMax as string,
+        });
+
+        res.status(200).json(vaccinazioni);
+
+    } catch (error: any) {
+        if (error.name === AppErrorsName.USER_NOT_FOUND) {
+            res.status(404).json({ error: AppErrorsMessage.USER_NOT_FOUND });
+        } else {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
+    }
+}
 }
 
 export const vaccinazioneController = new VaccinazioneController();
