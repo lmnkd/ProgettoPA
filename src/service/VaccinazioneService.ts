@@ -3,6 +3,8 @@ import {AppErrorsName} from "../enum/AppErrorsName";
 import { VaccinazioneAttributes } from "../model/Vaccinazione";
 import PDFDocument from "pdfkit";
 import { userDao } from "../dao/UserDao";
+import redis from "../config/redis";
+import { randomUUID } from "crypto";
 
 
 interface CreateVaccinazioneInput {
@@ -24,6 +26,20 @@ interface CoperturaResult {
 }
 
 export class VaccinazioneService {
+
+    async createCoperturaCode( cf: string, ttlMinutes: number = 10): Promise<string> {
+    const code = randomUUID();
+
+    await redis.set(
+        `copertura:${code}`,
+        cf,
+        { EX: ttlMinutes * 60 }
+    );
+
+    return code;
+}
+
+    
 
     async createVaccinazione(data: CreateVaccinazioneInput) {
         return vaccinazioneDao.create({

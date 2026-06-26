@@ -44,4 +44,8 @@ router.get("/copertura", authenticate, vaccinazioneController.getCoperturaReport
 // Rotta di prima ma con il pdf scaricato, differenza funziona per un dato utente, quindi cf deve essere inserito nella query
 router.get("/copertura/pdf", authenticate, vaccinazioneController.getCoperturaPdf);
 
+// Inserendo nella richiesta il code posso andare oltre il JWT /copertura/json?code=550e8400, se voglio farlo per un utente secifico basta creare con il post un token utilizzando il suo CF
+router.get("/copertura/code", vaccinazioneController.getCoperturaByCode)
+
+
 export default router;

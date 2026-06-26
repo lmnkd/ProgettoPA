@@ -9,11 +9,31 @@ import vaccinoRoutes from "./routes/vaccino";
 import vaccinazioneRoutes from "./routes/vaccinazione";
 import lottoVaccinoRoutes from "./routes/lottovaccino";
 import { AppErrorsMessage } from "./enum/AppErrorsMessage";
+import {connectRedis}  from "./config/redis";
+
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+
+// Avvio redis
+const start = async () => {
+    try {
+        await connectRedis(); 
+
+        app.listen(3000, () => {
+            console.log("Server avviato su porta 3000");
+        });
+    } catch (err) {
+        console.error("Errore avvio server:", err);
+        process.exit(1);
+    }
+};
+
+start();
+
 
 // Connessione DB + sync tabelle
 sequelize.getSequelize().authenticate()
