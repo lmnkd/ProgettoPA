@@ -5,6 +5,7 @@ import { authenticate, requireRole } from "../middleware/auth.middleware";
 
 const router = Router();
 
+router.get("/coperturascaduta", authenticate, requireRole("operator"), userController.getUsersWithExpiredCoverage);
 
 // Ottenere un USER
 router.get("/:cf", authenticate, requireRole("operator"), userController.getUserById);

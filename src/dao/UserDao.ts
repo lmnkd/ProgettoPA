@@ -1,4 +1,7 @@
 import {IDao} from "./IDao";
+import { Vaccinazione } from "../model/Vaccinazione";
+import { Vaccino } from "../model/Vaccino";
+import { fn, col, where } from "sequelize";
 import {User, UserAttributes, UserCreationAttributes} from "../model/User";
 import { Op, literal } from "sequelize";
 
@@ -45,6 +48,97 @@ export class UserDao implements IDao<User> {
 
     async findByEmail(email: string): Promise<User | null> {
         return await User.findOne({ where: { email } });
+    }
+
+    async findUsersWithExpiredCoverage(filters: {
+        vaccino?: string;
+        giorniMin?: number;
+        giorniMax?: number;
+    }) {
+
+        const utenti = await User.findAll({
+
+            include: [
+                {
+                    model: Vaccinazione,
+                    as: "vaccinazioni",
+                    required: true,
+
+                    include: [
+                        {
+                            model: Vaccino,
+                            required: true,
+
+                            ...(filters.vaccino
+                                ? {
+                                    where: {
+                                        nome: filters.vaccino
+                                    }
+                                }
+                                : {})
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const oggi = new Date();
+
+        return utenti.filter((u: any) => {
+
+            const vaccinazioni = u.vaccinazioni  ?? [];
+
+            return vaccinazioni.some((v: any) => {
+
+                const dataVaccino =
+                    new Date(v.dataVaccinazione);
+
+                const durata =
+                    v.Vaccino.durataCopertura;
+
+                const scadenza =
+                    new Date(dataVaccino);
+
+                scadenza.setDate(
+                    scadenza.getDate() + durata
+                );
+
+                const giorniScaduti = Math.floor(
+                    (oggi.getTime() - scadenza.getTime()) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+                if (giorniScaduti <= 0) {
+                    return false;
+                }
+
+                if (
+                    filters.giorniMin !== undefined &&
+                    filters.giorniMax === undefined
+                ) {
+                    return giorniScaduti >= filters.giorniMin;
+                }
+
+                if (
+                    filters.giorniMax !== undefined &&
+                    filters.giorniMin === undefined
+                ) {
+                    return giorniScaduti <= filters.giorniMax;
+                }
+
+                if (
+                    filters.giorniMin !== undefined &&
+                    filters.giorniMax !== undefined
+                ) {
+                    return (
+                        giorniScaduti >= filters.giorniMin &&
+                        giorniScaduti <= filters.giorniMax
+                    );
+                }
+
+                return true;
+            });
+        });
     }
 
     async decrementTokenIfAvailable(cf: string): Promise<boolean> {

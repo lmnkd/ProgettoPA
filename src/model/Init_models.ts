@@ -26,12 +26,14 @@ export function initModels(sequelize: Sequelize.Sequelize) {
     // USER -> VACCINAZIONI (1:N)
     User.hasMany(Vaccinazione, {
         foreignKey: "userCf",
-        sourceKey: "cf"
+        sourceKey: "cf",
+        as: "vaccinazioni"
     });
 
     Vaccinazione.belongsTo(User, {
         foreignKey: "userCf",
-        targetKey: "cf"
+        targetKey: "cf",
+        as: "utente"
     });
 
     // VACCINO -> LOTTI (1:N)
