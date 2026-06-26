@@ -71,6 +71,17 @@ export class UserService {
         return updated;
     }
 
+    async getUsersWithExpiredCoverage(filters: {
+        vaccino?: string;
+        giorniMin?: number;
+        giorniMax?: number;
+    }) {
+
+        return userDao.findUsersWithExpiredCoverage(
+            filters
+        );
+    }
+
     async deleteUser(cf: string) {
         const deleted = await userDao.delete(cf);
         if (!deleted) {

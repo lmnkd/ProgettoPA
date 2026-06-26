@@ -45,6 +45,37 @@ export class UserController {
         }
     }
 
+    async getUsersWithExpiredCoverage(
+        req: Request,
+        res: Response
+    ): Promise<void> {
+
+        try {
+
+            const utenti =
+                await userService.getUsersWithExpiredCoverage({
+
+                    vaccino: req.query.vaccino as string,
+
+                    giorniMin: req.query.giorniMin
+                        ? Number(req.query.giorniMin)
+                        : undefined,
+
+                    giorniMax: req.query.giorniMax
+                        ? Number(req.query.giorniMax)
+                        : undefined
+                });
+
+            res.status(200).json(utenti);
+
+        } catch {
+
+            res.status(500).json({
+                error: "SERVER_ERROR"
+            });
+        }
+    }
+
     // Anche per update potremmo aggiornare il codice
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
