@@ -194,7 +194,7 @@ async getFilteredVaccinazioni(req: Request, res: Response): Promise<void> {
 }
 
 
-    async getCoperturaReport(req: Request, res: Response): Promise<void> {
+async getCoperturaReport(req: Request, res: Response): Promise<void> {
     try {
         const requester = (req as any).user as AppJwtPayload;
         const isAdmin = requester.roles.includes("admin");
@@ -210,6 +210,46 @@ async getFilteredVaccinazioni(req: Request, res: Response): Promise<void> {
 
     } catch {
         res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+    }
+ }
+
+
+ async getCoperturaPdf(req: Request, res: Response): Promise<void> {
+    try {
+        const requester = (req as any).user as AppJwtPayload;
+        const isAdmin = requester.roles.includes("admin");
+
+        const targetCf = isAdmin
+            ? (req.query.cf as string | undefined)
+            : requester.cf;
+
+        const order =
+            (req.query.order as string) === "desc" ? "desc" : "asc";
+
+        if (!targetCf) {
+            res.status(400).json({
+                error: "CF mancante o non valido",
+            });
+            return;
+        }
+
+        const pdfBuffer =
+            await vaccinazioneService.generateCoperturaPdf(
+                targetCf,
+                order
+            );
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=copertura.pdf`
+        );
+
+        res.send(pdfBuffer);
+    } catch {
+        res.status(500).json({
+            error: AppErrorsMessage.SERVER_ERROR,
+        });
     }
  }
 }
