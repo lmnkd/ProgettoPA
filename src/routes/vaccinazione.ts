@@ -38,4 +38,7 @@ router.get("/pdf", authenticate, vaccinazioneController.pdfVaccinazione);
 // vaccinazioni filtrate /api/vaccinazioni/filtrate?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31 o /api/vaccinazioni/filtrate?nome=moderna&before=2024-06-01
 router.get("/filtrareuseradmin", authenticate, vaccinazioneController.getFilteredVaccinazioni);
 
+// Vaccinazione con copertura, admin può vederle di tutti(può filtrare mettendo cf) mentre l'user solo le sue. http://localhost:3000/api/vaccinazioni/copertura?order=asc order per vederli in ordine ascendente o discendente
+router.get("/copertura", authenticate, vaccinazioneController.getCoperturaReport);
+
 export default router;

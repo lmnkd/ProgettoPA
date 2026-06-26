@@ -95,6 +95,19 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
     });
     
 }
+
+async findAllWithDetails(userCf?: string): Promise<Vaccinazione[]> {
+    const where = userCf ? { userCf } : {};
+
+    return Vaccinazione.findAll({
+        where,
+        include: [
+            { model: Vaccino, attributes: ["nome", "durataCopertura"] },
+            { model: LottoVaccino, attributes: ["codiceLotto"] },
+        ],
+    });
+}
+
 }
 
 export const vaccinazioneDao = new VaccinazioneDao();

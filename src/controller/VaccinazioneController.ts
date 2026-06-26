@@ -192,6 +192,26 @@ async getFilteredVaccinazioni(req: Request, res: Response): Promise<void> {
         }
     }
 }
+
+
+    async getCoperturaReport(req: Request, res: Response): Promise<void> {
+    try {
+        const requester = (req as any).user as AppJwtPayload;
+        const isAdmin = requester.roles.includes("admin");
+
+        // operator: vede tutti (a meno che non passi un cf specifico in query, opzionale)
+        // user: vede solo le proprie
+        const targetCf = isAdmin ? (req.query.cf as string | undefined) : requester.cf;
+
+        const order = (req.query.order as string) === "desc" ? "desc" : "asc";
+
+        const report = await vaccinazioneService.getCoperturaReport(targetCf, order);
+        res.status(200).json(report);
+
+    } catch {
+        res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+    }
+ }
 }
 
 export const vaccinazioneController = new VaccinazioneController();

@@ -12,6 +12,17 @@ interface CreateVaccinazioneInput {
     data_vaccinazione: Date;
 }
 
+
+interface CoperturaResult {
+    vaccinazioneId: number;
+    userCf: string;
+    vaccino: string;
+    dataVaccinazione: Date;
+    fineCopertura: Date;
+    giorniDifferenza: number; // positivo = rimanenti, negativo = trascorsi dalla fine
+    statoCoperura: "attiva" | "scaduta";
+}
+
 export class VaccinazioneService {
 
     async createVaccinazione(data: CreateVaccinazioneInput) {
@@ -219,6 +230,38 @@ async getFilteredVaccinazioni(cf: string, filters: {
         dataMin: filters.dataMin ? new Date(filters.dataMin) : undefined,
         dataMax: filters.dataMax ? new Date(filters.dataMax) : undefined,
     });
+}
+
+async getCoperturaReport(userCf: string | undefined, order: "asc" | "desc" = "asc"): Promise<CoperturaResult[]> {
+    const vaccinazioni = await vaccinazioneDao.findAllWithDetails(userCf);
+    const oggi = new Date();
+
+    const results: CoperturaResult[] = (vaccinazioni as any[]).map((v) => {
+        const dataVacc = new Date(v.dataVaccinazione);
+        const durata = v.Vaccino.durataCopertura;
+
+        const fineCopertura = new Date(dataVacc);
+        fineCopertura.setDate(fineCopertura.getDate() + durata);
+
+        const msDiff = fineCopertura.getTime() - oggi.getTime();
+        const giorniDifferenza = Math.ceil(msDiff / (1000 * 60 * 60 * 24));
+
+        return {
+            vaccinazioneId: v.id,
+            userCf: v.userCf,
+            vaccino: v.Vaccino.nome,
+            dataVaccinazione: dataVacc,
+            fineCopertura,
+            giorniDifferenza,
+            statoCoperura: giorniDifferenza >= 0 ? "attiva" : "scaduta",
+        };
+    });
+
+    results.sort((a, b) =>
+        order === "asc" ? a.giorniDifferenza - b.giorniDifferenza : b.giorniDifferenza - a.giorniDifferenza
+    );
+
+    return results;
 }
 
 }
