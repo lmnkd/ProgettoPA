@@ -159,7 +159,37 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /:id | PUT | Operator | Aggiorna un vaccino esistente |
 | /:id | DELETE | Operator | Elimina un vaccino dal sistema |
 
+# 📡 API Reference Detail
 
+Di seguito sono riportate le rotte HTTP con la relativa descrizione e struttura delle richieste e risposte.
+
+---
+
+## 🔐 POST /auth/login
+
+Rotta utilizzata per autenticare un utente.  
+
+Se le credenziali sono corrette viene generato un JWT.
+
+---
+
+### Richiesta
+
+POST /api/auth/login HTTP/1.1
+Content-Type: application/json
+
+### Body 
+
+{
+    "email": "giuseppe.ner@email.it",
+    "password": "password123"
+  }
+
+### Risposta corretta
+
+{
+    "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZiI6Ik5SQUdQUDkyRTE4QTY2MlUiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3ODI0ODIzNDEsImV4cCI6MTc4MjQ4NTk0MX0.wYJAnUGJqMb8BQzHs76aQujXTv0DLPfTR5RqXL-eKE1xloVk4IZdKjll2jzNjX0l2NgTl3AqgK086YDWDceQiinb5eseh6f7mM8ZR1HNPAwKgcNnDGQgBqFTTyOQL0EbVZnwhsNtz8m4wQYXVZj5uozYwdKYnOUw4JccWlO5IV5W3dOpBa9KVo8bmz4gvCfjQqU1JR80dr1T0EpGDc0bOi58ADqH5ggNTKf_F7Pj0iEuVVDQ-53WFcrWNR3NaTh1Rxh4cJ07VHZmkOy3RLF6CZ-1V5JO0sPRJ2daAF0g0QxRSiduA9ezmV0vi1JlLfkf5wqT_XsJpDFQxHemCbS5WA"
+}
 
 
 
