@@ -139,8 +139,8 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /creavaccino | POST | Operator | Crea una nuova tipologia di vaccino |
 | /readAllVaccini | GET | Operator | Restituisce tutti i vaccini |
 | /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
-| /vaccini/statistiche | GET | Operator | Statistiche sui vaccini |
-| /vaccini/statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
+| /statistiche | GET | Operator | Statistiche sui vaccini |
+| /statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
 | /vaccini/id/:id | GET | Operator | Restituisce vaccino per ID |
 | /vaccini/nome/:nome | GET | Operator | Restituisce vaccino per nome |
 | /vaccini/:id | PUT | Operator | Aggiorna vaccino |
@@ -448,6 +448,118 @@ Content-Type: application/json
 ```
 
 
+
+
+## 🔐 /statistiche
+
+Rotta utilizzata per visualizzare le statistiche dei vaccini come richiesto nelle specifiche del progetto.
+Le statistiche avranno:
+- media dosi consegnate
+- statistiche mensili
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le statistiche per vaccino.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /statistiche HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "vaccini": [
+        {
+            "id": 1,
+            "nome": "Pfizer",
+            "mediaDosiConsegnate": 400,
+            "statisticheMensili": [
+                {
+                    "mese": 2,
+                    "min": 1,
+                    "max": 1,
+                    "media": 1,
+                    "deviazioneStandard": 0
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "nome": "Moderna",
+            "mediaDosiConsegnate": 400,
+            "statisticheMensili": [
+                {
+                    "mese": 3,
+                    "min": 1,
+                    "max": 1,
+                    "media": 1,
+                    "deviazioneStandard": 0
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "nome": "AstraZeneca",
+            "mediaDosiConsegnate": 250,
+            "statisticheMensili": []
+        },
+        {
+            "id": 4,
+            "nome": "Antinfluenzale",
+            "mediaDosiConsegnate": 1000,
+            "statisticheMensili": [
+                {
+                    "mese": 10,
+                    "min": 1,
+                    "max": 1,
+                    "media": 1,
+                    "deviazioneStandard": 0
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "nome": "Bscottino",
+            "mediaDosiConsegnate": 0,
+            "statisticheMensili": []
+        }
+    ]
+}
+```
+## 🔐 /statistiche/copertura
+
+Rotta utilizzata per visualizzare le statistiche dele coperture come richiesto nelle specifiche del progetto.
+Le statistiche avranno:
+- utenti scoperti entro 30 giorni
+- utenti scoperti tra i 31 3 i 90 giorni
+- utenti scoperti oltre i 90 giorni
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le statistiche riguardanti le coperture del vaccino.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /statistiche/copertura HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "utentiScopertiEntro30Giorni": 0,
+    "utentiScopertiTra31E90Giorni": 0,
+    "utentiScopertiOltre90Giorni": 3
+}
+```
 
 
 
