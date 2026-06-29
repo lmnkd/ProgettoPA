@@ -201,4 +201,126 @@ Content-Type: application/json
   "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZiI6Ik5SQUdQUDkyRTE4QTY2MlUiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3ODI0ODIzNDEsImV4cCI6MTc4MjQ4NTk0MX0...."
 }
 ```
+## 🔐 POST /users
+
+Rotta utilizzata per creare un utente.  
+L’utente deve fornire cf, nome, email, password e ruolo nel body della richiesta HTTP.
+
+
+
+Se i dati sono corretti viene restituito un json con i parametri indicati nel body e la conferma del processo di creazione dell'utente.
+
+---
+
+### 📥 Richiesta
+
+```http
+POST /users HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "cf": "NRAGPP92E18A662U",
+  "name": "Giuseppe neri",
+  "email": "giuseppe.ner@email.it",
+  "password": "password123",
+  "role": "admin"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "User crato correttamente.",
+    "user": {
+        "token": 1,
+        "cf": "NRAGPP92E18A662U",
+        "name": "Giuseppe neri",
+        "email": "giuseppe.ner@email.it",
+        "passwordHash": "$2b$10$yWjJGX115Ddw6fGr6NpZkO0NLJ5KA4xQb3Tp4q1P/7vSDjF4Pq6v6",
+        "role": "admin",
+        "updatedAt": "2026-06-26T13:58:58.019Z",
+        "createdAt": "2026-06-26T13:58:58.019Z"
+    }
+}
+```
+## 🔐 /admin/addToken/:cf
+
+Rotta utilizzata per aggiungere dei token ad un utente dato un certo cf.  
+Nella rotta l'admin dovrà aggiungere alla fine il cf dell'utente che vuole venga ricaricato.
+Nel body dovrà precisare la quantità di token da dare allo stesso.
+
+
+Se i dati sono corretti viene restituito un json con i parametri indicati nel body e la conferma del processo di creazione dell'utente.
+
+---
+
+### 📥 Richiesta
+
+```http
+POST /users HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+    "amount":  2
+}
+
+```
+### Richiesta con successo
+```
+{
+    "message": "Token aggiornato correttamente",
+    "user": {
+        "cf": "RSSMRA80A01H501U",
+        "name": "Mario Rossi",
+        "email": "mario.rossi@email.it",
+        "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+        "token": 3,
+        "role": "operator",
+        "createdAt": "2026-06-29T13:17:54.996Z",
+        "updatedAt": "2026-06-29T13:23:50.877Z"
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
