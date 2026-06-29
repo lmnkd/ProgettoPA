@@ -406,6 +406,47 @@ Content-Type: application/json
 ]
 ```
 
+## 🔐 /vaccini
+
+Rotta utilizzata per visualizzare i vaccini con la possibilità di filtrarli come richiesto nelle specifiche del progetto.
+Più precisamente nella richiesta http è possibile filtrare attraverso:
+-?nome=Pfizer
+-?nome=Pfizer,Moderna
+-?scadenzaMaggioreDi=2026-01-01
+-?scadenzaMinoreDi=2026-12-31
+-?scadenzaMaggioreDi=2026-01-01&scadenzaMinoreDi=2026-12-31
+-?disponibilitaMin=100
+-?disponibilitaMax=500
+-?disponibilitaMin=100&disponibilitaMax=500
+-?nome=Pfizer,Moderna&scadenzaMaggioreDi=2026-01-01&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutti i medicinali trovati che rispettano i filtri.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /vaccini HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "id": 2,
+        "nome": "Moderna",
+        "durataCopertura": 365,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T13:37:09.495Z",
+        "disponibilitaTotale": "400"
+    }
+]
+```
+
 
 
 
