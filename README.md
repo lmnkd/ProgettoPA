@@ -67,7 +67,7 @@ Sistema di token temporanei
 Il sistema prevede la possibilità di generare un codice univoco con durata limitata (N minuti) per l’accesso ai dati di un utente.
 Tale meccanismo è gestito tramite Redis utilizzando chiavi con TTL, consentendo il bypass temporaneo dell’autenticazione JWT.
 
-🛠 Requisiti tecnologici
+Requisiti tecnologici
 
 Il backend è sviluppato in TypeScript e utilizza le seguenti tecnologie:
 
