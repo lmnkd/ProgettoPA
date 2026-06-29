@@ -141,10 +141,10 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
 | /statistiche | GET | Operator | Statistiche sui vaccini |
 | /statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
-| /vaccini/id/:id | GET | Operator | Restituisce vaccino per ID |
-| /vaccini/nome/:nome | GET | Operator | Restituisce vaccino per nome |
-| /vaccini/:id | PUT | Operator | Aggiorna vaccino |
-| /vaccini/:id | DELETE | Operator | Elimina vaccino |
+| /:id | GET | Operator | Restituisce vaccino per ID |
+| /:nome | GET | Operator | Restituisce vaccino per nome |
+| /:id | PUT | Operator | Aggiorna vaccino |
+| /:id | DELETE | Operator | Elimina vaccino |
 | /coperturascaduta | GET | Operator | Utenti con copertura scaduta |
 | /:cf | GET | Operator | Dati utente per CF |
 | /:cf | PUT | Operator | Aggiorna utente |
@@ -561,12 +561,144 @@ Content-Type: application/json
 }
 ```
 
+## 🔐 /:id
+
+Rotta utilizzata per visualizzare un vaccinoi dato un id che inseriremo dentro la richiesta
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con il vaccino richiesto.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "id": 1,
+    "nome": "Pfizer",
+    "durataCopertura": 180,
+    "createdAt": "2026-06-29T13:37:09.495Z",
+    "updatedAt": "2026-06-29T13:37:09.495Z"
+}
+```
+## 🔐 /:nome
+
+Rotta utilizzata per visualizzare un vaccinoi dato un nome che inseriremo dentro la richiesta
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con il vaccino richiesto.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /pfizer HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "id": 1,
+    "nome": "Pfizer",
+    "durataCopertura": 180,
+    "createdAt": "2026-06-29T13:37:09.495Z",
+    "updatedAt": "2026-06-29T13:37:09.495Z"
+}
+```
+
+## 🔐 /:id
+
+Rotta utilizzata per modificare un vaccino dato un id che inseriremo dentro la richiesta.
+
+Il body ha i dati da cambiare al suo interno mentre se la richiesta ha successo il risultato sarà un json con il vaccino cambiato.
+
+---
+
+### 📥 Richiesta
+
+```http
+PUT /1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+    "nome": "Pfizerzzz",
+    "durataCopertura": 180
+}
+
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccino aggiornato correttamente",
+    "vaccino": {
+        "id": 1,
+        "nome": "Pfizerzzz",
+        "durataCopertura": 180,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T14:12:26.199Z"
+    }
+}
+```
 
 
+## 🔐 /:id
 
+Rotta utilizzata per eliminare un vaccino dato un id che inseriremo dentro la richiesta.
 
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con l'avvenuta conferma di eliminazione.
 
+---
 
+### 📥 Richiesta
+
+```http
+DELETE /1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccino cancellato correttamente"
+}
+```
+## 🔐 /:id
+
+Rotta utilizzata per eliminare un vaccino dato un id che inseriremo dentro la richiesta.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con l'avvenuta conferma di eliminazione.
+
+---
+
+### 📥 Richiesta
+
+```http
+DELETE /1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccino cancellato correttamente"
+}
+```
 
 
 
