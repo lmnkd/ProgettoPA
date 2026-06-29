@@ -186,14 +186,18 @@ Se le credenziali sono corrette viene restituito un token JWT utilizzato per le 
 ```http
 POST /api/auth/login HTTP/1.1
 Content-Type: application/json
-
-### Risposta corretta
-
+```
+### Body
+```
 {
-    "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZiI6Ik5SQUdQUDkyRTE4QTY2MlUiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3ODI0ODIzNDEsImV4cCI6MTc4MjQ4NTk0MX0.wYJAnUGJqMb8BQzHs76aQujXTv0DLPfTR5RqXL-eKE1xloVk4IZdKjll2jzNjX0l2NgTl3AqgK086YDWDceQiinb5eseh6f7mM8ZR1HNPAwKgcNnDGQgBqFTTyOQL0EbVZnwhsNtz8m4wQYXVZj5uozYwdKYnOUw4JccWlO5IV5W3dOpBa9KVo8bmz4gvCfjQqU1JR80dr1T0EpGDc0bOi58ADqH5ggNTKf_F7Pj0iEuVVDQ-53WFcrWNR3NaTh1Rxh4cJ07VHZmkOy3RLF6CZ-1V5JO0sPRJ2daAF0g0QxRSiduA9ezmV0vi1JlLfkf5wqT_XsJpDFQxHemCbS5WA"
+  "email": "{{USER_ROLE_EMAIL}}",
+  "password": "{{USER_ROLE_PSW}}"
 }
-
-
-
-
+```
+### Richiesta con successo
+```
+{
+  "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZiI6Ik5SQUdQUDkyRTE4QTY2MlUiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3ODI0ODIzNDEsImV4cCI6MTc4MjQ4NTk0MX0...."
+}
+```
 
