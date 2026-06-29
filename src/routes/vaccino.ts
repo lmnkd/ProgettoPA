@@ -18,6 +18,20 @@ router.get(
     vaccinoController.searchVaccini
 );
 
+router.get(
+    "/statistiche",
+    authenticate,
+    requireRole("operator"),
+    vaccinoController.getStatistiche
+);
+
+router.get(
+    "/statistiche/copertura",
+    authenticate,
+    requireRole("operator"),
+    vaccinoController.getStatisticheCopertura
+);
+
 // Leggere un singolo vaccino
 router.get("/:id", authenticate, requireRole("operator"), vaccinoController.getVaccinoById);
 

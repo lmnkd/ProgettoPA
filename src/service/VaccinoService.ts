@@ -1,4 +1,5 @@
 import {vaccinoDao} from "../dao/VaccinoDao";
+import { userDao } from "../dao/UserDao";
 import {AppErrorsName} from "../enum/AppErrorsName";
 
 interface CreateVaccinoInput {
@@ -53,6 +54,20 @@ export class VaccinoService {
             throw err;
         }
         return vaccinoDao.findAll();
+    }
+
+    async getStatistiche() {
+
+        const vaccini =
+            await vaccinoDao.getStatisticheVaccini();
+
+        return {
+            vaccini
+        };
+    }
+
+    async getStatisticheCopertura() {
+        return userDao.getCoverageStatistics();
     }
 
     async updateVaccino(

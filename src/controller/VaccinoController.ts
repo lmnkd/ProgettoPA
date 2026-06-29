@@ -74,6 +74,31 @@ export class VaccinoController {
         }
     }
 
+    async getStatistiche(req: Request, res: Response) {
+
+        const statistiche =
+            await vaccinoService.getStatistiche();
+
+        res.status(200).json(statistiche);
+    }
+
+    async getStatisticheCopertura(req: Request, res: Response) {
+
+        try {
+
+            const statistiche =
+                await vaccinoService.getStatisticheCopertura();
+
+            res.status(200).json(statistiche);
+
+        } catch {
+
+            res.status(500).json({
+                error: AppErrorsMessage.SERVER_ERROR
+            });
+        }
+    }
+
     async searchVaccini(req: Request, res: Response) {
 
         const vaccini =

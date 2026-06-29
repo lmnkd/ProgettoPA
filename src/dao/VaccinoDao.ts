@@ -1,11 +1,15 @@
 import { IDao } from "./IDao";
-import { Op, fn, col } from "sequelize";
+import { Op, fn, col, literal } from "sequelize";
+import { sequelize } from "../connector/connector";
+import { QueryTypes } from "sequelize";
 import {
     Vaccino,
     VaccinoAttributes,
     VaccinoCreationAttributes
 } from "../model/Vaccino";
 import { LottoVaccino } from "../model/LottoVaccino";
+import { Vaccinazione } from "../model/Vaccinazione";
+
 
 export class VaccinoDao implements IDao<Vaccino> {
 
@@ -185,6 +189,170 @@ export class VaccinoDao implements IDao<Vaccino> {
         }
 
         return result;
+    }
+
+    async getStatisticheVaccini() {
+
+        const vaccini = await Vaccino.findAll({
+
+            include: [
+
+                {
+                    model: Vaccinazione,
+                    attributes: [
+                        "dataVaccinazione"
+                    ]
+                },
+
+                {
+                    model: LottoVaccino,
+                    as: "lotti",
+                    attributes: [
+                        "quantitaDisponibile"
+                    ]
+                }
+            ]
+        });
+
+        return vaccini.map((vaccino: any) => {
+
+            const mesi: Record<number, number[]> = {};
+
+            // ==========================
+            // DOSI SOMMINISTRATE PER ANNO
+            // ==========================
+
+            for (const vaccinazione of vaccino.Vaccinaziones ?? []) {
+
+                const data = new Date(
+                    vaccinazione.dataVaccinazione
+                );
+
+                const mese = data.getMonth() + 1;
+
+                const anno = data.getFullYear();
+
+                if (!mesi[mese]) {
+                    mesi[mese] = [];
+                }
+
+                let posizioneAnno =
+                    mesi[mese].findIndex(
+                        (_: any, index: number) => false
+                    );
+
+                // uso una mappa temporanea
+            }
+
+            // conta vaccinazioni per mese/anno
+
+            const conteggi: Record<number, Record<number, number>> = {};
+
+            for (const vaccinazione of vaccino.Vaccinaziones ?? []) {
+
+                const data = new Date(vaccinazione.dataVaccinazione);
+
+                const mese = data.getMonth() + 1;
+                const anno = data.getFullYear();
+
+                if (!conteggi[mese]) {
+                    conteggi[mese] = {};
+                }
+
+                conteggi[mese][anno] =
+                    (conteggi[mese][anno] ?? 0) + 1;
+            }
+
+            const statisticheMensili = Object.entries(conteggi).map(
+
+                ([mese, anni]) => {
+
+                    const valori = Object.values(anni);
+
+                    const min = Math.min(...valori);
+
+                    const max = Math.max(...valori);
+
+                    const media =
+                        valori.reduce((a, b) => a + b, 0) /
+                        valori.length;
+
+                    const deviazione =
+                        Math.sqrt(
+
+                            valori.reduce(
+
+                                (somma, valore) =>
+                                    somma +
+                                    Math.pow(
+                                        valore - media,
+                                        2
+                                    ),
+
+                                0
+                            ) / valori.length
+                        );
+
+                    return {
+
+                        mese: Number(mese),
+
+                        min,
+
+                        max,
+
+                        media: Number(
+                            media.toFixed(2)
+                        ),
+
+                        deviazioneStandard: Number(
+                            deviazione.toFixed(2)
+                        )
+                    };
+                }
+            );
+
+            // ==========================
+            // MEDIA DOSI CONSEGNATE
+            // ==========================
+
+            const lotti = vaccino.lotti ?? [];
+
+            const mediaConsegnate =
+
+                lotti.length === 0
+
+                    ? 0
+
+                    : Number(
+
+                        (
+
+                            lotti.reduce(
+
+                                (somma: number, lotto: any) =>
+                                    somma +
+                                    lotto.quantitaDisponibile,
+
+                                0
+                            ) /
+
+                            lotti.length
+
+                        ).toFixed(2)
+                    );
+
+            return {
+
+                id: vaccino.id,
+
+                nome: vaccino.nome,
+
+                mediaDosiConsegnate: mediaConsegnate,
+
+                statisticheMensili
+            };
+        });
     }
 
     async update(

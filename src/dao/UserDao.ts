@@ -141,6 +141,84 @@ export class UserDao implements IDao<User> {
         });
     }
 
+    async getCoverageStatistics() {
+
+        const utenti = await User.findAll({
+
+            include: [
+                {
+                    model: Vaccinazione,
+                    as: "vaccinazioni",
+                    required: true,
+
+                    include: [
+                        {
+                            model: Vaccino,
+                            required: true
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const oggi = new Date();
+
+        let entro30 = 0;
+        let tra31e90 = 0;
+        let oltre90 = 0;
+
+        for (const u of utenti as any[]) {
+
+            const vaccinazioni = u.vaccinazioni ?? [];
+
+            let massimoScaduto = 0;
+
+            for (const v of vaccinazioni) {
+
+                const dataVaccino = new Date(v.dataVaccinazione);
+
+                const scadenza = new Date(dataVaccino);
+
+                scadenza.setDate(
+                    scadenza.getDate() +
+                    v.Vaccino.durataCopertura
+                );
+
+                const giorniScaduti = Math.floor(
+                    (oggi.getTime() - scadenza.getTime()) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+                if (giorniScaduti > massimoScaduto) {
+                    massimoScaduto = giorniScaduti;
+                }
+            }
+
+            if (massimoScaduto <= 0) {
+                continue;
+            }
+
+            if (massimoScaduto <= 30) {
+                entro30++;
+            }
+            else if (massimoScaduto <= 90) {
+                tra31e90++;
+            }
+            else {
+                oltre90++;
+            }
+        }
+
+        return {
+
+            utentiScopertiEntro30Giorni: entro30,
+
+            utentiScopertiTra31E90Giorni: tra31e90,
+
+            utentiScopertiOltre90Giorni: oltre90
+        };
+    }
+
     async decrementTokenIfAvailable(cf: string): Promise<boolean> {
         const [affectedRows] = await User.update(
             { token: literal('"token" - 1') as any },
