@@ -4,8 +4,72 @@ import { AppErrorsName } from "../enum/AppErrorsName";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 import { AppSuccessMessage } from "../enum/AppSuccessMessage";
 import { AppJwtPayload } from "../types/jwt-payload";
+import redis from "../config/redis";
 
 export class VaccinazioneController {
+
+
+    async getCoperturaByCode(req: Request, res: Response): Promise<void> {
+    try {
+        const code =
+            (req.query.code as string) ||
+            (req.headers["x-access-code"] as string) ||
+            (req.body?.code as string);
+
+        if (!code) {
+            res.status(400).json({ error: "Codice mancante" });
+            return;
+        }
+
+        const cf = await redis.get(`copertura:${code}`);
+        console.log(cf)
+
+        if (!cf) {
+            res.status(401).json({ error: "Codice scaduto o invalido" });
+            return;
+        }
+
+        const order =
+            (req.query.order as string) === "desc" ? "desc" : "asc";
+
+        const report =
+            await vaccinazioneService.getCoperturaReport(cf, order);
+
+        res.status(200).json(report);
+    } catch {
+        res.status(500).json({ error: "SERVER_ERROR" });
+    }
+}
+
+    async generateCoperturaCode(req: Request, res: Response): Promise<void> {
+    try {
+        const requester = (req as any).user as AppJwtPayload;
+
+        const cf = req.body.cf as string;
+
+        if (!cf) {
+            res.status(400).json({ error: "CF mancante" });
+            return;
+        }
+
+        const code = await vaccinazioneService.createCoperturaCode(
+            cf,
+            10
+        );
+
+        res.status(200).json({
+            code,
+            cf,
+            expiresIn: 600
+        });
+
+    } catch {
+        res.status(500).json({ error: "SERVER_ERROR" });
+    }
+}
+
+
+
 
     async createVaccinazione(req: Request, res: Response): Promise<void> {
         try {
