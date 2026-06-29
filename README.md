@@ -145,7 +145,6 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /:nome | GET | Operator | Restituisce vaccino per nome |
 | /:id | PUT | Operator | Aggiorna vaccino |
 | /:id | DELETE | Operator | Elimina vaccino |
-| /coperturascaduta | GET | Operator | Utenti con copertura scaduta |
 | /:cf | GET | Operator | Dati utente per CF |
 | /:cf | PUT | Operator | Aggiorna utente |
 | /:cf | DELETE | Operator | Elimina utente |
@@ -154,11 +153,11 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /vaccinazioni/:id | GET | Operator | Dettaglio vaccinazione |
 | /vaccinazioni/:id | PUT | Operator | Aggiorna vaccinazione |
 | /vaccinazioni/:id | DELETE | Operator | Elimina vaccinazione |
-| /pdf | User, Operator | GET | PDF storico vaccinazioni |
-| /filtrareuseradmin | User, Operator | GET | Filtra vaccinazioni |
-| /copertura | User, Operator | GET | Report copertura vaccinale |
-| /copertura/pdf | User, Operator | GET | PDF copertura |
-| /copertura/code | Code Redis | GET | Accesso senza JWT |
+| /pdf | User, Admin | GET | PDF storico vaccinazioni |
+| /filtrareuseradmin | Admin | GET | Filtra vaccinazioni |
+| /copertura | User, Admin | GET | Report copertura vaccinale |
+| /copertura/pdf | User, Admin | GET | PDF copertura |
+| /copertura/code | User, Admin | GET | Accesso senza JWT |
 
 # 📡 API Reference Detail
 
@@ -676,18 +675,18 @@ Content-Type: application/json
     "message": "Vaccino cancellato correttamente"
 }
 ```
-## 🔐 /:id
+## 🔐 /:cf da fare per update delete e tutto il resto
 
-Rotta utilizzata per eliminare un vaccino dato un id che inseriremo dentro la richiesta.
+Rotta utilizzata per vedere gli utenti con la copertura scaduta.
 
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con l'avvenuta conferma di eliminazione.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i nomi di tutti gli utenti con la copertura scaduta.
 
 ---
 
 ### 📥 Richiesta
 
 ```http
-DELETE /1 HTTP/1.1
+GET /coperturascaduta HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -700,8 +699,81 @@ Content-Type: application/json
 }
 ```
 
+## 🔐 /vaccinazioni/:id da fare per update delete e tutto il resto e all
+
+Rotta utilizzata per vedere gli utenti con la copertura scaduta.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i nomi di tutti gli utenti con la copertura scaduta.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /coperturascaduta HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccino cancellato correttamente"
+}
+```
+
+| /filtrareuseradmin | User, Operator | GET | Filtra vaccinazioni |
+| /copertura | User, Operator | GET | Report copertura vaccinale |
+| /copertura/pdf | User, Operator | GET | PDF copertura |
+| /copertura/code | Code Redis | GET | Accesso senza JWT |
 
 
+## 🔐 /pdf 
+
+Rotta utilizzata per vedere lo storico delle coperture tramite pdf.
+l'admin potrà richiedere tramite richiesta http specificando il cf lo sotricodi un dato user, un user invece può vedere solo le sue.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni di un dato utente o in generale tutte per admin.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /pdf HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+mettere immagine
+```
+## 🔐 /filtrareuseradmin
+
+Rotta utilizzata per vedere le vaccinazioni filtrare utilizzabile solo dall'admin.
+L'admin potrà filtrare attraverso:
+- ?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
+- ?nome=moderna&before=2024-06-01
+- 
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le vaccinazioni filtrate secondo i parametri.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /filtrareuseradmin HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+mettere immagine
+```
 
 
 
