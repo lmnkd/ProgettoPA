@@ -11,3 +11,5 @@ Questo progetto consiste nella realizzazione di un backend che gestisce delle va
 - [Design pattern utilizzati](#-design-pattern-utilizzati)
 - [Istruzioni per l'avvio del backend (Docker)](#-istruzioni-per-lavvio-del-backend-docker)
 - [Test del Progetto](#-test-del-progetto)
+
+## Obiettivo del progetto
