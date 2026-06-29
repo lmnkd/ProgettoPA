@@ -121,24 +121,47 @@ Il progetto include:
 
 
 
-
-
-
 # API Reference
 
 
 ## 📡 API Summary
 
+Molte rotte avranno rotte apparentemente simili, in realtà poi con il router gestiamo l'api in modo da evitare conflitti.
+
 | Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
-|------|------------|--------------------|-------------|
-| /login | POST | Utente non autenticato | Rotta di autenticazione |
-| /nonavzones | GET | Utente non autenticato | Visualizza tutte le zone di navigazione proibite |
-| /navplans | POST | User | Crea una richiesta di navigazione in stato pending |
-| /navplans?dateFrom=&dateTo=&status=&format= | GET | User | Visualizza piani di navigazione con filtri e export JSON/XML |
-| /navplans/:id | DELETE | User | Cancella una propria richiesta in stato pending |
-| /navplans?status= | GET | Operator | Visualizza tutti i piani di navigazione filtrabili |
-| /navplans/:id | PATCH | Operator | Approva o rigetta una richiesta in stato pending |
-| /nonavzones | POST | Operator | Crea una zona di navigazione proibita |
-| /nonavzones/:id | PATCH | Operator | Aggiorna una zona proibita |
-| /nonavzones/:id | DELETE | Operator | Elimina una zona proibita |
-| /users/:id | PATCH | Admin | Ricarica il credito token di un utente |
+|--------|------------|-------------------|-------------|
+| /auth/login | POST | Utente non autenticato | Rotta di autenticazione |
+| /users | POST | Utente non autenticato | Crea un nuovo utente specificando il ruolo |
+| /admin/addToken/:cf | GET | Admin | Ricarica il numero di token di un utente identificato dal codice fiscale |
+| /admin/code | POST | Admin | Genera un codice temporaneo Redis per accedere ai dati di un utente senza JWT |
+| /vaccini/:vaccinoId/lotti | POST | Operator | Crea un nuovo lotto per il vaccino specificato |
+| /vaccini/:vaccinoId/lotti | GET | Operator | Restituisce tutti i lotti associati a un vaccino |
+| /coperturascaduta | GET | Operator | Restituisce la lista degli utenti con copertura vaccinale scaduta |
+| /:cf | GET | Operator | Restituisce i dati di un utente dato il codice fiscale |
+| /:cf | PUT | Operator | Aggiorna i dati di un utente o operatore dato il codice fiscale |
+| /:cf | DELETE | Operator | Elimina un utente o operatore dato il codice fiscale |
+| /vaccinazioni | POST | Operator | Registra una nuova vaccinazione rispettando i vincoli previsti dal progetto |
+| /vaccinazioni | GET | Operator | Restituisce tutte le vaccinazioni registrate |
+| /vaccinazioni/:id | GET | Operator | Restituisce una specifica vaccinazione dato l'id |
+| /vaccinazioni/:id | PUT | Operator | Aggiorna una vaccinazione dato l'id |
+| /vaccinazioni/:id | DELETE | Operator | Elimina una vaccinazione dato l'id |
+| /pdf | User, Operator | GET | Genera un PDF contenente le vaccinazioni di un utente. L'admin/operator può specificare il CF tramite query string |
+| /filtrareuseradmin | User, Operator | GET | Restituisce le vaccinazioni filtrate per nome vaccino e/o intervallo di date |
+| /copertura | User, Operator | GET | Restituisce per ogni vaccinazione il numero di giorni mancanti alla scadenza della copertura o trascorsi dalla sua scadenza |
+| /copertura/pdf | User, Operator | GET | Genera un PDF con il report della copertura vaccinale di un utente |
+| /copertura/code | Accesso tramite codice Redis | GET | Restituisce il report di copertura utilizzando un codice temporaneo senza autenticazione JWT |
+|-------|---------|---------|--------|
+| /creavaccino | POST | Operator | Crea una nuova tipologia di vaccino (i nomi non possono essere duplicati) |
+| /readAllVaccini | GET | Operator | Restituisce tutti i vaccini presenti nel sistema |
+| /vaccini | GET | User, Operator | Ricerca vaccini con filtri su nome, disponibilità e data di scadenza |
+| /:id | GET | Operator | Restituisce un vaccino dato il suo ID |
+| /:nome | GET | Operator | Restituisce un vaccino dato il nome |
+| /:id | PUT | Operator | Aggiorna un vaccino esistente |
+| /:id | DELETE | Operator | Elimina un vaccino dal sistema |
+
+
+
+
+
+
+
