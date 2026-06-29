@@ -113,3 +113,32 @@ Il progetto include:
 - test con **Jest** (middleware)
 - test API con **Postman**
 - utilizzo di **Docker / docker-compose** per avvio sistema
+
+
+
+
+
+
+
+
+
+
+
+# API reference
+
+
+## 📡 API Summary
+
+| Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
+|------|------------|--------------------|-------------|
+| /login | POST | Utente non autenticato | Rotta di autenticazione |
+| /nonavzones | GET | Utente non autenticato | Visualizza tutte le zone di navigazione proibite |
+| /navplans | POST | User | Crea una richiesta di navigazione in stato pending |
+| /navplans?dateFrom=&dateTo=&status=&format= | GET | User | Visualizza piani di navigazione con filtri e export JSON/XML |
+| /navplans/:id | DELETE | User | Cancella una propria richiesta in stato pending |
+| /navplans?status= | GET | Operator | Visualizza tutti i piani di navigazione filtrabili |
+| /navplans/:id | PATCH | Operator | Approva o rigetta una richiesta in stato pending |
+| /nonavzones | POST | Operator | Crea una zona di navigazione proibita |
+| /nonavzones/:id | PATCH | Operator | Aggiorna una zona proibita |
+| /nonavzones/:id | DELETE | Operator | Elimina una zona proibita |
+| /users/:id | PATCH | Admin | Ricarica il credito token di un utente |
