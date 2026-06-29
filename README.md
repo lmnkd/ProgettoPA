@@ -1,7 +1,7 @@
 # Backend vaccinazione
 Questo progetto consiste nella realizzazione di un backend che gestisce delle vaccinazioni.
 
-- [Obiettivo del progetto](obiettivo-del-progetto)
+- [Obiettivo del progetto](#obiettivo-del-progetto)
 - [Progettazione](#progettazione)
 - [Casi d'uso](#casi-duso)
 - [Diagrammi di sequenza](#diagrammi-di-sequenza)
