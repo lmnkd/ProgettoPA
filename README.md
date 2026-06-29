@@ -128,36 +128,37 @@ Il progetto include:
 
 Molte rotte avranno rotte apparentemente simili, in realtà poi con il router gestiamo l'api in modo da evitare conflitti.
 
+## 📡 API Reference
+
 | Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
-|--------|------------|-------------------|-------------|
+|------|------------|-------------------|-------------|
 | /auth/login | POST | Utente non autenticato | Rotta di autenticazione |
 | /users | POST | Utente non autenticato | Crea un nuovo utente specificando il ruolo |
-| /admin/addToken/:cf | GET | Admin | Ricarica il numero di token di un utente identificato dal codice fiscale |
-| /admin/code | POST | Admin | Genera un codice temporaneo Redis per accedere ai dati di un utente senza JWT |
-| /vaccini/:vaccinoId/lotti | POST | Operator | Crea un nuovo lotto per il vaccino specificato |
-| /vaccini/:vaccinoId/lotti | GET | Operator | Restituisce tutti i lotti associati a un vaccino |
-| /coperturascaduta | GET | Operator | Restituisce la lista degli utenti con copertura vaccinale scaduta |
-| /:cf | GET | Operator | Restituisce i dati di un utente dato il codice fiscale |
-| /:cf | PUT | Operator | Aggiorna i dati di un utente o operatore dato il codice fiscale |
-| /:cf | DELETE | Operator | Elimina un utente o operatore dato il codice fiscale |
-| /vaccinazioni | POST | Operator | Registra una nuova vaccinazione rispettando i vincoli previsti dal progetto |
-| /vaccinazioni | GET | Operator | Restituisce tutte le vaccinazioni registrate |
-| /vaccinazioni/:id | GET | Operator | Restituisce una specifica vaccinazione dato l'id |
-| /vaccinazioni/:id | PUT | Operator | Aggiorna una vaccinazione dato l'id |
-| /vaccinazioni/:id | DELETE | Operator | Elimina una vaccinazione dato l'id |
-| /pdf | User, Operator | GET | Genera un PDF contenente le vaccinazioni di un utente. L'admin/operator può specificare il CF tramite query string |
-| /filtrareuseradmin | User, Operator | GET | Restituisce le vaccinazioni filtrate per nome vaccino e/o intervallo di date |
-| /copertura | User, Operator | GET | Restituisce per ogni vaccinazione il numero di giorni mancanti alla scadenza della copertura o trascorsi dalla sua scadenza |
-| /copertura/pdf | User, Operator | GET | Genera un PDF con il report della copertura vaccinale di un utente |
-| /copertura/code | Accesso tramite codice Redis | GET | Restituisce il report di copertura utilizzando un codice temporaneo senza autenticazione JWT |
-|-------|---------|---------|--------|
-| /creavaccino | POST | Operator | Crea una nuova tipologia di vaccino (i nomi non possono essere duplicati) |
-| /readAllVaccini | GET | Operator | Restituisce tutti i vaccini presenti nel sistema |
-| /vaccini | GET | User, Operator | Ricerca vaccini con filtri su nome, disponibilità e data di scadenza |
-| /:id | GET | Operator | Restituisce un vaccino dato il suo ID |
-| /:nome | GET | Operator | Restituisce un vaccino dato il nome |
-| /:id | PUT | Operator | Aggiorna un vaccino esistente |
-| /:id | DELETE | Operator | Elimina un vaccino dal sistema |
+| /admin/addToken/:cf | GET | Admin | Ricarica token utente tramite codice fiscale |
+| /admin/code | POST | Admin | Genera codice temporaneo Redis |
+| /creavaccino | POST | Operator | Crea una nuova tipologia di vaccino |
+| /readAllVaccini | GET | Operator | Restituisce tutti i vaccini |
+| /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
+| /vaccini/statistiche | GET | Operator | Statistiche sui vaccini |
+| /vaccini/statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
+| /vaccini/id/:id | GET | Operator | Restituisce vaccino per ID |
+| /vaccini/nome/:nome | GET | Operator | Restituisce vaccino per nome |
+| /vaccini/:id | PUT | Operator | Aggiorna vaccino |
+| /vaccini/:id | DELETE | Operator | Elimina vaccino |
+| /coperturascaduta | GET | Operator | Utenti con copertura scaduta |
+| /:cf | GET | Operator | Dati utente per CF |
+| /:cf | PUT | Operator | Aggiorna utente |
+| /:cf | DELETE | Operator | Elimina utente |
+| /vaccinazioni | POST | Operator | Registra vaccinazione |
+| /vaccinazioni | GET | Operator | Lista vaccinazioni |
+| /vaccinazioni/:id | GET | Operator | Dettaglio vaccinazione |
+| /vaccinazioni/:id | PUT | Operator | Aggiorna vaccinazione |
+| /vaccinazioni/:id | DELETE | Operator | Elimina vaccinazione |
+| /pdf | User, Operator | GET | PDF storico vaccinazioni |
+| /filtrareuseradmin | User, Operator | GET | Filtra vaccinazioni |
+| /copertura | User, Operator | GET | Report copertura vaccinale |
+| /copertura/pdf | User, Operator | GET | PDF copertura |
+| /copertura/code | Code Redis | GET | Accesso senza JWT |
 
 # 📡 API Reference Detail
 
