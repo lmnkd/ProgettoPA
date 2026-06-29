@@ -141,6 +141,7 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
 | /statistiche | GET | Operator | Statistiche sui vaccini |
 | /statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
+| /coperturascaduta | GET | Operator | Coperture scadute |
 | /:id | GET | Operator | Restituisce vaccino per ID |
 | /:nome | GET | Operator | Restituisce vaccino per nome |
 | /:id | PUT | Operator | Aggiorna vaccino |
@@ -865,6 +866,58 @@ immagine
 ```
 
 ## 🔐 /copertura/code
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/code HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "vaccinazioneId": 1,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccino": "Pfizer",
+        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
+        "fineCopertura": "2025-08-14T00:00:00.000Z",
+        "giorniDifferenza": -319,
+        "statoCoperura": "scaduta"
+    }
+]
+```
+
+## 🔐 /copertura/pdf
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
+Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/pdf HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+immagine
+```
+
+## 🔐 /coperturascaduta da fare
 
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
 Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
