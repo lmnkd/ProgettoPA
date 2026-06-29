@@ -33,7 +33,7 @@ router.put('/vaccinazioni/:id', authenticate, requireRole("operator"), checkUser
 router.delete('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.deleteVaccinazione);
 
 // creazione pdf admin richiederà con /pdf?cf=codicefiscaleuser
-router.get("/pdf", authenticate, vaccinazioneController.pdfVaccinazione);
+router.get("/pdf", authenticate, requireRole("admin"), vaccinazioneController.pdfVaccinazione);
 
 // vaccinazioni filtrate /api/vaccinazioni/filtrate?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31 o /api/vaccinazioni/filtrate?nome=moderna&before=2024-06-01
 router.get("/filtrareuseradmin", authenticate, vaccinazioneController.getFilteredVaccinazioni);
