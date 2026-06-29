@@ -723,7 +723,6 @@ Content-Type: application/json
 }
 ```
 
-| /filtrareuseradmin | User, Operator | GET | Filtra vaccinazioni |
 | /copertura | User, Operator | GET | Report copertura vaccinale |
 | /copertura/pdf | User, Operator | GET | PDF copertura |
 | /copertura/code | Code Redis | GET | Accesso senza JWT |
@@ -756,7 +755,7 @@ Rotta utilizzata per vedere le vaccinazioni filtrare utilizzabile solo dall'admi
 L'admin potrà filtrare attraverso:
 - ?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
 - ?nome=moderna&before=2024-06-01
-- 
+- ?cf=BNCMRA90C20D612Y&dataMin=2025-09-01&dataMax=2025-12-31
 Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le vaccinazioni filtrate secondo i parametri.
 
 ---
@@ -772,8 +771,78 @@ Content-Type: application/json
 ```
 ### Richiesta con successo
 ```
-mettere immagine
+[
+    {
+        "id": 3,
+        "userCf": "BNCMRA90C20D612Y",
+        "vaccinoId": 4,
+        "lottoId": 5,
+        "dataVaccinazione": "2025-10-01T00:00:00.000Z",
+        "createdAt": "2026-06-29T14:36:20.885Z",
+        "updatedAt": "2026-06-29T14:36:20.885Z",
+        "Vaccino": {
+            "nome": "Antinfluenzale",
+            "durataCopertura": 180
+        },
+        "LottoVaccino": {
+            "codiceLotto": "FLU-2025-001"
+        }
+    }
+]
 ```
+
+## 🔐 /copertura
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture.
+L'admin potrà vederle di tutti gli user, gli user solo di loro stessi.
+Inoltre si ha la possibilità di cambiare l'ordine in modo crescente o decrescente tramite richiesta ?order=asc o desc
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le vaccinazioni con le rispettive coperture.
+Nell'esempio abbiamo utilizzato admin per vedere tutte le vaccinazioni e coperture in ordine decrescente
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "vaccinazioneId": 3,
+        "userCf": "BNCMRA90C20D612Y",
+        "vaccino": "Antinfluenzale",
+        "dataVaccinazione": "2025-10-01T00:00:00.000Z",
+        "fineCopertura": "2026-03-30T00:00:00.000Z",
+        "giorniDifferenza": -91,
+        "statoCoperura": "scaduta"
+    },
+    {
+        "vaccinazioneId": 2,
+        "userCf": "VRDLGI85B15F205X",
+        "vaccino": "Moderna",
+        "dataVaccinazione": "2025-03-10T00:00:00.000Z",
+        "fineCopertura": "2026-03-10T00:00:00.000Z",
+        "giorniDifferenza": -111,
+        "statoCoperura": "scaduta"
+    },
+    {
+        "vaccinazioneId": 1,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccino": "Pfizer",
+        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
+        "fineCopertura": "2025-08-14T00:00:00.000Z",
+        "giorniDifferenza": -319,
+        "statoCoperura": "scaduta"
+    }
+]
+```
+
 
 
 
