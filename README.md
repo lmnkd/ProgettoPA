@@ -165,25 +165,27 @@ Di seguito sono riportate le rotte HTTP con la relativa descrizione e struttura 
 
 ---
 
-## 🔐 POST /auth/login
+## 🔐 POST /api/auth/login
 
 Rotta utilizzata per autenticare un utente.  
+L’utente deve fornire email e password nel body della richiesta HTTP.
 
-Se le credenziali sono corrette viene generato un JWT.
+La password deve rispettare i seguenti criteri:
+- almeno 8 caratteri
+- almeno una lettera minuscola
+- almeno una lettera maiuscola
+- almeno un numero
+- almeno un carattere speciale
+
+Se le credenziali sono corrette viene restituito un token JWT utilizzato per le richieste successive.
 
 ---
 
-### Richiesta
+### 📥 Richiesta
 
+```http
 POST /api/auth/login HTTP/1.1
 Content-Type: application/json
-
-### Body 
-
-{
-    "email": "giuseppe.ner@email.it",
-    "password": "password123"
-  }
 
 ### Risposta corretta
 
