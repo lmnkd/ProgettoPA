@@ -249,16 +249,17 @@ Content-Type: application/json
 Rotta utilizzata per aggiungere dei token ad un utente dato un certo cf.  
 Nella rotta l'admin dovrà aggiungere alla fine il cf dell'utente che vuole venga ricaricato.
 Nel body dovrà precisare la quantità di token da dare allo stesso.
+Il body non può avere come numero di crediti un numero negativo.
 
 
-Se i dati sono corretti viene restituito un json con i parametri indicati nel body e la conferma del processo di creazione dell'utente.
+Se i dati sono corretti viene restituito un json con il messaggio che informa del fatto che i token sono stati aggiornati e tutte le specifiche dell'user a cui l'aggiunta era rivolta con il numero di token corretti.
 
 ---
 
 ### 📥 Richiesta
 
 ```http
-POST /users HTTP/1.1
+GET /admin/addToken/:cf HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -284,6 +285,129 @@ Content-Type: application/json
     }
 }
 ```
+
+## 🔐 /admin/code
+
+Rotta utilizzata per creare un code Redis dato un cf che metteremo nel body.
+Se la richiesta è andata a buon fine apparirà un json con il code di Redis e il cf a esso collegato con il tempo entro il quale scadrà.
+
+---
+
+### 📥 Richiesta
+
+```http
+POST /admin/code HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "cf": "RSSMRA80A01H501U"
+}
+
+```
+### Richiesta con successo
+```
+{
+    "code": "72aab61f-8a13-4d0e-a438-f5f2a08fec7e",
+    "cf": "RSSMRA80A01H501U",
+    "expiresIn": 600
+}
+```
+## 🔐 /creavaccino
+
+Rotta utilizzata per creare un vaccino dato il nome e la durata della copertura che metteremo nel body.
+Se la richiesta è andata a buon fine apparirà un json con il messaggio di avvenuta creazione e tutti i dati del vaccino appena creato.
+
+---
+
+### 📥 Richiesta
+
+```http
+POST /creavaccino HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+    "nome": "Bscottino",
+    "durataCopertura": 80
+}
+
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccino creato correttamente",
+    "vaccino": {
+        "id": 5,
+        "nome": "Bscottino",
+        "durataCopertura": 80,
+        "updatedAt": "2026-06-29T13:37:40.190Z",
+        "createdAt": "2026-06-29T13:37:40.190Z"
+    }
+}
+```
+
+## 🔐 /readAllVaccini
+
+Rotta utilizzata per visualizzare tutti i vaccini, il body è vuoto.
+Se la richiesta è andata a buon fine avremo un array Json con tutti i vaccini presenti nel db.
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /readAllVaccini HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "id": 1,
+        "nome": "Pfizer",
+        "durataCopertura": 180,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T13:37:09.495Z"
+    },
+    {
+        "id": 2,
+        "nome": "Moderna",
+        "durataCopertura": 365,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T13:37:09.495Z"
+    },
+    {
+        "id": 3,
+        "nome": "AstraZeneca",
+        "durataCopertura": 365,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T13:37:09.495Z"
+    },
+    {
+        "id": 4,
+        "nome": "Antinfluenzale",
+        "durataCopertura": 180,
+        "createdAt": "2026-06-29T13:37:09.495Z",
+        "updatedAt": "2026-06-29T13:37:09.495Z"
+    },
+    {
+        "id": 5,
+        "nome": "Bscottino",
+        "durataCopertura": 80,
+        "createdAt": "2026-06-29T13:37:40.190Z",
+        "updatedAt": "2026-06-29T13:37:40.190Z"
+    }
+]
+```
+
+
+
 
 
 
