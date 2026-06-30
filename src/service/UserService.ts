@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { userDao } from "../dao/UserDao"; 
+import { userDao } from "../dao/UserDao";
 import { AppErrorsName } from "../enum/AppErrorsName";
 
 const SALT_ROUNDS = 10;
@@ -15,13 +15,7 @@ interface CreateUserInput {
 export class UserService {
 
     async createUser(data: CreateUserInput) {
-        const existing = await userDao.findByEmail(data.email);
-        if (existing) {
-            const err = new Error("Email already exists");
-            err.name = AppErrorsName.EMAIL_ALREADY_EXISTS;
-            throw err;
-        }
-
+        // l'unicità dell'email è già verificata dal middleware checkEmailNotExists
         const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
 
         return userDao.create({
@@ -33,16 +27,9 @@ export class UserService {
         });
     }
 
-    // requesterCf/isOperator: chi sta chiedendo; targetCf: chi si vuole leggere
     async getUserByCf(targetCf: string) {
-        const user = await userDao.findById(targetCf);
-        if (!user) {
-            const err = new Error("User not found");
-            err.name = AppErrorsName.USER_NOT_FOUND;
-            throw err;
-        }
-
-        return user;
+        // l'esistenza è già verificata dal middleware checkUserExistsByParam
+        return userDao.findById(targetCf);
     }
 
     async getAllUsers() {
@@ -50,24 +37,11 @@ export class UserService {
     }
 
     async updateUser(
-        requesterCf: string,
-        isOperator: boolean,
         targetCf: string,
         data: Partial<{ name: string; email: string; role: 'admin' | 'user' | 'operator' | 'both' }>
     ) {
-        if (!isOperator && requesterCf !== targetCf) {
-            const err = new Error("Permission denied");
-            err.name = AppErrorsName.PERMISSION_DENIED;
-            throw err;
-        }
-
+        // l'esistenza è già verificata dal middleware checkUserExistsByParam
         const updated = await userDao.update({ cf: targetCf }, data);
-        if (!updated) {
-            const err = new Error("User not found");
-            err.name = AppErrorsName.USER_NOT_FOUND;
-            throw err;
-        }
-
         return updated;
     }
 
@@ -76,19 +50,12 @@ export class UserService {
         giorniMin?: number;
         giorniMax?: number;
     }) {
-
-        return userDao.findUsersWithExpiredCoverage(
-            filters
-        );
+        return userDao.findUsersWithExpiredCoverage(filters);
     }
 
     async deleteUser(cf: string) {
-        const deleted = await userDao.delete(cf);
-        if (!deleted) {
-            const err = new Error("User not found");
-            err.name = AppErrorsName.USER_NOT_FOUND;
-            throw err;
-        }
+        // l'esistenza è già verificata dal middleware checkUserExistsByParam
+        await userDao.delete(cf);
     }
 }
 

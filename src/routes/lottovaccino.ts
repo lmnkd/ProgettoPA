@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { lottoVaccinoController } from "../controller/LottoVaccinoController";
 import { authenticate, requireRole } from "../middleware/auth.middleware";
+import { checkVaccinoExists, checkCodiceLottoUnique } from "../middleware/lottovaccino.middleware";
 
 const router = Router();
 
@@ -9,6 +10,8 @@ router.post(
     "/vaccini/:vaccinoId/lotti",
     authenticate,
     requireRole("operator"),
+    checkVaccinoExists,
+    checkCodiceLottoUnique,
     lottoVaccinoController.createLotto
 );
 
@@ -16,15 +19,9 @@ router.post(
 router.get(
     "/vaccini/:vaccinoId/lotti",
     authenticate,
-    (req, res) => lottoVaccinoController.getLottiByVaccino(req, res)
+    requireRole("operator"),
+    checkVaccinoExists,
+    lottoVaccinoController.getLottiByVaccino
 );
-
-// UPDATE
-
-
-// DELETE
-
-
-
 
 export default router;

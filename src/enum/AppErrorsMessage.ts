@@ -33,5 +33,7 @@ export enum AppErrorsMessage {
     MISSING_DATA = "Dati obbligatori mancanti.",
     INVALID_DATE = "La data fornita non è valida.",
     VACCINE_EXPIRED = "Il lotto è scaduto in relazione alla data di vaccinazione.",
-    COVERAGE_NOT_EXPIRED = "La copertura vaccinale da una precedente vaccinazione non è ancora scaduta."
+    COVERAGE_NOT_EXPIRED = "La copertura vaccinale da una precedente vaccinazione non è ancora scaduta.",
+    INVALID_DATA = "INVALID_DATA",
+    LOTTO_ALREADY_EXISTS = "LOTTO_ALREADY_EXISTS"
 }       
