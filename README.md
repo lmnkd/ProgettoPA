@@ -951,27 +951,44 @@ Content-Type: application/json
 # Progettazione
 ## Casi d'uso
 
+## Diagrammi di sequenza
 
 
 
 
 
 
+# Istruzioni per l'avvio del backend
+
+```
+git clone https://github.com/lmnkd/ProgettoPA
+```
+```
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_DB=postgres
+POSTGRES_PORT=5432
+POSTGRES_HOST=postgres
+JWT_PRIVATE_KEY_PATH=keys/private.pem
+JWT_PUBLIC_KEY_PATH=keys/public.pem
+JWT_EXPIRES_IN=1h
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+```
+mkdir -p keys
+openssl genrsa -out keys/private.pem 2048
+openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+```
+
+```
+docker compose up --build
+```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+# Test del progetto
 
 
 
