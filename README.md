@@ -116,7 +116,23 @@ Il progetto include:
 
 
 
+# Design Pattern
+## Singleton
 
+garantisce un'unica istanza della connessione al database in tutta l'applicazione, evitando connessioni multiple e inutili al DB. Lo stesso principio si applica ai DAO/service: ogni modulo Node, una volta importato, restituisce sempre la stessa istanza (comportamento nativo del sistema di moduli ES/CommonJS, sfruttato esplicitamente qui), evitando di istanziare più volte classi stateless che non hanno bisogno di essere ricreate ad ogni richiesta.
+
+## DAO
+separa la logica di accesso ai dati (query Sequelize) dalla logica di business (service). Questo rende il codice più testabile (si può mockare il DAO nei test senza toccare il DB reale) e disaccoppia il resto dell'applicazione dai dettagli specifici dell'ORM — se domani si cambiasse Sequelize con un altro ORM, in teoria basterebbe riscrivere i DAO senza toccare service/controller.
+
+## Layered Architecture
+ogni livello ha una responsabilità singola e ben definita (routing, validazione/autorizzazione, orchestrazione richiesta/risposta, logica di business, accesso dati, definizione schema). Migliora manutenibilità e testabilità, perché ogni livello può essere modificato o testato isolatamente senza impattare gli altri — è il principio alla base di tutto il refactoring che abbiamo fatto spostando le validazioni dai controller ai middleware.
+
+## Chain of Responsability
+ogni middleware gestisce una singola validazione e decide se "passare la mano" al successivo (next()) o interrompere la catena rispondendo con un errore. Questo evita un blocco monolitico di if annidati nel controller, rende ogni controllo riusabile singolarmente (es. checkUserExists è usato sia in creazione che in update vaccinazione) e permette di aggiungere/togliere/riordinare controlli senza toccare la logica di business.
+
+
+## Middleware pattern
+è un pattern architetturale specifico dell'ecosistema Express/Node, distinto dalla Chain of Responsibility "pura" perché qui ogni funzione ha accesso diretto a req/res condivisi (stato mutabile passato lungo la catena), non solo alla decisione "continua o fermati".
 
 
 
