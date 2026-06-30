@@ -19,7 +19,6 @@ router.post(
     vaccinazioneController.createVaccinazione
 );
 
-
 // Ottenere una singola vaccinazione
 router.get('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.getVaccinazioneById);
 
@@ -32,20 +31,19 @@ router.put('/vaccinazioni/:id', authenticate, requireRole("operator"), checkUser
 // cancellazione vaccinazione
 router.delete('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.deleteVaccinazione);
 
-// creazione pdf admin richiederà con /pdf?cf=codicefiscaleuser
+// PDF storico vaccinazioni [A,U] — admin/operator specifica cf in query, user usa il proprio dal JWT
 router.get("/pdf", authenticate, vaccinazioneController.pdfVaccinazione);
 
-// vaccinazioni filtrate /api/vaccinazioni/filtrate?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31 o /api/vaccinazioni/filtrate?nome=moderna&before=2024-06-01
+// vaccinazioni filtrate [A,U] /api/vaccinazioni/filtrareuseradmin?nomeVaccino=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
 router.get("/filtrareuseradmin", authenticate, vaccinazioneController.getFilteredVaccinazioni);
 
-// Vaccinazione con copertura, admin può vederle di tutti(può filtrare mettendo cf) mentre l'user solo le sue. http://localhost:3000/api/vaccinazioni/copertura?order=asc order per vederli in ordine ascendente o discendente
+// Report copertura JSON [A,U] — admin vede tutti (o filtra con cf), user solo le proprie
 router.get("/copertura", authenticate, vaccinazioneController.getCoperturaReport);
 
-// Rotta di prima ma con il pdf scaricato, differenza funziona per un dato utente, quindi cf deve essere inserito nella query
+// Report copertura PDF [A,U]
 router.get("/copertura/pdf", authenticate, vaccinazioneController.getCoperturaPdf);
 
-// Inserendo nella richiesta il code posso andare oltre il JWT /copertura/json?code=550e8400, se voglio farlo per un utente secifico basta creare con il post un token utilizzando il suo CF
-router.get("/copertura/code", vaccinazioneController.getCoperturaByCode)
-
+// Bypass JWT tramite codice OTP Redis [nessuna autenticazione, il codice sostituisce il JWT]
+router.get("/copertura/code", vaccinazioneController.getCoperturaByCode);
 
 export default router;

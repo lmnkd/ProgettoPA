@@ -1,167 +1,86 @@
 import { Request, Response } from "express";
 import { vaccinoService } from "../service/VaccinoService";
-import { AppErrorsName } from "../enum/AppErrorsName";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 import { AppSuccessMessage } from "../enum/AppSuccessMessage";
-import { AppJwtPayload } from "../types/jwt-payload";
 
 export class VaccinoController {
 
-// Possibilità di rimuovere alcuni controlli che aggiungeremo nelle rotte
-
-
     async createVaccino(req: Request, res: Response): Promise<void> {
-
         try {
-
-            const requester = (req as any).user as AppJwtPayload;
-            
-            // Verifica che l'utente sia operator, si può levare ma abbiamo tenuto per maggiore sicurezza che non ci sfugga il controlo del ruolo
-            if (!requester.roles.includes("operator")) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-                return;
-            }
-
             const vaccino = await vaccinoService.createVaccino(req.body);
             res.status(201).json({ message: AppSuccessMessage.VACCINO_CREATED, vaccino });
-        } catch (error: any) {
-            if (error.name === AppErrorsName.VACCINO_ALREADY_EXISTS) {
-                res.status(409).json({ error: AppErrorsMessage.VACCINO_ALREADY_EXISTS });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
-    }   
+    }
 
+    // vaccino già verificato dal middleware checkVaccinoExistsById
     async getVaccinoById(req: Request, res: Response): Promise<void> {
         try {
-
-            const requester = (req as any).user as AppJwtPayload;
-
-            // Anche qui si può levare
-
-            const isOperator = requester.roles.includes("operator");
-            const targetId = Number(req.params.id);
-            const vaccino = await vaccinoService.getVaccinoById(requester.cf, isOperator, targetId);
-
+            const vaccino = (req as any).targetVaccino;
             res.status(200).json(vaccino);
-        } catch (error: any) {
-            if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {
-                res.status(404).json({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
-            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
-        }
-    }   
-
-    async getVaccinoByNome(req: Request, res: Response): Promise<void> {
-        try {
-            const requester = (req as any).user as AppJwtPayload;
-            const isOperator = requester.roles.includes("operator");
-            const targetId = Number(req.params.id);
-            const vaccino = await vaccinoService.getVaccinoById(requester.cf, isOperator, targetId);
-            res.status(200).json(vaccino);
-        } catch (error: any) {
-            if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {
-                res.status(404).json({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
-            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
-        }
-    }
-
-    async getStatistiche(req: Request, res: Response) {
-
-        const statistiche =
-            await vaccinoService.getStatistiche();
-
-        res.status(200).json(statistiche);
-    }
-
-    async getStatisticheCopertura(req: Request, res: Response) {
-
-        try {
-
-            const statistiche =
-                await vaccinoService.getStatisticheCopertura();
-
-            res.status(200).json(statistiche);
-
         } catch {
-
-            res.status(500).json({
-                error: AppErrorsMessage.SERVER_ERROR
-            });
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
 
-    async searchVaccini(req: Request, res: Response) {
+    async getStatistiche(req: Request, res: Response): Promise<void> {
+        try {
+            const statistiche = await vaccinoService.getStatistiche();
+            res.status(200).json(statistiche);
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
+    }
 
-        const vaccini =
-            await vaccinoService.searchVaccini(req.query);
+    async getStatisticheCopertura(req: Request, res: Response): Promise<void> {
+        try {
+            const statistiche = await vaccinoService.getStatisticheCopertura();
+            res.status(200).json(statistiche);
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
+    }
 
-        res.status(200).json(vaccini);
+    async searchVaccini(req: Request, res: Response): Promise<void> {
+        try {
+            const vaccini = await vaccinoService.searchVaccini(req.query);
+            res.status(200).json(vaccini);
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
     }
 
     async getAllVaccini(req: Request, res: Response): Promise<void> {
         try {
-            const requester = (req as any).user as AppJwtPayload;
-            const isOperator = requester.roles.includes("operator");
-            const vaccini = await vaccinoService.getAllVaccini(requester.cf, isOperator);
+            const vaccini = await vaccinoService.getAllVaccini();
             res.status(200).json(vaccini);
-        } catch (error: any) {
-            if (error.name === AppErrorsName.PERMISSION_DENIED) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
-        }   
-    }
-
-    async updateVaccino(req: Request, res: Response): Promise<void> {
-        try {
-            const requester = (req as any).user as AppJwtPayload;   
-            const isOperator = requester.roles.includes("operator");
-            const targetId = Number(req.params.id);
-        const vaccino = await vaccinoService.updateVaccino(
-                isOperator,
-                targetId,
-                req.body
-            );
-            res.status(200).json({ message: AppSuccessMessage.VACCINO_UPDATED, vaccino });
-        } catch (error: any) {
-            if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {
-                res.status(404).json({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
-            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
-        }   
-    }
-
-    async deleteVaccino(req: Request, res: Response): Promise<void> {
-        try {
-            const requester = (req as any).user as AppJwtPayload;
-            const isOperator = requester.roles.includes("operator");
-            const targetId = Number(req.params.id);
-            await vaccinoService.deleteVaccino(isOperator, targetId);
-            res.status(200).json({ message: AppSuccessMessage.VACCINO_DELETED });
-        } catch (error: any) {
-            if (error.name === AppErrorsName.VACCINO_NOT_FOUND) {
-                res.status(404).json({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
-            } else if (error.name === AppErrorsName.PERMISSION_DENIED) {
-                res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }   
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
 
+    // vaccino e unicità nome già verificati dai middleware
+    async updateVaccino(req: Request, res: Response): Promise<void> {
+        try {
+            const targetId = Number(req.params.id);
+            const vaccino = await vaccinoService.updateVaccino(targetId, req.body);
+            res.status(200).json({ message: AppSuccessMessage.VACCINO_UPDATED, vaccino });
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
+    }
+
+    // vaccino già verificato dal middleware checkVaccinoExistsById
+    async deleteVaccino(req: Request, res: Response): Promise<void> {
+        try {
+            const targetId = Number(req.params.id);
+            await vaccinoService.deleteVaccino(targetId);
+            res.status(200).json({ message: AppSuccessMessage.VACCINO_DELETED });
+        } catch {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
+        }
+    }
 }
 
 export const vaccinoController = new VaccinoController();

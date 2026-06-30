@@ -116,7 +116,23 @@ Il progetto include:
 
 
 
+# Design Pattern
+## Singleton
 
+garantisce un'unica istanza della connessione al database in tutta l'applicazione, evitando connessioni multiple e inutili al DB. Lo stesso principio si applica ai DAO/service: ogni modulo Node, una volta importato, restituisce sempre la stessa istanza (comportamento nativo del sistema di moduli ES/CommonJS, sfruttato esplicitamente qui), evitando di istanziare più volte classi stateless che non hanno bisogno di essere ricreate ad ogni richiesta.
+
+## DAO
+separa la logica di accesso ai dati (query Sequelize) dalla logica di business (service). Questo rende il codice più testabile (si può mockare il DAO nei test senza toccare il DB reale) e disaccoppia il resto dell'applicazione dai dettagli specifici dell'ORM — se domani si cambiasse Sequelize con un altro ORM, in teoria basterebbe riscrivere i DAO senza toccare service/controller.
+
+## Layered Architecture
+ogni livello ha una responsabilità singola e ben definita (routing, validazione/autorizzazione, orchestrazione richiesta/risposta, logica di business, accesso dati, definizione schema). Migliora manutenibilità e testabilità, perché ogni livello può essere modificato o testato isolatamente senza impattare gli altri — è il principio alla base di tutto il refactoring che abbiamo fatto spostando le validazioni dai controller ai middleware.
+
+## Chain of Responsability
+ogni middleware gestisce una singola validazione e decide se "passare la mano" al successivo (next()) o interrompere la catena rispondendo con un errore. Questo evita un blocco monolitico di if annidati nel controller, rende ogni controllo riusabile singolarmente (es. checkUserExists è usato sia in creazione che in update vaccinazione) e permette di aggiungere/togliere/riordinare controlli senza toccare la logica di business.
+
+
+## Middleware pattern
+è un pattern architetturale specifico dell'ecosistema Express/Node, distinto dalla Chain of Responsibility "pura" perché qui ogni funzione ha accesso diretto a req/res condivisi (stato mutabile passato lungo la catena), non solo alla decisione "continua o fermati".
 
 
 
@@ -141,6 +157,7 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
 | /statistiche | GET | Operator | Statistiche sui vaccini |
 | /statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
+| /coperturascaduta | GET | Operator | Coperture scadute |
 | /:id | GET | Operator | Restituisce vaccino per ID |
 | /:nome | GET | Operator | Restituisce vaccino per nome |
 | /:id | PUT | Operator | Aggiorna vaccino |
@@ -723,10 +740,8 @@ Content-Type: application/json
 }
 ```
 
-| /filtrareuseradmin | User, Operator | GET | Filtra vaccinazioni |
-| /copertura | User, Operator | GET | Report copertura vaccinale |
-| /copertura/pdf | User, Operator | GET | PDF copertura |
-| /copertura/code | Code Redis | GET | Accesso senza JWT |
+
+
 
 
 ## 🔐 /pdf 
@@ -756,7 +771,7 @@ Rotta utilizzata per vedere le vaccinazioni filtrare utilizzabile solo dall'admi
 L'admin potrà filtrare attraverso:
 - ?nome=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
 - ?nome=moderna&before=2024-06-01
-- 
+- ?cf=BNCMRA90C20D612Y&dataMin=2025-09-01&dataMax=2025-12-31
 Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le vaccinazioni filtrate secondo i parametri.
 
 ---
@@ -772,31 +787,224 @@ Content-Type: application/json
 ```
 ### Richiesta con successo
 ```
-mettere immagine
+[
+    {
+        "id": 3,
+        "userCf": "BNCMRA90C20D612Y",
+        "vaccinoId": 4,
+        "lottoId": 5,
+        "dataVaccinazione": "2025-10-01T00:00:00.000Z",
+        "createdAt": "2026-06-29T14:36:20.885Z",
+        "updatedAt": "2026-06-29T14:36:20.885Z",
+        "Vaccino": {
+            "nome": "Antinfluenzale",
+            "durataCopertura": 180
+        },
+        "LottoVaccino": {
+            "codiceLotto": "FLU-2025-001"
+        }
+    }
+]
+```
+
+## 🔐 /copertura
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture.
+L'admin potrà vederle di tutti gli user, gli user solo di loro stessi.
+Inoltre si ha la possibilità di cambiare l'ordine in modo crescente o decrescente tramite richiesta ?order=asc o desc
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con tutte le vaccinazioni con le rispettive coperture.
+Nell'esempio abbiamo utilizzato admin per vedere tutte le vaccinazioni e coperture in ordine decrescente
+
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "vaccinazioneId": 3,
+        "userCf": "BNCMRA90C20D612Y",
+        "vaccino": "Antinfluenzale",
+        "dataVaccinazione": "2025-10-01T00:00:00.000Z",
+        "fineCopertura": "2026-03-30T00:00:00.000Z",
+        "giorniDifferenza": -91,
+        "statoCoperura": "scaduta"
+    },
+    {
+        "vaccinazioneId": 2,
+        "userCf": "VRDLGI85B15F205X",
+        "vaccino": "Moderna",
+        "dataVaccinazione": "2025-03-10T00:00:00.000Z",
+        "fineCopertura": "2026-03-10T00:00:00.000Z",
+        "giorniDifferenza": -111,
+        "statoCoperura": "scaduta"
+    },
+    {
+        "vaccinazioneId": 1,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccino": "Pfizer",
+        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
+        "fineCopertura": "2025-08-14T00:00:00.000Z",
+        "giorniDifferenza": -319,
+        "statoCoperura": "scaduta"
+    }
+]
+```
+
+
+## 🔐 /copertura/pdf
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
+Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/pdf HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+immagine
+```
+
+## 🔐 /copertura/code
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/code HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "vaccinazioneId": 1,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccino": "Pfizer",
+        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
+        "fineCopertura": "2025-08-14T00:00:00.000Z",
+        "giorniDifferenza": -319,
+        "statoCoperura": "scaduta"
+    }
+]
+```
+
+## 🔐 /copertura/pdf
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
+Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/pdf HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+immagine
+```
+
+## 🔐 /coperturascaduta da fare
+
+Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
+---
+
+### 📥 Richiesta
+
+```http
+GET /copertura/code HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "vaccinazioneId": 1,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccino": "Pfizer",
+        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
+        "fineCopertura": "2025-08-14T00:00:00.000Z",
+        "giorniDifferenza": -319,
+        "statoCoperura": "scaduta"
+    }
+]
+```
+
+# Progettazione
+## Casi d'uso
+
+## Diagrammi di sequenza
+
+
+
+
+
+
+# Istruzioni per l'avvio del backend
+
+```
+git clone https://github.com/lmnkd/ProgettoPA
+```
+```
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_DB=postgres
+POSTGRES_PORT=5432
+POSTGRES_HOST=postgres
+JWT_PRIVATE_KEY_PATH=keys/private.pem
+JWT_PUBLIC_KEY_PATH=keys/public.pem
+JWT_EXPIRES_IN=1h
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+```
+mkdir -p keys
+openssl genrsa -out keys/private.pem 2048
+openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+```
+
+```
+docker compose up --build
 ```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Test del progetto
 
 
 
