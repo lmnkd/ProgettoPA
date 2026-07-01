@@ -10,7 +10,7 @@ const router = Router();
 router.post(
     "/vaccinazioni",
     authenticate,
-    requireRole("operator"),
+    requireRole("operator", "admin"),
     checkUserExists,
     checkLottoValid,
     checkVaccineNotExpired,
@@ -20,30 +20,30 @@ router.post(
 );
 
 // Ottenere una singola vaccinazione
-router.get('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.getVaccinazioneById);
+router.get('/vaccinazioni/:id', authenticate, requireRole("operator", "admin"), vaccinazioneController.getVaccinazioneById);
 
 // Ottenere tutte le vaccinazioni
-router.get('/vaccinazioni', authenticate, requireRole("operator"), vaccinazioneController.getAllVaccinazioni);
+router.get('/vaccinazioni', authenticate, requireRole("admin"), vaccinazioneController.getAllVaccinazioni);
 
 // Update vaccinazione
-router.put('/vaccinazioni/:id', authenticate, requireRole("operator"), checkUserExists, checkLottoValid, checkTokenAvailability, vaccinazioneController.updateVaccinazione);
+router.patch('/vaccinazioni/:id', authenticate, requireRole("operator", "admin"), checkUserExists, checkLottoValid, checkTokenAvailability, vaccinazioneController.updateVaccinazione);
 
 // cancellazione vaccinazione
-router.delete('/vaccinazioni/:id', authenticate, requireRole("operator"), vaccinazioneController.deleteVaccinazione);
+router.delete('/vaccinazioni/:id', authenticate, requireRole("admin", "operator"), vaccinazioneController.deleteVaccinazione);
 
 // PDF storico vaccinazioni [A,U] — admin/operator specifica cf in query, user usa il proprio dal JWT
-router.get("/pdf", authenticate, vaccinazioneController.pdfVaccinazione);
+router.get("/pdf", authenticate, requireRole("admin", "user"), vaccinazioneController.pdfVaccinazione);
 
 // vaccinazioni filtrate [A,U] /api/vaccinazioni/filtrareuseradmin?nomeVaccino=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
-router.get("/filtrareuseradmin", authenticate, vaccinazioneController.getFilteredVaccinazioni);
+router.get("/filtrareuseradmin", authenticate, requireRole("admin", "user"), vaccinazioneController.getFilteredVaccinazioni);
 
-// Report copertura JSON [A,U] — admin vede tutti (o filtra con cf), user solo le proprie
-router.get("/copertura", authenticate, vaccinazioneController.getCoperturaReport);
+// Report copertura JSON [A,U] — admin vede tutti (o filtra con cf), user solo le proprie ?cf=RSSMRA80A01H501U&order=desc
+router.get("/copertura", authenticate, requireRole("admin", "user"), vaccinazioneController.getCoperturaReport);
 
 // Report copertura PDF [A,U]
-router.get("/copertura/pdf", authenticate, vaccinazioneController.getCoperturaPdf);
+router.get("/copertura/pdf", authenticate, requireRole("admin", "user"), vaccinazioneController.getCoperturaPdf);
 
 // Bypass JWT tramite codice OTP Redis [nessuna autenticazione, il codice sostituisce il JWT]
-router.get("/copertura/code", vaccinazioneController.getCoperturaByCode);
+router.get("/copertura/code", authenticate, requireRole("admin"), vaccinazioneController.getCoperturaByCode);
 
 export default router;

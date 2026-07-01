@@ -5,18 +5,18 @@ import { userExist } from "../middleware/redis.middleware";
 
 const router = Router();
 
-router.get("/coperturascaduta", authenticate, requireRole("operator"), userController.getUsersWithExpiredCoverage);
+router.get("/coperturascaduta", authenticate, requireRole("operator", "admin"), userController.getUsersWithExpiredCoverage);
 
 // Ottenere un USER
-router.get("/:cf", authenticate, requireRole("operator"), userExist, userController.getUserById);
+router.get("/:cf", authenticate, requireRole("operator", "admin"), userExist, userController.getUserById);
 
 // ottenere tutti gli user
-router.get("/", authenticate, requireRole("operator"), userController.getAllUsers);
+router.get("/", authenticate, requireRole("admin"), userController.getAllUsers);
 
 // Cancellare un uSER o Operator
-router.delete("/:cf", authenticate, requireRole("operator"), userExist, userController.deleteUser);
+router.delete("/:cf", authenticate, requireRole("admin"), userExist, userController.deleteUser);
 
 // Aggiornare un operatore
-router.put("/:cf", authenticate, requireRole("operator"), userExist, userController.updateUser);
+router.patch("/:cf", authenticate, requireRole("admin"), userExist, userController.updateUser);
 
 export default router;
