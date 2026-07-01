@@ -2,9 +2,15 @@ import { IDao } from "./IDao";
 import { Op } from "sequelize";
 import { LottoVaccino } from "../model/LottoVaccino";
 
+
+/*
+    * LottoVaccinoDao è una classe che implementa l'interfaccia IDao per gestire le operazioni CRUD sul modello LottoVaccino.
+    * Fornisce metodi per creare, leggere, aggiornare, eliminare e trovare lotti di vaccino nel database.
+    * Inoltre, include metodi specifici per trovare lotti in base all'ID del vaccino o al codice del lotto.
+    */
+
 export class LottoVaccinoDao implements IDao<LottoVaccino> {
 
-    // Dao di lotto vaccino con i metodi di default
 
     async create(item: any): Promise<LottoVaccino> {
         return await LottoVaccino.create(item);
@@ -38,6 +44,15 @@ export class LottoVaccinoDao implements IDao<LottoVaccino> {
         return await LottoVaccino.findByPk(id);
     }
 
+
+    /*
+        * Trova tutti i lotti di vaccino associati a un determinato ID di vaccino.
+        * @param vaccinoId - L'ID del vaccino per cui cercare i lotti.
+        * @param min - (Opzionale) La quantità minima disponibile per filtrare i lotti.
+        * @param max - (Opzionale) La quantità massima disponibile per filtrare i lotti.
+        * @returns Una promessa che risolve un array di lotti di vaccino corrispondenti ai criteri di ricerca.
+        */
+
     async findByVaccinoId(
         vaccinoId: number,
         min?: number,
@@ -64,6 +79,13 @@ export class LottoVaccinoDao implements IDao<LottoVaccino> {
 
         return LottoVaccino.findAll({ where });
     }
+
+
+    /*
+        * Trova un lotto di vaccino in base al codice del lotto.
+        * @param codiceLotto - Il codice del lotto da cercare.
+        * @returns Una promessa che risolve il lotto di vaccino corrispondente al codice fornito, o null se non trovato.
+    */
 
     async findByCodiceLotto(codiceLotto: string): Promise<LottoVaccino | null> {
         return await LottoVaccino.findOne({ where: { codiceLotto } });

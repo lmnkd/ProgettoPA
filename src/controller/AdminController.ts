@@ -8,7 +8,7 @@ import { AppJwtPayload } from "../types/jwt-payload";
 
 export class AdminController{
 
-    // Metodo per aggiungere token ad un certo User (sia operator che user)
+// Metodo per aggiungere token ad un certo User (sia operator che user)
 
  async increaseUserTokens(req: Request, res: Response): Promise<void> {
     try {

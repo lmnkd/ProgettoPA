@@ -1,3 +1,6 @@
+
+// File per la configurazione della connessione a Redis, utilizzato per la gestione dei codici OTP per il bypass del JWT.
+
 import { createClient } from "redis";
 
 const redis = createClient({

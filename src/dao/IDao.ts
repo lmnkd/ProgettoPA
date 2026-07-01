@@ -1,6 +1,8 @@
 
 /**
- * Intefaccia iniziale, probabilmenrte completa, in caso modificare
+ * Intefaccia iniziale per la gestione dei DAO (Data Access Object) generici.
+ * Fornisce i metodi CRUD di base per l'interazione con il database.
+ * @template T - Il tipo di entità gestita dal DAO.
  */
 
 export interface IDao<T> {

@@ -18,6 +18,8 @@ export async function checkTokenAvailability(req: Request, res: Response, next: 
     next();
 }
 
+
+// Funzione per check dei numeri negativi e corretta formattazzione.
 export async function correctAmount(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { amount } = req.body;
 

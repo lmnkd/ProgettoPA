@@ -4,8 +4,11 @@ import {initModels} from "../model/Init_models";
 
 
 /**
- * Questa classe è un singleton che gestisce la connessione al database PostgreSQL utilizzando Sequelize.
- * 
+ * File per la gestione della connessione al database PostgreSQL utilizzando Sequelize.
+ * La classe SequelizeConnector è progettata come un singleton per garantire che ci sia una sola connessione al database in tutta l'applicazione.
+ * Il costruttore privato inizializza la connessione al database utilizzando le variabili d'ambiente per configurare il database, l'utente, la password, l'host e la porta.
+ * Il metodo getInstance() restituisce l'istanza singleton della classe, creando una nuova istanza se non esiste già.
+ * Il metodo getSequelize() restituisce l'oggetto Sequelize per interagire con il database.
  */
 
 export class SequelizeConnector {

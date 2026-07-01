@@ -1,5 +1,12 @@
 import { lottoVaccinoDao } from "../dao/LottoVaccinoDao";
 
+/*
+    * Servizio per la gestione dei lotti di vaccino.
+    * Fornisce metodi per creare un nuovo lotto, recuperare lotti per vaccino e ottenere un lotto specifico per ID.
+    * Utilizza il LottoVaccinoDao per interagire con il database.
+    */
+
+
 export class LottoVaccinoService {
 
     async createLotto(vaccinoId: number, data: any) {

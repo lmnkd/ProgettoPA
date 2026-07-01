@@ -3,6 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { userDao } from "../dao/UserDao";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
+
+// Funzione per verificare se un utente con l'email fornita esiste già nel database. Se l'utente esiste, viene restituito un errore 409 (Conflict). Altrimenti, la richiesta procede al middleware successivo o al controller.
+
 export async function checkEmailNotExists(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { email } = req.body;
 

@@ -1,3 +1,6 @@
+
+// File per l'inserimento delle chiavi pubbliche e private per la firma e verifica dei token JWT, si trovano nell'env.
+
 import fs from "fs";
 import path from "path";
 

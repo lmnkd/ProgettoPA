@@ -6,6 +6,10 @@ import { userDao } from "../dao/UserDao";
 import redis from "../config/redis";
 import { randomUUID } from "crypto";
 
+/*
+    * Interfaccia per i dati di input necessari per creare una nuova vaccinazione.
+    * Contiene il codice fiscale dell'utente, l'ID del lotto, l'ID del vaccino e la data della vaccinazione.
+    */
 
 interface CreateVaccinazioneInput {
     user_cf: string;
@@ -14,6 +18,10 @@ interface CreateVaccinazioneInput {
     data_vaccinazione: Date;
 }
 
+/*
+    * Interfaccia per rappresentare il risultato del report sulla copertura vaccinale.
+    * Contiene informazioni sulla vaccinazione, l'utente, il vaccino, le date di vaccinazione e fine copertura, la differenza in giorni e lo stato della copertura.
+    */
 
 interface CoperturaResult {
     vaccinazioneId: number;
@@ -25,8 +33,20 @@ interface CoperturaResult {
     statoCoperura: "attiva" | "scaduta";
 }
 
+
+/*    * Classe di servizio per la gestione delle operazioni relative alle vaccinazioni.
+    * Fornisce metodi per creare, leggere, aggiornare e cancellare vaccinazioni, generare report PDF e gestire codici di copertura.
+    */
+
 export class VaccinazioneService {
 
+    /*
+        * Crea un codice di copertura per un utente specifico e lo memorizza in Redis con un tempo di vita limitato.
+        * @param cf - Il codice fiscale dell'utente per il quale generare il codice di copertura inserito nella query.
+        * @param ttlMinutes - Il tempo di vita del codice in minuti (default: 10 minuti).
+        * @returns Una Promise che risolve con il codice di copertura generato.
+        * Nota: Il codice generato è un UUID casuale e viene memorizzato in Redis con una chiave formattata come "copertura:<code>".
+        */
     async createCoperturaCode(cf: string, ttlMinutes: number = 10): Promise<string> {
         const code = randomUUID();
 
@@ -85,6 +105,13 @@ export class VaccinazioneService {
         }
         return deleted;
     }
+
+/*
+    * Genera un PDF con il report delle vaccinazioni di un utente specifico.
+    * @param cf - Il codice fiscale dell'utente per il quale generare il report o il report dell'user che lo richiede.
+    * @returns Una Promise che risolve con un Buffer contenente il PDF generato.
+    * Nota: Se l'utente non viene trovato, viene generato un errore con il nome "USER_NOT_FOUND".
+    */
 
     async generatePdfReport(cf: string): Promise<Buffer> {
         const user = await userDao.findById(cf);
@@ -179,6 +206,14 @@ export class VaccinazioneService {
         });
     }
 
+    /*
+    * Ottiene le vaccinazioni filtrate per un utente specifico in base ai parametri forniti.
+    * @param cf - Il codice fiscale dell'utente per il quale ottenere le vaccinazioni filtrate nella query.
+    * @param filters - Un oggetto contenente i filtri opzionali per il nome del vaccino e le date.
+    * @returns Una Promise che risolve con un array di vaccinazioni filtrate dell'utente.
+    * Nota: Se l'utente non viene trovato, viene generato un errore con il nome "USER_NOT_FOUND".
+    */
+
     async getFilteredVaccinazioni(cf: string, filters: {
         nomeVaccino?: string;
         dataGt?: string;
@@ -202,6 +237,13 @@ export class VaccinazioneService {
         });
     }
 
+    /*
+        * Ottiene il report della copertura vaccinale per un utente specifico.
+        * @param userCf - Il codice fiscale dell'utente per il quale ottenere il report della copertura vaccinale, oppure undefined per ottenere il report per l'utente corrente.
+        * @param order - L'ordine di ordinamento dei risultati, può essere "asc" per ascendente o "desc" per discendente (default: "asc").
+        * @returns Una Promise che risolve con un array di risultati del report della copertura vaccinale.
+        * Nota: Se l'utente non viene trovato, viene generato un errore con il nome "USER_NOT_FOUND".
+        */
     async getCoperturaReport(userCf: string | undefined, order: "asc" | "desc" = "asc"): Promise<CoperturaResult[]> {
         const vaccinazioni = await vaccinazioneDao.findAllWithDetails(userCf);
         const oggi = new Date();
@@ -233,6 +275,14 @@ export class VaccinazioneService {
 
         return results;
     }
+
+
+/*    * Ottiene il report della copertura vaccinale per un utente specifico in formato PDF.
+    * @param cf - Il codice fiscale dell'utente per il quale ottenere il report della copertura vaccinale in formato PDF.
+    * @param order - L'ordine di ordinamento dei risultati, può essere "asc" per ascendente o "desc" per discendente (default: "asc").
+    * @returns Una Promise che risolve con un Buffer contenente il PDF generato.
+    * Nota: Se l'utente non viene trovato, viene generato un errore con il nome "USER_NOT_FOUND".
+    */
 
     async generateCoperturaPdf(cf: string, order: "asc" | "desc" = "asc"): Promise<Buffer> {
         const user = await userDao.findById(cf);
