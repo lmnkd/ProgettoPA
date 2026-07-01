@@ -8,6 +8,12 @@ import redis from "../config/redis";
 
 export class VaccinazioneController {
 
+    /*
+        * Recupera la copertura vaccinale di un utente in base al codice di accesso Redis.
+        * @param req - La richiesta HTTP contenente il codice di accesso.
+        * @param res - La risposta HTTP che conterrà la copertura vaccinale o un messaggio di errore.
+        */
+
     async getCoperturaByCode(req: Request, res: Response): Promise<void> {
         try {
             const code =
@@ -37,7 +43,13 @@ export class VaccinazioneController {
         }
     }
 
-    // cf già verificato dal middleware userExist, disponibile in req.targetUser
+
+    /* 
+        * Genera un codice di accesso per la copertura vaccinale.
+        * @param req - La richiesta HTTP contenente l'utente target nel body della richiesta.
+        * @param res - La risposta HTTP che conterrà il codice di accesso o un messaggio di errore.
+        */
+
     async generateCoperturaCode(req: Request, res: Response): Promise<void> {
         try {
             const targetUser = (req as any).targetUser;
@@ -55,7 +67,11 @@ export class VaccinazioneController {
         }
     }
 
-    // tutti i dati (targetUser, lotto, vaccino, dataVaccinazione) arrivano già validati dai middleware in catena
+    /*
+        * Crea una nuova vaccinazione.
+        * @param req - La richiesta HTTP contenente i dati della vaccinazione.
+        * @param res - La risposta HTTP che conterrà la vaccinazione creata o un messaggio di errore.
+        */
     async createVaccinazione(req: Request, res: Response): Promise<void> {
         try {
             const targetUser = (req as any).targetUser;
@@ -75,6 +91,12 @@ export class VaccinazioneController {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
+    
+    /*
+        * Recupera una vaccinazione specifica in base al suo ID.
+        * @param req - La richiesta HTTP contenente l'ID della vaccinazione.
+        * @param res - La risposta HTTP che conterrà la vaccinazione o un messaggio di errore.
+        */
 
     async getVaccinazioneById(req: Request, res: Response): Promise<void> {
         try {
@@ -89,7 +111,12 @@ export class VaccinazioneController {
             }
         }
     }
-
+    
+    /*
+        * Recupera tutte le vaccinazioni.
+        * @param req - La richiesta HTTP.
+        * @param res - La risposta HTTP che conterrà l'elenco delle vaccinazioni o un messaggio di errore.
+        */
     async getAllVaccinazioni(req: Request, res: Response): Promise<void> {
         try {
             const vaccinazioni = await vaccinazioneService.getAllVaccinazioni();
@@ -99,6 +126,12 @@ export class VaccinazioneController {
         }
     }
 
+    
+    /*
+        * Aggiorna una vaccinazione specifica in base al suo ID.
+        * @param req - La richiesta HTTP contenente l'ID della vaccinazione e i dati aggiornati nel corpo della richiesta.
+        * @param res - La risposta HTTP che conterrà la vaccinazione aggiornata o un messaggio di errore.
+        */
     async updateVaccinazione(req: Request, res: Response): Promise<void> {
         try {
             const targetId = Number(req.params.id);
@@ -113,6 +146,13 @@ export class VaccinazioneController {
         }
     }
 
+
+    /*
+        * Elimina una vaccinazione specifica in base al suo ID.
+        * @param req - La richiesta HTTP contenente l'ID della vaccinazione.
+        * @param res - La risposta HTTP che conterrà un messaggio di conferma o un messaggio di errore.
+        */
+
     async deleteVaccinazione(req: Request, res: Response): Promise<void> {
         try {
             const targetId = Number(req.params.id);
@@ -126,8 +166,12 @@ export class VaccinazioneController {
             }
         }
     }
-
-    // [A,U]: admin specifica il CF in query, user usa il proprio dal JWT
+    
+    /*
+        * Genera un PDF con le informazioni sulla vaccinazione.
+        * @param req - La richiesta HTTP, che può contenere il codice fiscale dell'utente target come parametro di query (per admin/operator) o utilizzare il codice fiscale dell'utente autenticato (per user).
+        * @param res - La risposta HTTP che conterrà il PDF o un messaggio di errore.
+        */
     async pdfVaccinazione(req: Request, res: Response): Promise<void> {
         try {
             const requester = (req as any).user as AppJwtPayload;
@@ -160,6 +204,12 @@ export class VaccinazioneController {
             }
         }
     }
+
+    /*
+        * Recupera le vaccinazioni filtrate in base ai parametri forniti.
+        * @param req - La richiesta HTTP contenente i parametri di filtro come query string.
+        * @param res - La risposta HTTP che conterrà le vaccinazioni filtrate o un messaggio di errore.
+        */
 
     async getFilteredVaccinazioni(req: Request, res: Response): Promise<void> {
         try {
@@ -198,6 +248,12 @@ export class VaccinazioneController {
         }
     }
 
+    /*
+        * Recupera un report sulla copertura vaccinale.
+        * @param req - La richiesta HTTP, che può contenere il codice fiscale dell'utente target come parametro di query (per admin/operator) o utilizzare il codice fiscale dell'utente autenticato (per user).
+        * @param res - La risposta HTTP che conterrà il report o un messaggio di errore.
+        */
+
     async getCoperturaReport(req: Request, res: Response): Promise<void> {
         try {
             const requester = (req as any).user as AppJwtPayload;
@@ -215,6 +271,12 @@ export class VaccinazioneController {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
+
+    /*
+        * Genera un PDF con il report sulla copertura vaccinale.
+        * @param req - La richiesta HTTP, che può contenere il codice fiscale dell'utente target come parametro di query (per admin/operator) o utilizzare il codice fiscale dell'utente autenticato (per user).
+        * @param res - La risposta HTTP che conterrà il PDF o un messaggio di errore.
+        */
 
     async getCoperturaPdf(req: Request, res: Response): Promise<void> {
         try {

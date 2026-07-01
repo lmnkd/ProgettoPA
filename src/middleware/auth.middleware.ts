@@ -33,11 +33,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
 // Funzione per autenticazione con ruoli
 
-export function requireRole(role: "user" | "operator" | "admin") {
+export function requireRole(...roles: ("user" | "operator" | "admin" | "both")[]) {
     return (req: Request, res: Response, next: NextFunction): void => {
         const user = (req as any).user as AppJwtPayload;
 
-        if (!user || !user.roles.includes(role)) {
+        if (!user || !roles.some(role => user.roles.includes(role))) {
             res.status(403).json({ error: AppErrorsMessage.PERMISSION_DENIED });
             return;
         }

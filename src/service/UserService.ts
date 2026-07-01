@@ -1,9 +1,18 @@
 import bcrypt from "bcrypt";
 import { userDao } from "../dao/UserDao";
-import { AppErrorsName } from "../enum/AppErrorsName";
 
+
+
+/*    * Servizio per la gestione degli utenti.
+    * Fornisce metodi per creare, leggere, aggiornare e cancellare utenti, nonché per ottenere utenti con copertura vaccinale scaduta.
+    * Utilizza il DAO UserDao per interagire con il database.
+    */
 const SALT_ROUNDS = 10;
 
+
+/*    * Interfaccia per i dati di input necessari per creare un nuovo utente.
+    * Contiene il codice fiscale, il nome, l'email, la password e il ruolo dell'utente.
+    */
 interface CreateUserInput {
     cf: string;
     name: string;
@@ -44,6 +53,11 @@ export class UserService {
         const updated = await userDao.update({ cf: targetCf }, data);
         return updated;
     }
+
+/*    * Ottiene un report degli utenti con copertura vaccinale scaduta.
+    * @param filters - Un oggetto contenente filtri opzionali per il nome del vaccino e i giorni minimi e massimi di scadenza della copertura.
+    * @returns Un array di utenti con copertura vaccinale scaduta in base ai filtri forniti.
+    */
 
     async getUsersWithExpiredCoverage(filters: {
         vaccino?: string;

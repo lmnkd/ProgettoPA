@@ -4,6 +4,12 @@ import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
 export class LottoVaccinoController {
 
+    /*
+        * Crea un nuovo lotto per un vaccino specifico.
+        * @param req - La richiesta HTTP contenente l'ID del vaccino e i dati del lotto.
+        * @param res - La risposta HTTP che conterrà il lotto creato o un messaggio di errore.
+        */
+
     async createLotto(req: Request, res: Response): Promise<void> {
         try {
             const vaccinoId = Number(req.params.vaccinoId);
@@ -14,8 +20,13 @@ export class LottoVaccinoController {
         }
     }
 
-    // vaccino già verificato dal middleware checkVaccinoExists
-    // filtro disponibilità opzionale: ?min=k&max=k2
+   
+    /*
+        * Recupera tutti i lotti disponibili per un vaccino specifico.
+        * @param req - La richiesta HTTP contenente l'ID del vaccino, e opzionalmente i parametri di query min e max per filtrare i lotti in base alla disponibilità.
+        * @param res - La risposta HTTP che conterrà l'elenco dei lotti o un messaggio di errore.
+        */
+    
     async getLottiByVaccino(req: Request, res: Response): Promise<void> {
         try {
             const vaccinoId = Number(req.params.vaccinoId);

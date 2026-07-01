@@ -5,6 +5,14 @@ import { AppJwtPayload } from "../types/jwt-payload";
 import { userDao } from "../dao/UserDao";
 import { AppErrorsName } from "../enum/AppErrorsName";
 
+/*
+    * Funzione di utilità per convertire un ruolo in un array di ruoli.
+    * Se il ruolo è "both", restituisce un array contenente sia "user" che "operator".
+    * Altrimenti, restituisce un array contenente solo il ruolo specificato.
+    * @param role - Il ruolo dell'utente, che può essere "admin", "user", "operator" o "both".
+    * @returns Un array di ruoli corrispondenti al ruolo specificato.
+    */
+
 function toRolesArray(role: 'admin' | 'user' | 'operator' | 'both'): ("admin" | "user" | "operator")[] {
     if (role === 'both') return ['user', 'operator'];
     return [role];

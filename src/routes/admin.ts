@@ -10,7 +10,7 @@ const router = Router();
 
 
 // Rotta per aggiungere token ad un User o Operator
-router.put('/admin/addToken/:cf', authenticate, requireRole("admin"), userExist, correctAmount, adminController.increaseUserTokens)
+router.patch('/admin/addToken/:cf', authenticate, requireRole("admin"), userExist, correctAmount, adminController.increaseUserTokens)
 
 
 // Rotta token redis admin/code mettere nel body l'utente che si vuole vedere senza usare il JWT

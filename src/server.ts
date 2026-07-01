@@ -49,7 +49,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello, World!" });
 });
 
-// Route protette e pubbliche
+// Route protette
 app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", adminRoutes);

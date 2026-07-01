@@ -11,6 +11,13 @@ import { LottoVaccino } from "../model/LottoVaccino";
 import { Vaccinazione } from "../model/Vaccinazione";
 
 
+/*
+    * Classe DAO per la gestione delle operazioni CRUD sui vaccini.
+    * Implementa l'interfaccia IDao per i vaccini.
+    * Fornisce metodi per creare, leggere, aggiornare e cancellare vaccini, nonché per trovare vaccini filtrati e statistiche sui vaccini.
+    */
+
+
 export class VaccinoDao implements IDao<Vaccino> {
 
     async read(item: Vaccino): Promise<Vaccino | null> {
@@ -40,6 +47,13 @@ export class VaccinoDao implements IDao<Vaccino> {
     async findAll(): Promise<Vaccino[]> {
         return Vaccino.findAll();
     }
+
+
+/*
+    * Cerca i vaccini in base ai filtri forniti.
+    * @param filters - Un oggetto contenente i filtri opzionali per il nome del vaccino, la disponibilità e le date di scadenza dei lotti.
+    * @returns Un array di vaccini che soddisfano i criteri di ricerca, con la disponibilità totale calcolata per ciascun vaccino.
+*/
 
     async searchVaccini(filters: any) {
 
@@ -190,6 +204,12 @@ export class VaccinoDao implements IDao<Vaccino> {
 
         return result;
     }
+
+
+/*
+    * Ottiene le statistiche sui vaccini, inclusi i dati sulle vaccinazioni e la disponibilità dei lotti.
+    * @returns Un array di oggetti contenenti le statistiche per ciascun vaccino, inclusi il nome del vaccino, la media delle dosi consegnate e le statistiche mensili delle vaccinazioni.
+    */
 
     async getStatisticheVaccini() {
 

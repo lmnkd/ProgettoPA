@@ -9,7 +9,7 @@ const router = Router();
 router.post(
     "/vaccini/:vaccinoId/lotti",
     authenticate,
-    requireRole("operator"),
+    requireRole("admin"),
     checkVaccinoExists,
     checkCodiceLottoUnique,
     lottoVaccinoController.createLotto
@@ -19,7 +19,7 @@ router.post(
 router.get(
     "/vaccini/:vaccinoId/lotti",
     authenticate,
-    requireRole("operator"),
+    requireRole("operator", "admin"),
     checkVaccinoExists,
     lottoVaccinoController.getLottiByVaccino
 );

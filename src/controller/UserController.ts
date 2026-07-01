@@ -5,6 +5,12 @@ import { AppSuccessMessage } from "../enum/AppSuccessMessage";
 
 export class UserController {
 
+    /*
+        * Crea un nuovo utente.
+        * @param req - La richiesta HTTP contenente i dati dell'utente.
+        * @param res - La risposta HTTP che conterrà l'utente creato o un messaggio di errore.
+        */
+
     async createUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await userService.createUser(req.body);
@@ -14,7 +20,11 @@ export class UserController {
         }
     }
 
-    // GET /api/users/:cf — utente già verificato dal middleware checkUserExistsByParam
+    /*
+        * Recupera un utente specifico in base al suo CF.
+        * @param req - La richiesta HTTP contenente il CF dell'utente.
+        * @param res - La risposta HTTP che conterrà l'utente o un messaggio di errore.
+        */
     async getUserById(req: Request, res: Response): Promise<void> {
         try {
             const user = (req as any).targetUser;
@@ -24,6 +34,12 @@ export class UserController {
         }
     }
 
+    /*
+        * Recupera tutti gli utenti.
+        * @param req - La richiesta HTTP.
+        * @param res - La risposta HTTP che conterrà l'elenco degli utenti o un messaggio di errore.
+        */
+    
     async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
             const users = await userService.getAllUsers();
@@ -32,6 +48,12 @@ export class UserController {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
+
+    /*
+        * Recupera gli utenti con copertura vaccinale scaduta in base ai parametri di query.
+        * @param req - La richiesta HTTP contenente i parametri di query (vaccino, giorniMin, giorniMax).
+        * @param res - La risposta HTTP che conterrà l'elenco degli utenti o un messaggio di errore.
+        */
 
     async getUsersWithExpiredCoverage(req: Request, res: Response): Promise<void> {
         try {
@@ -47,7 +69,12 @@ export class UserController {
         }
     }
 
-    // PUT /api/users/:cf — utente già verificato dal middleware checkUserExistsByParam
+    /*
+        * Aggiorna un utente specifico in base al suo CF.
+        * @param req - La richiesta HTTP contenente il CF dell'utente e i dati aggiornati si trovano nel corpo della richiesta.
+        * @param res - La risposta HTTP che conterrà l'utente aggiornato o un messaggio di errore.
+        */
+
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await userService.updateUser(req.params.cf, req.body);
@@ -57,7 +84,12 @@ export class UserController {
         }
     }
 
-    // DELETE /api/users/:cf — utente già verificato dal middleware checkUserExistsByParam
+    /*
+        * Elimina un utente specifico in base al suo CF.
+        * @param req - La richiesta HTTP contenente il CF dell'utente.
+        * @param res - La risposta HTTP che conterrà un messaggio di successo o un messaggio di errore.
+        */
+
     async deleteUser(req: Request, res: Response): Promise<void> {
         try {
             await userService.deleteUser(req.params.cf);

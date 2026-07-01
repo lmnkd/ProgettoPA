@@ -1,10 +1,19 @@
 import { vaccinoDao } from "../dao/VaccinoDao";
 import { userDao } from "../dao/UserDao";
 
+
+/*    * Interfaccia per i dati di input necessari per creare un nuovo vaccino.
+    * Contiene il nome del vaccino e la durata della copertura in giorni.
+    */
+
 interface CreateVaccinoInput {
     nome: string;
     durataCopertura: number;
 }
+
+/*    * Classe di servizio per la gestione dei vaccini.
+    * Fornisce metodi per creare, leggere, aggiornare e cancellare vaccini, nonché per ottenere statistiche sui vaccini e sulla copertura vaccinale.
+    */
 
 export class VaccinoService {
 

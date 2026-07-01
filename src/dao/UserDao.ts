@@ -5,10 +5,16 @@ import { fn, col, where } from "sequelize";
 import {User, UserAttributes, UserCreationAttributes} from "../model/User";
 import { Op, literal } from "sequelize";
 
+/*
+    * UserDao è una classe che implementa l'interfaccia IDao per gestire le operazioni CRUD sugli utenti nel database.
+    * Fornisce metodi per creare, leggere, aggiornare e cancellare utenti, oltre a metodi specifici per trovare utenti per email,
+    * ottenere statistiche sulla copertura vaccinale e gestire i token degli utenti.
+    * Utilizza Sequelize come ORM per interagire con il database PostgreSQL.
+    */
+
 
 export class UserDao implements IDao<User> {
 
-    // Anche qua metodi classici ma in più ci sono i metodi che riguardano i token
 
     async create(item: UserCreationAttributes): Promise<User> {
         return await User.create(item);
@@ -49,6 +55,12 @@ export class UserDao implements IDao<User> {
     async findByEmail(email: string): Promise<User | null> {
         return await User.findOne({ where: { email } });
     }
+
+    /*
+        * Trova tutti gli utenti con copertura vaccinale scaduta in base ai filtri specificati.
+        * @param filters - i criteri di filtro per la ricerca inseriti come oggetto contenente il nome del vaccino e/o il numero minimo e massimo di giorni di copertura scaduta.
+        * @returns Una promessa che risolve un array di utenti corrispondenti ai criteri di ricerca.
+        */
 
     async findUsersWithExpiredCoverage(filters: {
         vaccino?: string;
@@ -141,6 +153,12 @@ export class UserDao implements IDao<User> {
         });
     }
 
+
+    /*
+        * Ottiene le statistiche sulla copertura vaccinale degli utenti.
+        * @returns Una promessa che risolve un oggetto contenente il numero di utenti con copertura scaduta entro 30 giorni, tra 31 e 90 giorni, e oltre 90 giorni.
+        */
+
     async getCoverageStatistics() {
 
         const utenti = await User.findAll({
@@ -219,6 +237,13 @@ export class UserDao implements IDao<User> {
         };
     }
 
+
+/*
+    * Decrementa il numero di token disponibili per un utente specifico se ne ha almeno uno disponibile, l' abbiamo implementata ma non la usiamo.
+    * @param cf - Il codice fiscale dell'utente.
+    * @returns Una promessa che risolve a true se il decremento è avvenuto con successo, altrimenti false.
+    */
+
     async decrementTokenIfAvailable(cf: string): Promise<boolean> {
         const [affectedRows] = await User.update(
             { token: literal('"token" - 1') as any },
@@ -226,6 +251,13 @@ export class UserDao implements IDao<User> {
         );
         return affectedRows > 0;
     }
+
+
+/*    * Incrementa il numero di token disponibili per un utente specifico.
+    * @param cf - Il codice fiscale dell'utente.
+    * @param amount - La quantità di token da aggiungere.
+    * @returns Una promessa che risolve l'utente aggiornato o null se l'utente non esiste.
+    */
 
     async increaseTokens(cf: string, amount: number): Promise<User | null> {
         const user = await User.findByPk(cf);
