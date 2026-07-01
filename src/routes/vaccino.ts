@@ -22,7 +22,7 @@ router.get("/statistiche/copertura", authenticate, requireRole("admin"), vaccino
 router.get("/:id", authenticate, requireRole("operator", "admin"), checkVaccinoExistsById, vaccinoController.getVaccinoById);
 
 // Update vaccino
-router.put("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, checkNomeVaccinoUnique, vaccinoController.updateVaccino);
+router.patch("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, checkNomeVaccinoUnique, vaccinoController.updateVaccino);
 
 // Cancellazione vaccino
 router.delete("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, vaccinoController.deleteVaccino);
