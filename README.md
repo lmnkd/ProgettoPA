@@ -1061,6 +1061,162 @@ Per accedere al container Docker:
 ```bash
 docker exec -it pa-web-node bash
 
+```
+# Test delle API
+
+Le risposte alle richieste avranno in comune tramite i middleware authenticate e requireRole alcune risposte in comune, per evitare di ripeterle le abbiamo riportate solo in Rotte auth.
+
+## 1. Rotte pubbliche di autenticazione (Auth)
+Verifica dei flussi di autenticazione, generazione del JWT e gestione degli errori.
+
+ POST /auth/login - Input non valido fornito 400
+ POST /auth/login - Credenziali non valide 401
+ POST /auth/login - Generazione JWT con successo 200
+
+ POST /users - Dati obbligatori mancanti 400
+ POST /users - Token mancante 401
+ POST /users - Token non valido 401
+ POST /users - Token scaduto 401
+ POST /users - Permesso negato per l'operazione richiesta 403
+ POST /users - Codice fiscale già esistente 409
+ POST /users - Account con questo indirizzo email già esistente 409
+ POST /users - Creazione utente con successo 201
+
+---
+
+## 2. Gestione amministratore (Admin)
+Test delle operazioni riservate all'amministratore.
+
+ PATCH /admin/addToken/:cf - Dati obbligatori mancanti 400
+ PATCH /admin/addToken/:cf - Dati non validi 400
+ PATCH /admin/addToken/:cf - Valori negativi non consentiti 400
+ PATCH /admin/addToken/:cf - User non trovato 404
+ PATCH /admin/addToken/:cf - Aggiornamento token con successo 200
+
+ POST /admin/code - Dati obbligatori mancanti 400
+ POST /admin/code - User non trovato 404
+ POST /admin/code - Generazione codice con successo 200
+
+---
+
+## 3. Lotti vaccino
+Test di creazione e consultazione dei lotti vaccinali.
+
+ POST /vaccini/:vaccinoId/lotti - Dati obbligatori mancanti 400
+ POST /vaccini/:vaccinoId/lotti - Valori negativi non consentiti 400
+ POST /vaccini/:vaccinoId/lotti - Data fornita non valida 400
+ POST /vaccini/:vaccinoId/lotti - Vaccino non trovato 404
+ POST /vaccini/:vaccinoId/lotti - Lotto già esistente 409
+ POST /vaccini/:vaccinoId/lotti - Creazione lotto con successo 201
+
+ GET /vaccini/:vaccinoId/lotti - Vaccino non trovato 404
+ GET /vaccini/:vaccinoId/lotti - Visualizzazione lotti con successo 200
+
+---
+
+## 4. Gestione utenti (User)
+Test di consultazione, aggiornamento e cancellazione degli utenti.
+
+ GET /coperturascaduta - Visualizzazione utenti con copertura scaduta 200
+
+ GET /:cf - User non trovato 404
+ GET /:cf - Visualizzazione utente con successo 200
+
+ GET / - Visualizzazione elenco utenti con successo 200
+
+ PATCH /:cf - User non trovato 404
+ PATCH /:cf - Aggiornamento utente con successo 200
+
+ DELETE /:cf - User non trovato 404
+ DELETE /:cf - Eliminazione utente con successo 200
+
+---
+
+## 5. Vaccinazioni
+Test di creazione, consultazione, aggiornamento, cancellazione e generazione documenti relativi alle vaccinazioni.
+
+ POST /vaccinazioni - Dati obbligatori mancanti 400
+ POST /vaccinazioni - Nessun token rimasto 401
+ POST /vaccinazioni - User non trovato 404
+ POST /vaccinazioni - Lotto non trovato 404
+ POST /vaccinazioni - Lotto scaduto in base alla data di vaccinazione 409
+ POST /vaccinazioni - Copertura vaccinale precedente non ancora scaduta 409
+ POST /vaccinazioni - Creazione vaccinazione con successo 201
+
+ GET /vaccinazioni/:id - Vaccinazione non trovata 404
+ GET /vaccinazioni/:id - Visualizzazione vaccinazione con successo 200
+
+ GET /vaccinazioni - Visualizzazione elenco vaccinazioni con successo 200
+
+ PATCH /vaccinazioni/:cf - Dati obbligatori mancanti 400
+ PATCH /vaccinazioni/:cf - Nessun token rimasto 401
+ PATCH /vaccinazioni/:cf - User non trovato 404
+ PATCH /vaccinazioni/:cf - Lotto non trovato 404
+ PATCH /vaccinazioni/:cf - Aggiornamento vaccinazione con successo 200
+
+ DELETE /vaccinazioni/:cf - Vaccinazione non trovata 404
+ DELETE /vaccinazioni/:cf - Cancellazione vaccinazione con successo 200
+
+ GET /pdf - Dati obbligatori mancanti 400
+ GET /pdf - User non trovato 404
+ GET /pdf - Generazione PDF con successo 200
+
+ GET /filtrareuseradmin - Dati obbligatori mancanti 400
+ GET /filtrareuseradmin - Data fornita non valida 400
+ GET /filtrareuseradmin - User non trovato 404
+ GET /filtrareuseradmin - Vaccino non trovato 404
+ GET /filtrareuseradmin - Visualizzazione filtrata con successo 200
+
+ GET /copertura - User non trovato 404
+ GET /copertura - Visualizzazione copertura vaccinale con successo 200
+
+ GET /copertura/pdf - Dati obbligatori mancanti 400
+ GET /copertura/pdf - User non trovato 404
+ GET /copertura/pdf - Generazione PDF copertura con successo 200
+
+ GET /copertura/code - Dati obbligatori mancanti 400
+ GET /copertura/code - Token non valido 401
+ GET /copertura/code - Visualizzazione codice copertura con successo 200
+
+---
+
+## 6. Vaccini
+Test di creazione, consultazione, aggiornamento, cancellazione e statistiche relative ai vaccini.
+
+ POST /vaccino - Dati non validi 400
+ POST /vaccino - Valori negativi non consentiti 400
+ POST /vaccino - Vaccino già esistente 409
+ POST /vaccino - Creazione vaccino con successo 201
+
+ GET /vaccini - Visualizzazione elenco vaccini con successo 200
+
+ GET /vacciniFiltrati - Dati non validi 400
+ GET /vacciniFiltrati - Data fornita non valida 400
+ GET /vacciniFiltrati - Valori negativi non consentiti 400
+ GET /vacciniFiltrati - Numeri non validi 400
+ GET /vacciniFiltrati - Vaccino non trovato 404
+ GET /vacciniFiltrati - Visualizzazione filtrata con successo 200
+
+ GET /statistiche - Visualizzazione statistiche con successo 200
+
+ GET /statistiche/copertura - Visualizzazione statistiche di copertura con successo 200
+
+ GET /:id - Vaccino non trovato 404
+ GET /:id - Visualizzazione vaccino con successo 200
+
+ PATCH /:id - Input non valido fornito 400
+ PATCH /:id - Valori negativi non consentiti 400
+ PATCH /:id - Vaccino non trovato 404
+ PATCH /:id - Aggiornamento vaccino con successo 200
+
+ DELETE /:id - Vaccino non trovato 404
+ DELETE /:id - Cancellazione vaccino con successo 200
+
+
+
+
+
+
 
 
 
