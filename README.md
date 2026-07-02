@@ -1061,6 +1061,23 @@ Per accedere al container Docker:
 ```bash
 docker exec -it pa-web-node bash
 
+```
+
+# Test API
+## Rotte auth
+
+Post /auth/login Token Jwt (200)
+Post /auth/login Input non valido fornito (400)
+Post /auth/login Credenziali non valide (401)
+
+Post /users Permesso negato per l'operazione richiesta (403)
+Post /users User creato correttamente + user (201)
+Post /users Un account con questo indirizzo email esiste già (409)
+Post /users Il codice fiscale esiste già (409)
+Post /users Dati obbligatori mancanti (400)
+Post /users Token mancante (401)
+Post /users Toekn non valido (401)
+
 
 
 
