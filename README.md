@@ -1125,9 +1125,34 @@ Post /vaccinazioni User non trovato (404)
 Post /vaccinazioni Lotto non trovato (404)
 Post /vaccinazioni Dati obbligatori mancanti (400)
 Post /vaccinazioni Vaccinazione creata correttamente (201)
+Post /vaccinazioni La copertura vaccinale da una precedente vaccinazione non è ancora scaduta (409)
+Post /vaccinazioni Nessun Token rimasto (401)
+
+Get /vaccinazioni/:id body (200)
+Get /vaccinazioni/:id Vaccinazione non trovata (404)
+
+Get /vaccinazioni body (200)
  
+Patch /vaccinazioni/:cf Nessun Token rimasto (401)
+Patch /vaccinazioni/:cf Vaccinazione aggiornata correttamente (200)
+Patch /vaccinazioni/:cf Lotto non trovato (404)
+Patch /vaccinazioni/:cf User non trovato (404)
+Patch /vaccinazioni/:cf Dati obbligatori mancanti (400)
 
+Delete /vaccinazioni/:cf Vaccinazione non trovata (404)
+Delete /vaccinazioni/:cf Vaccinazione cancellata correttamente (200)
 
+Get /pdf Dati obbligatori mancanti (400)
+Get /pdf User non trovato (404)
+Get /pdf User pdf (200)
+Get /pdf fare con user o operatore e usare altro cf
+
+Get /filtrareuseradmin  Dati obbligatori mancanti (400)
+Get /filtrareuseradmin La data fornita non è valida (400)
+Get /filtrareuseradmin User non trovato (404)
+Get /filtrareuseradmin body (200)
+
+Get /copertura body (200)
 
 
 
