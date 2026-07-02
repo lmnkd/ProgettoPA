@@ -1179,12 +1179,21 @@ Get /vacciniFiltrati Dati non validi (400)
 Get /vacciniFiltrati Non è possibile inserire numeri negativi (400)
 Get /vacciniFiltrati Numeri non validi (400)
 
+Get /statistiche body (200)
+
+Get /statistiche/copertura (200)
 
 
+Get /:id Vaccino non trovato (404)
+Get /:id body (200)
 
+Patch /:id Vaccino non trovato (404)
+Patch /:id Vaccino aggiornato correttamente + body (200)
+Patch /:id Input non valido fornito (400)
+Patch /:id Non è possibile inserire numeri negativi (400)
 
-
-
+Delete /:id Vaccino non trovato (404)
+Delete /:id Vaccino cancellato correttamente (200)
 
 
 
