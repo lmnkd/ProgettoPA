@@ -1164,3 +1164,38 @@ Get /copertura/code Token non valido (401)
 Get /copertura/code body (200)
 Get /copertura/code Dati obbligatori mancanti (400)
 
+## Route vaccino
+Post /vaccino Vaccino creato correttamente (201)
+Post /vaccino Esiste già un vaccino (409)
+Post /vaccino Non è possibile inserire numeri negativi (400)
+Post /vaccino Dati non validi (400)
+
+Get /vaccini body (200)
+
+Get /vacciniFiltrati body (200)
+Get /vacciniFiltrati Vaccino non trovato (404)
+Get /vacciniFiltrati La data fornita non è valida (400)
+Get /vacciniFiltrati Dati non validi (400)
+Get /vacciniFiltrati Non è possibile inserire numeri negativi (400)
+Get /vacciniFiltrati Numeri non validi (400)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
