@@ -1064,6 +1064,8 @@ docker exec -it pa-web-node bash
 ```
 
 # Test API
+Le risposte alle richieste avranno in comune tramite i middleware authenticate e requireRole alcune risposte in comune, per evitare di ripeterle le abbiamo riportate solo in Rotte auth.
+
 ## Rotte auth
 
 Post /auth/login Token Jwt (200)
@@ -1079,7 +1081,17 @@ Post /users Token mancante (401)
 Post /users Toekn non valido (401)
 Post /users Token scaduto (401)
 
+## Rotte admin
 
+Patch /admin/addToken/:cf User non trovato (404)
+Patch /admin/addToken/:cf Token aggiornato correttamente + body (200)
+Patch /admin/addToken/:cf Dati obbligatori mancanti (400)
+Patch /admin/addToken/:cf Non è possibile inserire numeri negativi (400)
+Patch /admin/addToken/:cf Dati non validi (400)
+
+Post /admin/code body + (200)
+Post /admin/code User non trovato (404)
+Post /admin/code Dati obbligatori mancanti (400)
 
 
 
