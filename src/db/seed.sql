@@ -1,7 +1,7 @@
 -- USERS
 INSERT INTO users (cf, name, email, password_hash, role)
 VALUES
-('RSSMRA80A01H501U','Mario Rossi','mario@email.it','$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2','admin'),
+('RSSMRA80A01H501U','Mario Rossi','mario@email.it','$2b$10$.G2pf5.vKUQpnFzX0KhQ7O5kviBGUn6SfNf8qrXgF0qq1NYBw1v7a','admin'),
 ('VRDLGI85B15F205X','Luigi Verdi','luigi@email.it','$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2','operator'),
 ('BNCMRA90C20D612Y','Maria Bianchi','maria@email.it','$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2','user'),
 ('NRAGPP88F10A944L','Giuseppe Neri','giuseppe@email.it','$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2','user'),
