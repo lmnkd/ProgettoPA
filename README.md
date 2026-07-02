@@ -1093,6 +1093,42 @@ Post /admin/code body + (200)
 Post /admin/code User non trovato (404)
 Post /admin/code Dati obbligatori mancanti (400)
 
+## Rotte Lotto vaccino 
+Post /vaccini/:vaccinoId/lotti Dati obbligatori mancanti (400)
+Post /vaccini/:vaccinoId/lotti body (201)
+Post /vaccini/:vaccinoId/lotti Vaccino non trovato (404)
+Post /vaccini/:vaccinoId/lotti Il lotto esiste già (409)
+Post /vaccini/:vaccinoId/lotti Non è possibiloe inserire numeri negativi (400)
+Post /vaccini/:vaccinoId/lotti La data fornita non è valida (400)
+
+Get /vaccini/:vaccinoId/lotti body (200)
+Get /vaccini/:vaccinoId/lotti Vaccino non trovato (404)
+
+## Rotte user
+Get /coperturascaduta body (200)
+
+Get /:cf User non trovato (404)
+Get /:cf body (200)
+
+Get / body (200)
+
+Delete /:cf User non trovato (404)
+Delete /:cf User eliminato correttamente (200)
+
+Update /:cf User non trovato (404)
+Update /:cf User aggiornato correttamente + body + (200)
+
+## Rotte vaccinazioni
+
+Post /vaccinazioni Il lotto è scaduto in base alla data di vaccinazione (409)
+Post /vaccinazioni User non trovato (404)
+Post /vaccinazioni Lotto non trovato (404)
+Post /vaccinazioni Dati obbligatori mancanti (400)
+Post /vaccinazioni Vaccinazione creata correttamente (201)
+ 
+
+
+
 
 
 
