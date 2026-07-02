@@ -11,19 +11,23 @@ export class AuthController {
 * @returns Una Promise che risolve void. In caso di successo, invia un token JWT al client. In caso di errore, invia un messaggio di errore appropriato.
 */
     async login(req: Request, res: Response): Promise<void> {
-        try {
-            const { email, password } = req.body;
-            const token = await authService.login(email, password);
-            res.status(200).json({ token });
-        } catch (error: any) {
-            console.error("Errore durante il login:", error);
-            if (error.name === AppErrorsName.INVALID_CREDENTIALS) {
-                res.status(401).json({ error: AppErrorsMessage.INVALID_CREDENTIALS });
-            } else {
-                res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-            }
+    try {
+        if (!req.body?.email || !req.body?.password) {
+            res.status(400).json({ error: AppErrorsMessage.INVALID_INPUT });
+            return;
+        }
+        const { email, password } = req.body;
+        const token = await authService.login(email, password);
+        res.status(200).json({ token });
+    } catch (error: any) {
+        console.error("Errore durante il login:", error);
+        if (error.name === AppErrorsName.INVALID_CREDENTIALS) {
+            res.status(401).json({ error: AppErrorsMessage.INVALID_CREDENTIALS });
+        } else {
+            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
+}
 }
 
 export const authController = new AuthController();

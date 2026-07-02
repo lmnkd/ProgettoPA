@@ -1,18 +1,18 @@
 import { Router } from "express";
 import { vaccinoController } from "../controller/VaccinoController";
 import { authenticate, requireRole } from "../middleware/auth.middleware";
-import { checkVaccinoExistsById, checkNomeVaccinoUnique } from "../middleware/vaccino.middleware";
+import { checkVaccinoExistsById, checkNomeVaccinoUnique, checkDurataCopertura, checkVaccinoQueryExistsById, checkCoerenzaScadenza, checkCoerenzaDisponibilita, checkDisponibilita, checkScadenza, checkCopertura } from "../middleware/vaccino.middleware";
 
 const router = Router();
 
 // Creazione vaccino (i nomi non si possono ripetere)
-router.post("/vaccino", authenticate, requireRole("admin"), checkNomeVaccinoUnique, vaccinoController.createVaccino);
+router.post("/vaccino", authenticate, requireRole("admin"), checkNomeVaccinoUnique, checkDurataCopertura, vaccinoController.createVaccino);
 
 // Leggere tutti i vaccini
 router.get("/vaccini", authenticate, requireRole("admin"), vaccinoController.getAllVaccini);
 
-// Legge tutti i vaccini, uno o più vaccini specifici, filtrabile per disponibilità/scadenza, da mettere come query string, ad esempio: /vacciniFiltrati?nomeVaccino=pfizer&disponibile=true&scaduto=false
-router.get("/vacciniFiltrati", authenticate, requireRole("admin"), vaccinoController.searchVaccini);
+// Legge tutti i vaccini, uno o più vaccini specifici, filtrabile per disponibilità/scadenza, da mettere come query string, ad esempio: vacciniFiltrati?nomeVaccino=Moderna&scadenzaMaggioreDi=2026-01-01&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500
+router.get("/vacciniFiltrati", authenticate, requireRole("admin"), checkVaccinoQueryExistsById, checkDisponibilita, checkScadenza, checkCoerenzaDisponibilita, checkCoerenzaScadenza, vaccinoController.searchVaccini);
 
 // Statistiche generali sui vaccini, ad esempio numero di vaccinazioni per vaccino, numero di lotti scaduti, ecc.
 router.get("/statistiche", authenticate, requireRole("admin"), vaccinoController.getStatistiche);
@@ -24,7 +24,7 @@ router.get("/statistiche/copertura", authenticate, requireRole("admin"), vaccino
 router.get("/:id", authenticate, requireRole("operator", "admin"), checkVaccinoExistsById, vaccinoController.getVaccinoById);
 
 // Update vaccino
-router.patch("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, checkNomeVaccinoUnique, vaccinoController.updateVaccino);
+router.patch("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, checkNomeVaccinoUnique, checkCopertura, vaccinoController.updateVaccino);
 
 // Cancellazione vaccino
 router.delete("/:id", authenticate, requireRole("admin"), checkVaccinoExistsById, vaccinoController.deleteVaccino);

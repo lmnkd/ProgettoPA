@@ -5,7 +5,6 @@ import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
 
 // Funzione per verificare se un utente con l'email fornita esiste già nel database. Se l'utente esiste, viene restituito un errore 409 (Conflict). Altrimenti, la richiesta procede al middleware successivo o al controller.
-
 export async function checkEmailNotExists(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { email } = req.body;
 
@@ -17,6 +16,24 @@ export async function checkEmailNotExists(req: Request, res: Response, next: Nex
     const existing = await userDao.findByEmail(email);
     if (existing) {
         res.status(409).json({ error: AppErrorsMessage.EMAIL_ALREADY_EXISTS });
+        return;
+    }
+
+    next();
+}
+
+export async function checkCfNotExists(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { cf } = req.body;
+
+    if (!cf) {
+        res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });
+        return;
+    }
+
+    const existing = await userDao.findById(cf);
+    if (existing) {
+        // se esiste già → errore, non possiamo creare un duplicato
+        res.status(409).json({ error: AppErrorsMessage.CF_ALREADY_EXISTS });
         return;
     }
 

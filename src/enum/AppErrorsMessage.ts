@@ -25,7 +25,7 @@ export enum AppErrorsMessage {
     VACCINO_NOT_FOUND = "Vaccino non trovato",
     NO_TOKENS_LEFT = "Nessun Token rimasto",
     NEGATIVE_NUMBER_NOT_AVAILABLE = "Non è possibiloe inserire numeri negativi",
-    VACCINAZIONE_NOT_FOUND = "VACCINAZIONE_NOT_FOUND",
+    VACCINAZIONE_NOT_FOUND = "Vaccinazione non trovata",
     VACCINAZIONE_ALREADY_EXISTS = "Una vaccinazione esiste già",
     LOTTO_NOT_FOUND = "Lotto non trovato",
     LOTTO_EXPIRED = "Il lotto vaccino è scaduto e non può essere utilizzato.",
@@ -34,6 +34,10 @@ export enum AppErrorsMessage {
     INVALID_DATE = "La data fornita non è valida.",
     VACCINE_EXPIRED = "Il lotto è scaduto in relazione alla data di vaccinazione.",
     COVERAGE_NOT_EXPIRED = "La copertura vaccinale da una precedente vaccinazione non è ancora scaduta.",
-    INVALID_DATA = "INVALID_DATA",
-    LOTTO_ALREADY_EXISTS = "LOTTO_ALREADY_EXISTS"
+    INVALID_DATA = "Dati non validi.",
+    LOTTO_ALREADY_EXISTS = "Il lotto esiste già.",
+    USER_ALREADY_EXISTS = "L'utente esiste già.",
+    CF_ALREADY_EXISTS = "Il codice fiscale esiste già",
+    DISPONIBILITA_VACCINO_INSUFFICIENTE = "Vaccino nondisponibile",
+    INVALID_NUMBER = "Numero non valido",
 }       

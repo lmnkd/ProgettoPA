@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { authController } from "../controller/AuthController";
 import { userController } from "../controller/UserController";
-import { checkEmailNotExists } from "../middleware/user.middleware";
-import { requireRole } from "../middleware/auth.middleware";
+import { checkCfNotExists, checkEmailNotExists } from "../middleware/user.middleware";
+import { authenticate, requireRole } from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -12,5 +12,5 @@ router.post("/auth/login", authController.login);
 
 // Rotta per creazione user o operator
 // routes/auth.ts
-router.post("/users", checkEmailNotExists, requireRole("admin"), userController.createUser);
+router.post("/users", authenticate, requireRole("admin"), checkCfNotExists, checkEmailNotExists,  userController.createUser);
 export default router;

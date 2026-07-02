@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { lottoVaccinoController } from "../controller/LottoVaccinoController";
 import { authenticate, requireRole } from "../middleware/auth.middleware";
-import { checkVaccinoExists, checkCodiceLottoUnique } from "../middleware/lottovaccino.middleware";
+import { checkVaccinoExists, checkCodiceLottoUnique, checkQuantitaPositiva, checkDateCoerenti } from "../middleware/lottovaccino.middleware";
 
 const router = Router();
 
@@ -12,6 +12,8 @@ router.post(
     requireRole("admin"),
     checkVaccinoExists,
     checkCodiceLottoUnique,
+    checkQuantitaPositiva,
+    checkDateCoerenti,
     lottoVaccinoController.createLotto
 );
 

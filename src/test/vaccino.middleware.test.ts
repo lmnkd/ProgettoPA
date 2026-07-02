@@ -1,10 +1,11 @@
-import { checkVaccinoExistsById } from "../middleware/vaccino.middleware";
+import { checkVaccinoExistsById, checkNomeVaccinoExists } from "../middleware/vaccino.middleware";
 import { vaccinoDao } from "../dao/VaccinoDao";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
 jest.mock("../dao/VaccinoDao", () => ({
     vaccinoDao: {
-        findById: jest.fn()
+        findById: jest.fn(),
+        findByNome: jest.fn()
     }
 }));
 
@@ -53,6 +54,28 @@ describe("checkVaccinoExistsById", () => {
     expect(next).not.toHaveBeenCalled();
 });
 
-    
+    test("se la query contiene più nomi li divide e chiama next se tutti esistono", async () => {
+        (vaccinoDao.findByNome as jest.Mock)
+            .mockResolvedValueOnce({ id: 1, nome: "Pfizer" })
+            .mockResolvedValueOnce({ id: 2, nome: "Moderna" });
+
+        const req: any = {
+            query: { nomeVaccino: "Pfizer, Moderna" }
+        };
+
+        const res: any = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+
+        const next = jest.fn();
+
+        await checkNomeVaccinoExists(req, res, next);
+
+        expect(vaccinoDao.findByNome).toHaveBeenCalledTimes(2);
+        expect(next).toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
+    });
+
 });
 

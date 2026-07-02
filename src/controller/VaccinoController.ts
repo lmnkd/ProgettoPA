@@ -72,12 +72,8 @@ export class VaccinoController {
         */
 
     async searchVaccini(req: Request, res: Response): Promise<void> {
-        try {
             const vaccini = await vaccinoService.searchVaccini(req.query);
             res.status(200).json(vaccini);
-        } catch {
-            res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
-        }
     }
 
     /*

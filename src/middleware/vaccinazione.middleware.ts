@@ -96,3 +96,60 @@ export async function checkCoverageExpired(req: Request, res: Response, next: Ne
     (req as any).vaccino = vaccino;
     next();
 }
+
+// middleware/vaccinazione.middleware.ts — aggiunta
+export async function checkFiltriVaccinazione(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { dataGt, dataLt, dataMin, dataMax } = req.query;
+
+    // valida dataGt se presente
+    if (dataGt && isNaN(new Date(dataGt as string).getTime())) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
+    // valida dataLt se presente
+    if (dataLt && isNaN(new Date(dataLt as string).getTime())) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
+    // valida dataMin se presente
+    if (dataMin && isNaN(new Date(dataMin as string).getTime())) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
+    // valida dataMax se presente
+    if (dataMax && isNaN(new Date(dataMax as string).getTime())) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
+    // dataMin e dataMax devono essere usati insieme
+    if ((dataMin && !dataMax) || (!dataMin && dataMax)) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATA });
+        return;
+    }
+
+    // se entrambi presenti, dataMin deve essere prima di dataMax
+    if (dataMin && dataMax) {
+        if (new Date(dataMin as string) >= new Date(dataMax as string)) {
+            res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+            return;
+        }
+    }
+
+    // dataGt e dataLt non possono essere usati insieme al range dataMin/dataMax
+    if ((dataGt || dataLt) && (dataMin || dataMax)) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATA });
+        return;
+    }
+
+    // dataGt e dataLt non possono essere usati insieme tra loro
+    if (dataGt && dataLt) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATA });
+        return;
+    }
+
+    next();
+}

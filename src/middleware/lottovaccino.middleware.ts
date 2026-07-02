@@ -37,5 +37,58 @@ export async function checkCodiceLottoUnique(req: Request, res: Response, next: 
         return;
     }
 
+
+
+
+    
+    next();
+}
+// 3. Verifica che la quantità disponibile non sia negativa
+export async function checkQuantitaPositiva(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const rawQuantita = req.body?.quantitaDisponibile;
+
+    if (rawQuantita === undefined || rawQuantita === null) {
+        res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });
+        return;
+    }
+
+    const quantita = Number(rawQuantita);
+
+    if (isNaN(quantita)) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATA });
+        return;
+    }
+
+    if (quantita < 0) {
+        res.status(400).json({ error: AppErrorsMessage.NEGATIVE_NUMBER_NOT_AVAILABLE });
+        return;
+    }
+
+    req.body.quantitaDisponibile = quantita;
+    next();
+}
+
+// 4. Verifica coerenza date: dataConsegna deve essere prima di dataScadenza
+export async function checkDateCoerenti(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { dataConsegna, dataScadenza } = req.body;
+
+    if (!dataConsegna || !dataScadenza) {
+        res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });
+        return;
+    }
+
+    const consegna = new Date(dataConsegna);
+    const scadenza = new Date(dataScadenza);
+
+    if (isNaN(consegna.getTime()) || isNaN(scadenza.getTime())) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
+    if (consegna >= scadenza) {
+        res.status(400).json({ error: AppErrorsMessage.INVALID_DATE });
+        return;
+    }
+
     next();
 }
