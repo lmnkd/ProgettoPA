@@ -961,56 +961,6 @@ Content-Type: application/json
 
 ## Diagrammi di sequenza
 
-```mermaid
-Operatore → AuthMiddleware : POST /vaccinazioni {Bearer JWT, cf, lotto_id, data_vaccinazione}
-AuthMiddleware → AuthMiddleware : jwt.verify(token, publicKey, RS256)
-alt [token mancante/non valido/scaduto]
-    AuthMiddleware --> Operatore : 401 (MISSING/INVALID/TOKEN_EXPIRED)
-else [token valido]
-    AuthMiddleware → AuthMiddleware : requireRole("operator")
-    alt [ruolo non autorizzato]
-        AuthMiddleware --> Operatore : 403 PERMISSION_DENIED
-    else [autorizzato]
-        AuthMiddleware → VaccinazioneMiddleware : next()
-        VaccinazioneMiddleware → UserDao : findById(cf)
-        UserDao → Database : SELECT * FROM users WHERE cf=...
-        Database --> UserDao : row | null
-        alt [utente non trovato]
-            VaccinazioneMiddleware --> Operatore : 404 USER_NOT_FOUND
-        else [utente trovato]
-            VaccinazioneMiddleware → LottoVaccinoDao : findById(lotto_id)
-            LottoVaccinoDao → Database : SELECT * FROM lotti_vaccino WHERE id=...
-            Database --> LottoVaccinoDao : row | null
-            alt [lotto non trovato]
-                VaccinazioneMiddleware --> Operatore : 404 LOTTO_NOT_FOUND
-            else [lotto trovato]
-                VaccinazioneMiddleware → VaccinazioneMiddleware : data_vaccinazione > lotto.dataScadenza ?
-                alt [vaccino scaduto]
-                    VaccinazioneMiddleware --> Operatore : 409 VACCINE_EXPIRED
-                else [non scaduto]
-                    VaccinazioneMiddleware → VaccinoDao : findById(lotto.vaccinoId)
-                    VaccinazioneMiddleware → VaccinazioneDao : findLastByUserAndVaccino(cf, vaccinoId)
-                    VaccinazioneDao → Database : SELECT ... ORDER BY data_vaccinazione DESC LIMIT 1
-                    Database --> VaccinazioneDao : ultimaVaccinazione | null
-                    alt [copertura non scaduta — vaccinazione anticipata]
-                        VaccinazioneMiddleware --> Operatore : 409 COVERAGE_NOT_EXPIRED
-                    else [copertura scaduta / prima dose]
-                        VaccinazioneMiddleware → TokenMiddleware : next()
-                        TokenMiddleware → UserDao : decrementTokenIfAvailable(operatore.cf)
-                        UserDao → Database : UPDATE users SET token=token-1 WHERE cf=... AND token>0
-                        Database --> UserDao : rowCount
-                        alt [token esauriti]
-                            TokenMiddleware --> Operatore : 401 NO_TOKENS_LEFT
-                        else [token disponibili]
-                            TokenMiddleware → VaccinazioneController : next()
-                            VaccinazioneController → VaccinazioneService : createVaccinazione({user_cf, lotto_id, vaccino_id, data_vaccinazione})
-                            VaccinazioneService → VaccinazioneDao : create(...)
-                            VaccinazioneDao → Database : INSERT INTO vaccinazioni (...)
-                            Database --> VaccinazioneDao : record creato
-                            VaccinazioneDao --> VaccinazioneService : vaccinazione
-                            VaccinazioneService --> VaccinazioneController : vaccinazione
-                            VaccinazioneController --> Operatore : 201 Created {message, vaccinazione}
-```
 
 
 
