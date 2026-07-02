@@ -1151,10 +1151,16 @@ Get /filtrareuseradmin  Dati obbligatori mancanti (400)
 Get /filtrareuseradmin La data fornita non è valida (400)
 Get /filtrareuseradmin User non trovato (404)
 Get /filtrareuseradmin body (200)
+Get /filtrareuseradmin Vaccino non trovato (404)
 
 Get /copertura body (200)
+Get /copertura User non trovato (404)
 
+Get /copertura/pdf User non trovato (404)
+Get /copertura/pdf Dati obbligatori mancanti (400)
+Get /copertura/pdf pdf (200)
 
-
-
+Get /copertura/code Token non valido (401)
+Get /copertura/code body (200)
+Get /copertura/code Dati obbligatori mancanti (400)
 
