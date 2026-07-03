@@ -1233,8 +1233,8 @@ Content-Type: application/json
 
 ## GET /coperturascaduta 
 
-Rotta utilizzata per vedere gli user con una copertura scaduta.
-Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+Rotta utilizzata per vedere gli user con una copertura scaduta, specificando i giorni di scadenza (?giorniMin=10&giorniMax=30) (?vaccino=Pfizer&giorniMin=0)
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user opportunamente filtrate.
 ---
 
 ### Richiesta
@@ -1318,72 +1318,47 @@ openssl rsa -in keys/private.pem -pubout -out keys/public.pem
 docker compose up --build
 ```
 
-# Test del progetto da fare per ora ho solo un esempio incollato per prendere spunto
+# Test del progetto
 
 Il progetto include test unitari sviluppati con **Jest** per verificare il corretto funzionamento dei principali middleware dell'applicazione.
 
 ---
 
-## Middleware di Autenticazione
+## Middleware dei Token
 
-Il middleware controlla la presenza e la validità del token JWT associato alla richiesta HTTP.
+Il middleware `correctAmount` verifica la presenza e la validità del campo `amount` nel body della richiesta.
 
-I casi di test implementati sono i seguenti:
+### Casi di test implementati:
 
-1. **Token assente**  
-   Il sistema genera l’errore `AUTH_TOKEN_NOTFOUND`.
+- **Amount mancante**  
+  Se il campo `amount` non è presente nel body della richiesta, il sistema restituisce un errore HTTP 400 con `MISSING_DATA` e non chiama `next()`.
 
-2. **Token scaduto**  
-   Il sistema genera l’errore `JWT_EXPIRED`.
-
-3. **Token non valido**  
-   Il sistema genera l’errore `INVALID_JWT`.
-
-4. **Token valido**  
-   Il middleware associa correttamente il payload JWT all’oggetto `Request` e il sistema richiama il middleware successivo tramite `next()`.
+- **Amount valido**  
+  Se il campo `amount` è presente e valido, il middleware consente la prosecuzione della richiesta e chiama `next()`.
 
 ---
 
-## Middleware di Autorizzazione
+## Middleware dei Vaccini
 
-Il middleware verifica che l’utente autenticato possieda un ruolo autorizzato ad accedere alla risorsa richiesta.
+Il middleware verifica la corretta gestione delle richieste relative ai vaccini.
 
-I casi di test implementati sono i seguenti:
+### Casi di test implementati:
 
-1. **Ruolo non autorizzato**  
-   Il sistema genera l’errore `UNAUTHORIZED_JWT`.
+- **Vaccino esistente**  
+  Se il vaccino esiste nel database, il middleware chiama `next()` permettendo la prosecuzione della richiesta.
 
-2. **Ruolo non consentito per la rotta**  
-   Il sistema genera l’errore `UNAUTHORIZED_JWT`.
+- **Vaccini con più nomi**  
+  Se la query contiene più nomi separati da virgola, il middleware li divide, esegue una ricerca per ciascun nome e chiama `next()` solo se tutti esistono.
 
-3. **Ruolo autorizzato**  
-   Il middleware richiama correttamente la funzione `next()` e consente la prosecuzione della richiesta.
-
----
-
-## Middleware di Gestione Errori
-
-Il middleware centralizza la gestione delle eccezioni applicative e le trasforma in risposte HTTP strutturate.
-
-I casi di test implementati sono i seguenti:
-
-1. **Errore HTTP personalizzato**  
-   Il sistema restituisce lo status code corretto come ad esempio `403 Forbidden`.
-
-2. **Gestione della risposta di errore**  
-   Il middleware restituisce una risposta JSON coerente con l’errore ricevuto.
-
-3. **Errore generico**  
-   Il sistema converte gli errori non gestiti in una risposta `500 Internal Server Error`.
-
+- **Vaccino non esistente**  
+  Se uno dei vaccini non esiste, il sistema restituisce un errore HTTP 404 con `VACCINO_NOT_FOUND`.
 ---
 
 ## Esecuzione dei test
 
-Per accedere al container Docker:
+```
 
-```bash
-docker exec -it pa-web-node bash
+npm run test
 
 ```
 # Test delle API
