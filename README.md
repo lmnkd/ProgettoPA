@@ -37,7 +37,8 @@ Le tipologie di utenza previste sono:
 
 - **user**: può consultare i propri dati vaccinali;
 - **operator**: può registrare vaccinazioni e gestire vaccini e dosi;
-- un utente può avere più ruoli contemporaneamente.
+- **both**: un utente può avere più ruoli contemporaneamente.
+- **admin**: un utente che ha accesso a tutte le funzioni.
 
 Il JWT contiene:
 - metadati dell’utente
@@ -94,8 +95,8 @@ Il progetto è sviluppato in **TypeScript** e utilizza:
 - **Express** → framework per API REST
 - **Sequelize** → ORM per database relazionale
 - **Redis** → gestione token temporanei e cache
-- **PDFKit (o simili)** → generazione PDF
-- **RDBMS** → PostgreSQL / MySQL / SQLite (a scelta)
+- **PDFKit** → generazione PDF
+- **RDBMS** → PostgreSQL
 
 ---
 
@@ -135,66 +136,58 @@ Questo è un pattern architetturale specifico dell'ecosistema Express/Node, dist
 
 # API Reference
 
+Seguono le API implementate.
 
-## 📡 API Summary
-
-Molte rotte avranno rotte apparentemente simili, in realtà poi con il router gestiamo l'api in modo da evitare conflitti. da modificare
-
-## 📡 API Reference
+## API Summary
 
 | Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
 |------|------------|-------------------|-------------|
 | /auth/login | POST | Utente non autenticato | Rotta di autenticazione |
-| /users | POST | Utente non autenticato | Crea un nuovo utente specificando il ruolo |
-| /admin/addToken/:cf | GET | Admin | Ricarica token utente tramite codice fiscale |
+| /users | POST | Admin | Crea un nuovo utente specificando il ruolo |
+| /admin/addToken/:cf | PATCH | Admin | Ricarica token utente tramite codice fiscale |
 | /admin/code | POST | Admin | Genera codice temporaneo Redis |
-| /creavaccino | POST | Operator | Crea una nuova tipologia di vaccino |
-| /readAllVaccini | GET | Operator | Restituisce tutti i vaccini |
-| /vaccini | GET | User, Operator | Ricerca vaccini con filtri |
-| /statistiche | GET | Operator | Statistiche sui vaccini |
-| /statistiche/copertura | GET | Operator | Statistiche copertura vaccinale |
-| /coperturascaduta | GET | Operator | Coperture scadute |
-| /:id | GET | Operator | Restituisce vaccino per ID |
-| /:nome | GET | Operator | Restituisce vaccino per nome |
-| /:id | PUT | Operator | Aggiorna vaccino |
-| /:id | DELETE | Operator | Elimina vaccino |
-| /:cf | GET | Operator | Dati utente per CF |
-| /:cf | PUT | Operator | Aggiorna utente |
-| /:cf | DELETE | Operator | Elimina utente |
-| /vaccinazioni | POST | Operator | Registra vaccinazione |
-| /vaccinazioni | GET | Operator | Lista vaccinazioni |
-| /vaccinazioni/:id | GET | Operator | Dettaglio vaccinazione |
-| /vaccinazioni/:id | PUT | Operator | Aggiorna vaccinazione |
-| /vaccinazioni/:id | DELETE | Operator | Elimina vaccinazione |
-| /pdf | User, Admin | GET | PDF storico vaccinazioni |
-| /filtrareuseradmin | Admin | GET | Filtra vaccinazioni |
-| /copertura | User, Admin | GET | Report copertura vaccinale |
-| /copertura/pdf | User, Admin | GET | PDF copertura |
-| /copertura/code | User, Admin | GET | Accesso senza JWT |
+| /vaccini/:vaccinoId/lotti | POST | Admin | Crea un nuovo lotto vaccino |
+| /vaccini/:vaccinoId/lotti | GET | Operator, Admin | Ottiene lotti di un dato vaccino |
+| /coperturascaduta | GET | Operator,  Admin | Ottiene le coperture vaccinali scadute |
+| /:cf | GET | Operator, Admin | Ottiene un utente dato un certo cf |
+| / | GET | Admin | Ottiene tutti gli utenti |
+| /:cf | DELETE | Admin | Cancella un utente dato un certo cf |
+| /:cf | PATCH | Admin | Aggiorna un utente dato un certo cf |
+| /vaccinazioni/:id | GET | Operator, Admin | Ottiene una singola vaccinazione dato un certo id |
+| /vaccinazioni | GET | Admin | Ottiene tutte le vaccinazioni |
+| /vaccinazioni/:id | PATCH | Operator, Admin| Aggiorna una vaccinazione dato un certo id |
+| /vaccinazioni/:id | DELETE | Operator,  Admin | Cancella una vaccinazione dato un certo id |
+| /pdf | GET | User, Admin | Ottieni un pdf specificando per admin nella query cf o altrimenti per user proprio cf|
+| /filtrareuseradmin | GET | Admin, User | Ottiene vaccinazioni filtrare tramite cf nella query di un dato utente o di se stesso per user |
+| /copertura | GET | Admin, User | Ottiene le coperture di un dato user, user solo le proprie|
+| /copertura/pdf | GET | Admin, User | Ottiene le coperture di un dato user, user solo le proprie |
+| /copertura/code | GET | Admin | Ottiene le coperture di un user tramite codice redis |
+| /vaccino | POST | Admin | Crea un vaccino |
+| /vaccini | GET | Admin | Legge tutti i vaccini |
+| /vacciniFIltrati | GET | Admin | Legge i vaccini filtrandoli tramite query |
+| /statistiche | GET | Admin | Ottiene le statistiche generali sui vaccini |
+| /statistuche/copertura | GET | Admin | Ottiene statistiche sulle coperture |
+| /:id | GET | Admin, Operator | Ottiene un singolo vaccino specificando un id |
+| /:id | PATCH | Admin | Aggiorna un vaccino specificando un id |
+| /:id | DELETE | Admin | Cancella un vaccino specificando un id |
 
-# 📡 API Reference Detail
+
+# API Reference Detail
 
 Di seguito sono riportate le rotte HTTP con la relativa descrizione e struttura delle richieste e risposte.
 
 ---
 
-## 🔐 POST /api/auth/login
+## POST /api/auth/login
 
 Rotta utilizzata per autenticare un utente.  
 L’utente deve fornire email e password nel body della richiesta HTTP.
-
-La password deve rispettare i seguenti criteri:
-- almeno 8 caratteri
-- almeno una lettera minuscola
-- almeno una lettera maiuscola
-- almeno un numero
-- almeno un carattere speciale
 
 Se le credenziali sono corrette viene restituito un token JWT utilizzato per le richieste successive.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 POST /api/auth/login HTTP/1.1
@@ -213,18 +206,16 @@ Content-Type: application/json
   "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZiI6Ik5SQUdQUDkyRTE4QTY2MlUiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3ODI0ODIzNDEsImV4cCI6MTc4MjQ4NTk0MX0...."
 }
 ```
-## 🔐 POST /users
+## POST /users
 
 Rotta utilizzata per creare un utente.  
 L’utente deve fornire cf, nome, email, password e ruolo nel body della richiesta HTTP.
-
-
 
 Se i dati sono corretti viene restituito un json con i parametri indicati nel body e la conferma del processo di creazione dell'utente.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 POST /users HTTP/1.1
@@ -256,22 +247,21 @@ Content-Type: application/json
     }
 }
 ```
-## 🔐 /admin/addToken/:cf
+## PATCH /admin/addToken/:cf
 
 Rotta utilizzata per aggiungere dei token ad un utente dato un certo cf.  
 Nella rotta l'admin dovrà aggiungere alla fine il cf dell'utente che vuole venga ricaricato.
 Nel body dovrà precisare la quantità di token da dare allo stesso.
 Il body non può avere come numero di crediti un numero negativo.
 
-
 Se i dati sono corretti viene restituito un json con il messaggio che informa del fatto che i token sono stati aggiornati e tutte le specifiche dell'user a cui l'aggiunta era rivolta con il numero di token corretti.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /admin/addToken/:cf HTTP/1.1
+PATCH /admin/addToken/:cf HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -298,14 +288,14 @@ Content-Type: application/json
 }
 ```
 
-## 🔐 /admin/code
+## POST /admin/code
 
 Rotta utilizzata per creare un code Redis dato un cf che metteremo nel body.
 Se la richiesta è andata a buon fine apparirà un json con il code di Redis e il cf a esso collegato con il tempo entro il quale scadrà.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 POST /admin/code HTTP/1.1
@@ -326,17 +316,17 @@ Content-Type: application/json
     "expiresIn": 600
 }
 ```
-## 🔐 /creavaccino
+## POST /vaccino
 
 Rotta utilizzata per creare un vaccino dato il nome e la durata della copertura che metteremo nel body.
 Se la richiesta è andata a buon fine apparirà un json con il messaggio di avvenuta creazione e tutti i dati del vaccino appena creato.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-POST /creavaccino HTTP/1.1
+POST /vaccino HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -361,17 +351,17 @@ Content-Type: application/json
 }
 ```
 
-## 🔐 /readAllVaccini
+## GET /vaccini
 
 Rotta utilizzata per visualizzare tutti i vaccini, il body è vuoto.
 Se la richiesta è andata a buon fine avremo un array Json con tutti i vaccini presenti nel db.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /readAllVaccini HTTP/1.1
+GET /vaccini HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -418,7 +408,7 @@ Content-Type: application/json
 ]
 ```
 
-## 🔐 /vaccini
+## GET /vacciniFiltrati
 
 Rotta utilizzata per visualizzare i vaccini con la possibilità di filtrarli come richiesto nelle specifiche del progetto.
 Più precisamente nella richiesta http è possibile filtrare attraverso:
@@ -436,10 +426,10 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json c
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /vaccini HTTP/1.1
+GET /vacciniFiltrati HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -462,7 +452,7 @@ Content-Type: application/json
 
 
 
-## 🔐 /statistiche
+## GET /statistiche
 
 Rotta utilizzata per visualizzare le statistiche dei vaccini come richiesto nelle specifiche del progetto.
 Le statistiche avranno:
@@ -473,7 +463,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json c
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /statistiche HTTP/1.1
@@ -543,7 +533,7 @@ Content-Type: application/json
     ]
 }
 ```
-## 🔐 /statistiche/copertura
+## GET /statistiche/copertura
 
 Rotta utilizzata per visualizzare le statistiche dele coperture come richiesto nelle specifiche del progetto.
 Le statistiche avranno:
@@ -555,7 +545,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json c
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /statistiche/copertura HTTP/1.1
@@ -573,15 +563,15 @@ Content-Type: application/json
 }
 ```
 
-## 🔐 /:id
+## GET /:id
 
-Rotta utilizzata per visualizzare un vaccinoi dato un id che inseriremo dentro la richiesta
+Rotta utilizzata per visualizzare un vaccino dato un id che inseriremo dentro la richiesta
 
 Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con il vaccino richiesto.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /1 HTTP/1.1
@@ -600,35 +590,8 @@ Content-Type: application/json
     "updatedAt": "2026-06-29T13:37:09.495Z"
 }
 ```
-## 🔐 /:nome
 
-Rotta utilizzata per visualizzare un vaccinoi dato un nome che inseriremo dentro la richiesta
-
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con il vaccino richiesto.
-
----
-
-### 📥 Richiesta
-
-```http
-GET /pfizer HTTP/1.1
-Content-Type: application/json
-```
-### Body
-```
-```
-### Richiesta con successo
-```
-{
-    "id": 1,
-    "nome": "Pfizer",
-    "durataCopertura": 180,
-    "createdAt": "2026-06-29T13:37:09.495Z",
-    "updatedAt": "2026-06-29T13:37:09.495Z"
-}
-```
-
-## 🔐 /:id
+##  PATCH /:id
 
 Rotta utilizzata per modificare un vaccino dato un id che inseriremo dentro la richiesta.
 
@@ -636,10 +599,10 @@ Il body ha i dati da cambiare al suo interno mentre se la richiesta ha successo 
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-PUT /1 HTTP/1.1
+PATCH /1 HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -665,7 +628,7 @@ Content-Type: application/json
 ```
 
 
-## 🔐 /:id
+## DELETE /:id
 
 Rotta utilizzata per eliminare un vaccino dato un id che inseriremo dentro la richiesta.
 
@@ -673,7 +636,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json c
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 DELETE /1 HTTP/1.1
@@ -688,18 +651,19 @@ Content-Type: application/json
     "message": "Vaccino cancellato correttamente"
 }
 ```
-## 🔐 /:cf da fare per update delete e tutto il resto
 
-Rotta utilizzata per vedere gli utenti con la copertura scaduta.
+## GET /:cf 
 
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i nomi di tutti gli utenti con la copertura scaduta.
+Rotta utilizzata per ottenere i dati di un user tramite cf.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i dati dell'utente cercarto.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /coperturascaduta HTTP/1.1
+GET /BNCLCU81B10F205B HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -708,22 +672,81 @@ Content-Type: application/json
 ### Richiesta con successo
 ```
 {
-    "message": "Vaccino cancellato correttamente"
+    "cf": "BNCLCU81B10F205B",
+    "name": "Luca Bianchi",
+    "email": "luca@email.it",
+    "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+    "token": 1,
+    "role": "user",
+    "createdAt": "2026-07-03T08:11:14.133Z",
+    "updatedAt": "2026-07-03T08:11:14.133Z"
 }
 ```
 
-## 🔐 /vaccinazioni/:id da fare per update delete e tutto il resto e all
+## GET / 
 
-Rotta utilizzata per vedere gli utenti con la copertura scaduta.
+Rotta utilizzata per ottenere i dati di tutti gli user.
 
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i nomi di tutti gli utenti con la copertura scaduta.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i dati di tutti gli utenti cercarti.
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /coperturascaduta HTTP/1.1
+GET / HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+[
+    {
+        "cf": "RSSMRA80A01H501U",
+        "name": "Mario Rossi",
+        "email": "mario@email.it",
+        "passwordHash": "$2b$10$.G2pf5.vKUQpnFzX0KhQ7O5kviBGUn6SfNf8qrXgF0qq1NYBw1v7a",
+        "token": 1,
+        "role": "admin",
+        "createdAt": "2026-07-03T08:11:14.133Z",
+        "updatedAt": "2026-07-03T08:11:14.133Z"
+    },
+    {
+        "cf": "VRDLGI85B15F205X",
+        "name": "Luigi Verdi",
+        "email": "luigi@email.it",
+        "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+        "token": 1,
+        "role": "operator",
+        "createdAt": "2026-07-03T08:11:14.133Z",
+        "updatedAt": "2026-07-03T08:11:14.133Z"
+    },
+    {
+        "cf": "BNCMRA90C20D612Y",
+        "name": "Maria Bianchi",
+        "email": "maria@email.it",
+        "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+        "token": 1,
+        "role": "user",
+        "createdAt": "2026-07-03T08:11:14.133Z",
+        "updatedAt": "2026-07-03T08:11:14.133Z"
+    }
+]
+```
+## DELETE /:cf
+
+Rotta utilizzata per cancellare i dati di un user.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un messaggio che conferma l'avvenuta cancellazione dell'utente.
+
+---
+
+### Richiesta
+
+```http
+DELETE /BNCLCU81B10F205B HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -732,11 +755,177 @@ Content-Type: application/json
 ### Richiesta con successo
 ```
 {
-    "message": "Vaccino cancellato correttamente"
+    "message": "User eliminato correttamente."
+}
+
+```
+
+## PATCH /:cf
+
+Rotta utilizzata per aggiornare i dati di un user.
+
+Il body contiene i dati da aggiornare mentre se la richiesta ha successo il risultato sarà un json che conferma l'avvenuta aggiornamento dell'utente e ne mostra i risultati.
+
+---
+
+### Richiesta
+
+```http
+PATCH /VRDGNN87C20H501C HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "cf": "VRDGNN87C20H501C",
+  "name": "Giuseppe neriiiiiii",
+  "role": "admin"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "User aggiornato correttamente.",
+    "user": {
+        "cf": "VRDGNN87C20H501C",
+        "name": "Giuseppe neriiiiiii",
+        "email": "giovanni@email.it",
+        "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+        "token": 1,
+        "role": "admin",
+        "createdAt": "2026-07-03T08:11:14.133Z",
+        "updatedAt": "2026-07-03T09:20:40.022Z"
+    }
 }
 ```
 
-## 🔐 /pdf 
+## GET /vaccinazioni/:id 
+Rotta utilizzata per vedere una vaccinazione dato un certo id.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione.
+
+---
+
+### Richiesta
+
+```http
+GET /vaccinaizoni/1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+    "id": 2,
+    "userCf": "USR03CFTEST03",
+    "vaccinoId": 1,
+    "lottoId": 1,
+    "dataVaccinazione": "2022-01-08T00:00:00.000Z",
+    "createdAt": "2026-07-03T08:11:14.143Z",
+    "updatedAt": "2026-07-03T08:11:14.143Z"
+}
+```
+
+## POST /vaccinazioni
+Rotta utilizzata per creare una vaccinazione.
+
+Il body contiene le informazioni per creare la vaccinazione mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione e il messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+POST /vaccinaizoni HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "cf": "RSSMRA80A01H501U",
+  "lotto_id": 16,
+  "data_vaccinazione": "2026-01-04"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccinazione creata correttamente",
+    "vaccinazione": {
+        "id": 279,
+        "userCf": "RSSMRA80A01H501U",
+        "lottoId": 16,
+        "vaccinoId": 2,
+        "dataVaccinazione": "2026-01-04T00:00:00.000Z",
+        "updatedAt": "2026-07-03T09:24:47.024Z",
+        "createdAt": "2026-07-03T09:24:47.024Z"
+    }
+}
+```
+## PATCH /vaccinazioni/:id
+Rotta utilizzata per aggiornare una vaccinazione dato un certo id.
+
+Il body contiene le informazioni per aggiornare la vaccinazione mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione e il messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+PATCH /vaccinazioni HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "userCf": "RSSMRA80A01H501U",
+  "lottoId": 1,
+  "dataVaccinazione": "2027-01-04"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccizazione aggiornata correttamente",
+    "vaccinazione": {
+        "id": 2,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccinoId": 1,
+        "lottoId": 1,
+        "dataVaccinazione": "2027-01-04T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.366Z",
+        "updatedAt": "2026-07-03T09:56:14.759Z"
+    }
+}
+```
+
+## DELETE /vaccinazioni/:id
+Rotta utilizzata per cancellare una vaccinazione dato un certo id.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+DELETE /vaccinaizoni/1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccinazione cancellatta correttamente"
+}
+```
+
+## GET /pdf 
 
 Rotta utilizzata per vedere lo storico delle coperture tramite pdf.
 l'admin potrà richiedere tramite richiesta http specificando il cf lo sotricodi un dato user, un user invece può vedere solo le sue.
@@ -744,7 +933,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf co
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /pdf HTTP/1.1
@@ -757,7 +946,7 @@ Content-Type: application/json
 ```
 mettere immagine
 ```
-## 🔐 /filtrareuseradmin
+## GET /filtrareuseradmin
 
 Rotta utilizzata per vedere le vaccinazioni filtrare utilizzabile solo dall'admin.
 L'admin potrà filtrare attraverso:
@@ -768,7 +957,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json c
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /filtrareuseradmin HTTP/1.1
@@ -799,7 +988,7 @@ Content-Type: application/json
 ]
 ```
 
-## 🔐 /copertura
+## GET /copertura
 
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture.
 L'admin potrà vederle di tutti gli user, gli user solo di loro stessi.
@@ -809,7 +998,7 @@ Nell'esempio abbiamo utilizzato admin per vedere tutte le vaccinazioni e copertu
 
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /copertura HTTP/1.1
@@ -852,14 +1041,14 @@ Content-Type: application/json
 ```
 
 
-## 🔐 /copertura/pdf
+## GET /copertura/pdf
 
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
 Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
 Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /copertura/pdf HTTP/1.1
@@ -873,14 +1062,14 @@ Content-Type: application/json
 immagine
 ```
 
-## 🔐 /copertura/code
+## GET /copertura/code
 
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
 Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
 ?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
 GET /copertura/code HTTP/1.1
@@ -904,57 +1093,193 @@ Content-Type: application/json
 ]
 ```
 
-## 🔐 /copertura/pdf
+## POST /vaccini/:vaccinoId/lotti
 
-Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
-Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+Rotta utilizzata per creare un lotto dato un certo vaccino.
+Il body contiene le informazioni del lotto  mentre se la richiesta ha successo il risultato un messaggio di avvenuta creazione e il body.
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /copertura/pdf HTTP/1.1
+POST /vaccini/1/lotti HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
 ```
+{
+    "codiceLotto": "PFZ-2026-001",
+    "quantitaDisponibile": 500,
+    "dataConsegna": "2026-01-10",
+    "dataScadenza": "2027-01-10"
+}
+
 ```
 ### Richiesta con successo
 ```
-immagine
+{
+    "id": 41,
+    "vaccinoId": 1,
+    "codiceLotto": "PFZ-2026-001",
+    "quantitaDisponibile": 500,
+    "dataConsegna": "2026-01-10T00:00:00.000Z",
+    "dataScadenza": "2027-01-10T00:00:00.000Z",
+    "updatedAt": "2026-07-03T10:01:29.346Z",
+    "createdAt": "2026-07-03T10:01:29.346Z"
+}
 ```
 
-## 🔐 /coperturascaduta da fare
+## GET /vaccini/:vaccinoId/lotti
 
-Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
-Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
-?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
+Rotta utilizzata per vedere i lotti dato un certo vaccino.
+Il body è vuoto  mentre se la richiesta ha successo il risultato è un json con tutti i lotti che corrispondono alla ricerca.
 ---
 
-### 📥 Richiesta
+### Richiesta
 
 ```http
-GET /copertura/code HTTP/1.1
+GET /vaccini/1/lotti HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
 ```
+
 ```
 ### Richiesta con successo
 ```
 [
     {
-        "vaccinazioneId": 1,
-        "userCf": "RSSMRA80A01H501U",
-        "vaccino": "Pfizer",
-        "dataVaccinazione": "2025-02-15T00:00:00.000Z",
-        "fineCopertura": "2025-08-14T00:00:00.000Z",
-        "giorniDifferenza": -319,
-        "statoCoperura": "scaduta"
+        "id": 1,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ001",
+        "quantitaDisponibile": 300,
+        "dataConsegna": "2022-01-05T00:00:00.000Z",
+        "dataScadenza": "2023-01-05T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 2,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ002",
+        "quantitaDisponibile": 450,
+        "dataConsegna": "2023-01-10T00:00:00.000Z",
+        "dataScadenza": "2024-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 3,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ003",
+        "quantitaDisponibile": 500,
+        "dataConsegna": "2024-01-10T00:00:00.000Z",
+        "dataScadenza": "2025-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 13,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ004",
+        "quantitaDisponibile": 650,
+        "dataConsegna": "2025-01-15T00:00:00.000Z",
+        "dataScadenza": "2026-01-15T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 14,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ005",
+        "quantitaDisponibile": 800,
+        "dataConsegna": "2026-01-10T00:00:00.000Z",
+        "dataScadenza": "2027-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 21,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2022",
+        "quantitaDisponibile": 220,
+        "dataConsegna": "2022-01-10T00:00:00.000Z",
+        "dataScadenza": "2023-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 22,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2023",
+        "quantitaDisponibile": 240,
+        "dataConsegna": "2023-01-10T00:00:00.000Z",
+        "dataScadenza": "2024-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 23,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2024",
+        "quantitaDisponibile": 260,
+        "dataConsegna": "2024-01-10T00:00:00.000Z",
+        "dataScadenza": "2025-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
     }
 ]
 ```
+
+## GET /coperturascaduta 
+
+Rotta utilizzata per vedere gli user con una copertura scaduta.
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+---
+
+### Richiesta
+
+```http
+GET /coperturascaduta HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+```
+### Richiesta con successo
+```
+{
+        "cf": "USR02CFTEST02",
+        "name": "User2",
+        "email": "user2@mail.it",
+        "passwordHash": "$2b$10$xqbKlHCs/oNRZWMudXMEBuQgNqC.s2TquXnlylBTXg2d53zfaN9W2",
+        "token": 1,
+        "role": "user",
+        "createdAt": "2026-07-03T08:11:14.133Z",
+        "updatedAt": "2026-07-03T08:11:14.133Z",
+        "vaccinazioni": [
+            {
+                "id": 1,
+                "userCf": "USR02CFTEST02",
+                "vaccinoId": 1,
+                "lottoId": 1,
+                "dataVaccinazione": "2022-01-05T00:00:00.000Z",
+                "createdAt": "2026-07-03T08:11:14.143Z",
+                "updatedAt": "2026-07-03T08:11:14.143Z",
+                "Vaccino": {
+                    "id": 1,
+                    "nome": "Pfizer",
+                    "durataCopertura": 180,
+                    "createdAt": "2026-07-03T08:11:14.136Z",
+                    "updatedAt": "2026-07-03T08:11:14.136Z"
+                }
+            }
+        ]
+    }
+```
+
+
+
 
 # Progettazione
 ## Casi d'uso
