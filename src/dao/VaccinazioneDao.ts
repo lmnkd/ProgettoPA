@@ -84,14 +84,25 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
         * Trova tutte le vaccinazioni di un utente specifico.
         * @param userCf - Il codice fiscale dell'utente.
         * @returns Un array di vaccinazioni dell'utente, ordinate per data di vaccinazione in ordine decrescente.
+        * Aggiunto include per ottenere i dettagli del vaccino e del lotto associati a ciascuna vaccinazione.
         */
 
     async findAllByUserCf(userCf: string): Promise<Vaccinazione[]> {
-        return Vaccinazione.findAll({
-            where: { userCf },
-            order: [["dataVaccinazione", "DESC"]],
-        });
-    }
+    return Vaccinazione.findAll({
+        where: { userCf },
+        include: [
+            { 
+                model: Vaccino, 
+                attributes: ["nome", "durataCopertura"] 
+            },
+            { 
+                model: LottoVaccino, 
+                attributes: ["codiceLotto"] 
+            },
+        ],
+        order: [["dataVaccinazione", "DESC"]],
+    });
+}
 
     /*
         * Trova tutte le vaccinazioni di un utente specifico filtrate in base ai parametri forniti.
