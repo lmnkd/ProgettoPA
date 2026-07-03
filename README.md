@@ -1326,58 +1326,39 @@ Il progetto include test unitari sviluppati con **Jest** per verificare il corre
 
 ## Middleware dei Token
 
-Il middleware controlla la presenza e la validità del token per effettuare transazioni.
+Il middleware `correctAmount` verifica la presenza e la validità del campo `amount` nel body della richiesta.
 
-I casi di test implementati sono i seguenti:
+### Casi di test implementati:
 
-1. **Token Amount**  
-   Il sistema genera l’errore  ` restituisce 400 se amount manca ` .
+- **Amount mancante**  
+  Se il campo `amount` non è presente nel body della richiesta, il sistema restituisce un errore HTTP 400 con `MISSING_DATA` e non chiama `next()`.
 
-2. **Token corretto**  
-   Il sistema genera la chiamata `chiama next se amount è valido`.
-
----
-
-## Middleware di Vaccino
-
-Il middleware verifica che le richieste riguardanti vaccino siano correttamente eseguite.
-I casi di test implementati sono i seguenti:
-
-1. **Vaccino esiste**  
-   Il sistema genera la chiamata `chiama next se il vaccino esiste`.
-
-2. **Vaccino con più nomi esiste**  
-   Il sistema genera la chiamata `se la query contiene più nomi li divide e chiama next se tutti esistono`.
-
-3. **Vaccino non esiste**  
-   Il sistema richiama correttamente l' errore `restituisce 404 se il vaccino non esiste`.
-
+- **Amount valido**  
+  Se il campo `amount` è presente e valido, il middleware consente la prosecuzione della richiesta e chiama `next()`.
 
 ---
 
-## Middleware di Gestione Errori
+## Middleware dei Vaccini
 
-Il middleware centralizza la gestione delle eccezioni applicative e le trasforma in risposte HTTP strutturate.
+Il middleware verifica la corretta gestione delle richieste relative ai vaccini.
 
-I casi di test implementati sono i seguenti:
+### Casi di test implementati:
 
-1. **Errore HTTP personalizzato**  
-   Il sistema restituisce lo status code corretto come ad esempio `403 Forbidden`.
+- **Vaccino esistente**  
+  Se il vaccino esiste nel database, il middleware chiama `next()` permettendo la prosecuzione della richiesta.
 
-2. **Gestione della risposta di errore**  
-   Il middleware restituisce una risposta JSON coerente con l’errore ricevuto.
+- **Vaccini con più nomi**  
+  Se la query contiene più nomi separati da virgola, il middleware li divide, esegue una ricerca per ciascun nome e chiama `next()` solo se tutti esistono.
 
-3. **Errore generico**  
-   Il sistema converte gli errori non gestiti in una risposta `500 Internal Server Error`.
-
+- **Vaccino non esistente**  
+  Se uno dei vaccini non esiste, il sistema restituisce un errore HTTP 404 con `VACCINO_NOT_FOUND`.
 ---
 
 ## Esecuzione dei test
 
-Per accedere al container Docker:
+```
 
-```bash
-docker exec -it pa-web-node bash
+npm run test
 
 ```
 # Test delle API
