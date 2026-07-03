@@ -165,6 +165,13 @@ Molte rotte avranno rotte apparentemente simili, in realtà poi con il router ge
 | /copertura/pdf | GET | Admin, User | Ottiene le coperture di un dato user, user solo le proprie |
 | /copertura/code | GET | Admin | Ottiene le coperture di un user tramite codice redis |
 | /vaccino | POST | Admin | Crea un vaccino |
+| /vaccini | GET | Admin | Legge tutti i vaccini |
+| /vacciniFIltrati | GET | Admin | Legge i vaccini filtrandoli tramite query |
+| /statistiche | GET | Admin | Ottiene le statistiche generali sui vaccini |
+| /statistuche/copertura | GET | Admin | Ottiene statistiche sulle coperture |
+| /:id | GET | Admin, Operator | Ottiene un singolo vaccino specificando un id |
+| /:id | PATCH | Admin | Aggiorna un vaccino specificando un id |
+| /:id | DELETE | Admin | Cancella un vaccino specificando un id |
 
 
 # 📡 API Reference Detail
