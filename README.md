@@ -95,8 +95,8 @@ Il progetto è sviluppato in **TypeScript** e utilizza:
 - **Express** → framework per API REST
 - **Sequelize** → ORM per database relazionale
 - **Redis** → gestione token temporanei e cache
-- **PDFKit (o simili)** → generazione PDF
-- **RDBMS** → PostgreSQL / MySQL / SQLite (a scelta)
+- **PDFKit** → generazione PDF
+- **RDBMS** → PostgreSQL
 
 ---
 
