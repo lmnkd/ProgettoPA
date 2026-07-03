@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { userService } from "../service/UserService";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 import { AppSuccessMessage } from "../enum/AppSuccessMessage";
+import { sanitizeUser, sanitizeUsers } from "../utils/UserSerializer";
 
 export class UserController {
 
@@ -14,7 +15,7 @@ export class UserController {
     async createUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await userService.createUser(req.body);
-            res.status(201).json({ message: AppSuccessMessage.USER_CREATED, user });
+            res.status(201).json({ message: AppSuccessMessage.USER_CREATED, user: sanitizeUser(user) });
         } catch {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
@@ -28,7 +29,7 @@ export class UserController {
     async getUserById(req: Request, res: Response): Promise<void> {
         try {
             const user = (req as any).targetUser;
-            res.status(200).json(user);
+            res.status(200).json(sanitizeUser(user));
         } catch {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
@@ -43,7 +44,7 @@ export class UserController {
     async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
             const users = await userService.getAllUsers();
-            res.status(200).json(users);
+            res.status(200).json(sanitizeUsers(users));
         } catch {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
@@ -63,7 +64,7 @@ export class UserController {
                 giorniMax: req.query.giorniMax ? Number(req.query.giorniMax) : undefined,
             });
 
-            res.status(200).json(utenti);
+            res.status(200).json(sanitizeUsers(utenti));
         } catch {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
@@ -78,7 +79,13 @@ export class UserController {
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
             const user = await userService.updateUser(req.params.cf, req.body);
-            res.status(200).json({ message: AppSuccessMessage.USER_UPDATED, user });
+            
+            if (!user) {
+                res.status(404).json({ error: AppErrorsMessage.SERVER_ERROR });
+                return;
+            }
+
+            res.status(200).json({ message: AppSuccessMessage.USER_UPDATED, user: sanitizeUser(user) });
         } catch {
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }

@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-import { userService } from "../service/UserService";
-import { AppErrorsName } from "../enum/AppErrorsName";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 import { AppSuccessMessage } from "../enum/AppSuccessMessage";
 import {userDao} from "../dao/UserDao"
-import { AppJwtPayload } from "../types/jwt-payload";
+import { sanitizeUser } from "../utils/UserSerializer";
 
 export class AdminController{
 
@@ -17,7 +15,12 @@ export class AdminController{
 
         const user = await userDao.increaseTokens(targetUser.cf, amount);
 
-        res.status(200).json({ message: AppSuccessMessage.TOKENS_UPDATED, user });
+        if (!user) {
+            res.status(404).json({ error: AppErrorsMessage.SERVER_ERROR });
+            return;
+        }
+
+        res.status(200).json({ message: AppSuccessMessage.TOKENS_UPDATED, user: sanitizeUser(user) });
     } catch {
         res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
     }
