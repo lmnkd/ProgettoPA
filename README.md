@@ -1240,7 +1240,7 @@ Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte l
 ### Richiesta
 
 ```http
-GET /copertura/code HTTP/1.1
+GET /coperturascaduta HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
