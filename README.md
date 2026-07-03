@@ -39,7 +39,7 @@ Le tipologie di utenza previste sono:
 - **operator**: può registrare vaccinazioni e gestire vaccini e dosi;
 - **both **: un utente può avere più ruoli contemporaneamente.
 - ** admin **: un utente che ha accesso a tutte le funzioni.
-- 
+
 Il JWT contiene:
 - metadati dell’utente
 - codice fiscale
