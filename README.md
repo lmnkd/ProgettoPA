@@ -1356,6 +1356,7 @@ npm run test
 # Test delle API
 
 Le funzionalità possono essere verificate effettuando il run della collection **Postman** presente nella cartella collections.
+Specifichiamo però che non tutte le funzionalità che si possono vedere successivamente sono testate nella collection ma sono state testate e funzionano.
 Alcune risposte, quelle che si hanno con il middlewware authenticate e requireRole non sono state ripetute ma sono utilizzate in tutte le altre rotte in cui non appaiono
 
 ## 1. Rotte pubbliche di autenticazione (Auth)
