@@ -1278,8 +1278,224 @@ Content-Type: application/json
 
 ## Diagrammi di sequenza
 
+Creazione della vaccinazione
 
+```mermaid
+sequenceDiagram
+    actor Operatore
+    participant AuthMiddleware
+    participant VaccinazioneMiddleware
+    participant UserDao
+    participant LottoVaccinoDao
+    participant VaccinoDao
+    participant VaccinazioneDao
+    participant TokenMiddleware
+    participant VaccinazioneController
+    participant VaccinazioneService
+    participant Database
 
+    Operatore->>AuthMiddleware: POST /vaccinazioni\nBearer JWT, cf, lotto_id, data_vaccinazione
+    AuthMiddleware->>AuthMiddleware: jwt.verify(token, publicKey, RS256)
+
+    alt Token mancante / non valido / scaduto
+        AuthMiddleware-->>Operatore: 401 MISSING / INVALID / TOKEN_EXPIRED
+    else Token valido
+        AuthMiddleware->>AuthMiddleware: requireRole("operator")
+
+        alt Ruolo non autorizzato
+            AuthMiddleware-->>Operatore: 403 PERMISSION_DENIED
+        else Autorizzato
+            AuthMiddleware->>VaccinazioneMiddleware: next()
+
+            VaccinazioneMiddleware->>UserDao: findById(cf)
+            UserDao->>Database: SELECT * FROM users WHERE cf=...
+            Database-->>UserDao: row | null
+
+            alt Utente non trovato
+                VaccinazioneMiddleware-->>Operatore: 404 USER_NOT_FOUND
+            else Utente trovato
+
+                VaccinazioneMiddleware->>LottoVaccinoDao: findById(lotto_id)
+                LottoVaccinoDao->>Database: SELECT * FROM lotti_vaccino WHERE id=...
+                Database-->>LottoVaccinoDao: row | null
+
+                alt Lotto non trovato
+                    VaccinazioneMiddleware-->>Operatore: 404 LOTTO_NOT_FOUND
+                else Lotto trovato
+
+                    VaccinazioneMiddleware->>VaccinazioneMiddleware: data_vaccinazione > dataScadenza?
+
+                    alt Vaccino scaduto
+                        VaccinazioneMiddleware-->>Operatore: 409 VACCINE_EXPIRED
+                    else Vaccino valido
+
+                        VaccinazioneMiddleware->>VaccinoDao: findById(vaccinoId)
+
+                        VaccinazioneMiddleware->>VaccinazioneDao: findLastByUserAndVaccino(cf, vaccinoId)
+                        VaccinazioneDao->>Database: SELECT ultima vaccinazione
+                        Database-->>VaccinazioneDao: ultimaVaccinazione | null
+
+                        alt Copertura non scaduta
+                            VaccinazioneMiddleware-->>Operatore: 409 COVERAGE_NOT_EXPIRED
+                        else Copertura scaduta / prima dose
+
+                            VaccinazioneMiddleware->>TokenMiddleware: next()
+
+                            TokenMiddleware->>UserDao: decrementTokenIfAvailable(cf operatore)
+                            UserDao->>Database: UPDATE token = token - 1
+                            Database-->>UserDao: rowCount
+
+                            alt Token esauriti
+                                TokenMiddleware-->>Operatore: 401 NO_TOKENS_LEFT
+                            else Token disponibili
+
+                                TokenMiddleware->>VaccinazioneController: next()
+
+                                VaccinazioneController->>VaccinazioneService: createVaccinazione(...)
+
+                                VaccinazioneService->>VaccinazioneDao: create(...)
+                                VaccinazioneDao->>Database: INSERT INTO vaccinazioni(...)
+                                Database-->>VaccinazioneDao: record creato
+
+                                VaccinazioneDao-->>VaccinazioneService: vaccinazione
+                                VaccinazioneService-->>VaccinazioneController: vaccinazione
+                                VaccinazioneController-->>Operatore: 201 Created {message, vaccinazione}
+
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+```
+Get vaccinazioni
+
+```mermaid
+sequenceDiagram
+    actor Richiedente
+    participant AuthMiddleware
+    participant VaccinazioneController
+    participant VaccinazioneService
+    participant UserDao
+    participant VaccinazioneDao
+    participant PDFKit
+
+    Richiedente->>AuthMiddleware: GET /vaccinazioni/pdf?cf=...\nBearer JWT
+    AuthMiddleware->>VaccinazioneController: next() (JWT in req.user)
+
+    VaccinazioneController->>VaccinazioneController: isAdmin = roles.includes("admin" || "operator")
+
+    alt Admin o Operatore
+        VaccinazioneController->>VaccinazioneController: targetCf = req.query.cf
+
+        alt CF mancante
+            VaccinazioneController-->>Richiedente: 400 MISSING_DATA
+        else CF presente
+            Note over VaccinazioneController: Continua con targetCf
+        end
+
+    else Utente semplice
+        VaccinazioneController->>VaccinazioneController: targetCf = requester.cf
+    end
+
+    VaccinazioneController->>VaccinazioneService: generatePdfReport(targetCf)
+
+    VaccinazioneService->>UserDao: findById(targetCf)
+    UserDao-->>VaccinazioneService: user | null
+
+    alt Utente non trovato
+        VaccinazioneService-->>VaccinazioneController: throw USER_NOT_FOUND
+        VaccinazioneController-->>Richiedente: 404 USER_NOT_FOUND
+
+    else Utente trovato
+
+        VaccinazioneService->>VaccinazioneDao: findAllByUserCf(targetCf)
+        VaccinazioneDao-->>VaccinazioneService: vaccinazioni[]
+
+        VaccinazioneService->>PDFKit: new PDFDocument() + costruzione contenuto
+        PDFKit-->>VaccinazioneService: Buffer (PDF)
+
+        VaccinazioneService-->>VaccinazioneController: pdfBuffer
+        VaccinazioneController-->>Richiedente: 200 application/pdf
+
+    end
+```
+
+crea codice PDF
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    actor Richiedente
+
+    participant AuthMiddleware
+    participant AdminController
+    participant VaccinazioneController
+    participant VaccinazioneService
+    participant UserDao
+    participant VaccinazioneDao
+    participant Redis
+
+    %% ==========================
+    %% 1. Generazione del codice
+    %% ==========================
+
+    Admin->>AuthMiddleware: POST /admin/code {cf}\nBearer JWT (admin)
+    AuthMiddleware->>AdminController: next()
+
+    AdminController->>UserDao: findById(cf)
+    UserDao-->>AdminController: user | null
+
+    alt Utente non trovato
+        AdminController-->>Admin: 404 USER_NOT_FOUND
+
+    else Utente trovato
+
+        AdminController->>VaccinazioneController: generateCoperturaCode(req)
+
+        VaccinazioneController->>VaccinazioneService: createCoperturaCode(cf, 10)
+
+        VaccinazioneService->>VaccinazioneService: code = randomUUID()
+
+        VaccinazioneService->>Redis: SET copertura:{code} cf EX 600
+        Redis-->>VaccinazioneService: OK
+
+        VaccinazioneService-->>VaccinazioneController: code
+        VaccinazioneController-->>Admin: 200 {code, cf, expiresIn:600}
+
+    end
+
+    Note over Richiedente,Redis: In un momento successivo (entro 10 minuti)
+
+    %% ==========================
+    %% 2. Utilizzo del codice
+    %% ==========================
+
+    Richiedente->>VaccinazioneController: GET /vaccinazioni/copertura/code?code=...\nNessun JWT
+
+    VaccinazioneController->>Redis: GET copertura:{code}
+    Redis-->>VaccinazioneController: cf | null
+
+    alt Codice scaduto o non valido
+
+        VaccinazioneController-->>Richiedente: 401 INVALID_TOKEN
+
+    else Codice valido
+
+        VaccinazioneController->>VaccinazioneService: getCoperturaReport(cf, order)
+
+        VaccinazioneService->>VaccinazioneDao: findAllWithDetails(cf)
+        VaccinazioneDao-->>VaccinazioneService: vaccinazioni[]
+
+        VaccinazioneService->>VaccinazioneService: calcola giorniDifferenza + ordina
+
+        VaccinazioneService-->>VaccinazioneController: report[]
+
+        VaccinazioneController-->>Richiedente: 200 JSON report
+
+    end
+```
 
 
 # Istruzioni per l'avvio del backend
