@@ -1233,8 +1233,8 @@ Content-Type: application/json
 
 ## GET /coperturascaduta 
 
-Rotta utilizzata per vedere gli user con una copertura scaduta.
-Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
+Rotta utilizzata per vedere gli user con una copertura scaduta, specificando i giorni di scadenza (?giorniMin=10&giorniMax=30) (?vaccino=Pfizer&giorniMin=0)
+Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user opportunamente filtrate.
 ---
 
 ### Richiesta
@@ -1318,7 +1318,7 @@ openssl rsa -in keys/private.pem -pubout -out keys/public.pem
 docker compose up --build
 ```
 
-# Test del progetto da fare per ora ho solo un esempio incollato per prendere spunto
+# Test del progetto
 
 Il progetto include test unitari sviluppati con **Jest** per verificare il corretto funzionamento dei principali middleware dell'applicazione.
 
