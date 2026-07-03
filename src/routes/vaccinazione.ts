@@ -28,7 +28,7 @@ router.get('/vaccinazioni/:id', authenticate, requireRole("operator", "admin"), 
 router.get('/vaccinazioni', authenticate, requireRole("admin"), vaccinazioneController.getAllVaccinazioni);
 
 // Update vaccinazione da inserire nel body cf e lotto id altrimenti non si può aggiornare la vaccinazione
-router.patch('/vaccinazioni/:id', authenticate, requireRole("operator", "admin"), checkUserExists, checkLottoValid, checkTokenAvailability, vaccinazioneController.updateVaccinazione);
+router.patch('/vaccinazioni/:id', authenticate, requireRole("operator", "admin"), userExist, checkLottoValid, checkTokenAvailability, vaccinazioneController.updateVaccinazione);
 
 // cancellazione vaccinazione
 router.delete('/vaccinazioni/:id', authenticate, requireRole("admin", "operator"), vaccinazioneController.deleteVaccinazione);
@@ -39,7 +39,7 @@ router.get("/pdf", authenticate, requireRole("admin", "user"), vaccinazioneContr
 // vaccinazioni filtrate [A,U] /api/vaccinazioni/filtrareuseradmin?nomeVaccino=pfizer&dataMin=2024-01-01&dataMax=2024-12-31
 router.get("/filtrareuseradmin", authenticate, requireRole("admin", "user"), checkNomeVaccinoExists, checkFiltriVaccinazione, vaccinazioneController.getFilteredVaccinazioni);
 
-// Report copertura JSON [A,U] — admin vede tutti (o filtra con cf), user solo le proprie ?cf=RSSMRA80A01H501U&order=desc
+// Report copertura JSON [A,U] — admin vede tutti (filtra con cf), user solo le proprie ?cf=RSSMRA80A01H501U&order=desc
 router.get("/copertura", authenticate, requireRole("admin", "user"),userExist, vaccinazioneController.getCoperturaReport);
 
 // Report copertura PDF [A,U]

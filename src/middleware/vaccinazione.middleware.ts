@@ -7,7 +7,7 @@ import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
 // 1. Utente esistente
 export async function checkUserExists(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { cf } = req.body;
+    const cf = req.body?.cf;
 
     if (!cf) {
         res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });
@@ -26,7 +26,7 @@ export async function checkUserExists(req: Request, res: Response, next: NextFun
 
 // 2. Lotto valido
 export async function checkLottoValid(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { lotto_id } = req.body;
+    const lotto_id  = req.body?.lotto_id;
 
     if (!lotto_id) {
         res.status(400).json({ error: AppErrorsMessage.MISSING_DATA });

@@ -1,4 +1,4 @@
-import { checkVaccinoExistsById, checkNomeVaccinoExists } from "../middleware/vaccino.middleware";
+import { checkVaccinoExistsById, checkVaccinoQueryExistsById } from "../middleware/vaccino.middleware";
 import { vaccinoDao } from "../dao/VaccinoDao";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
@@ -33,11 +33,13 @@ describe("checkVaccinoExistsById", () => {
         expect(next).toHaveBeenCalled();
     });
 
-    test("restituisce 404 se il vaccino non esiste", async () => {
-    (vaccinoDao.findById as jest.Mock).mockResolvedValue(null);
+   test("se la query contiene più nomi li divide e chiama next se tutti esistono", async () => {
+    (vaccinoDao.findByNome as jest.Mock)
+        .mockResolvedValueOnce({ id: 1, nome: "Pfizer" })
+        .mockResolvedValueOnce({ id: 2, nome: "Moderna" });
 
     const req: any = {
-        params: { id: "999" }
+        query: { nomeVaccino: "Pfizer, Moderna" }
     };
 
     const res: any = {
@@ -47,35 +49,15 @@ describe("checkVaccinoExistsById", () => {
 
     const next = jest.fn();
 
-    await checkVaccinoExistsById(req, res, next);
+    await checkVaccinoQueryExistsById(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: AppErrorsMessage.VACCINO_NOT_FOUND });
-    expect(next).not.toHaveBeenCalled();
+    expect(vaccinoDao.findByNome).toHaveBeenCalledTimes(2);
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+
+    expect(req.vaccinoFiltro).toEqual([
+        { id: 1, nome: "Pfizer" },
+        { id: 2, nome: "Moderna" }
+    ]);
 });
-
-    test("se la query contiene più nomi li divide e chiama next se tutti esistono", async () => {
-        (vaccinoDao.findByNome as jest.Mock)
-            .mockResolvedValueOnce({ id: 1, nome: "Pfizer" })
-            .mockResolvedValueOnce({ id: 2, nome: "Moderna" });
-
-        const req: any = {
-            query: { nomeVaccino: "Pfizer, Moderna" }
-        };
-
-        const res: any = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn()
-        };
-
-        const next = jest.fn();
-
-        await checkNomeVaccinoExists(req, res, next);
-
-        expect(vaccinoDao.findByNome).toHaveBeenCalledTimes(2);
-        expect(next).toHaveBeenCalled();
-        expect(res.status).not.toHaveBeenCalled();
-    });
-
-});
-
+})
