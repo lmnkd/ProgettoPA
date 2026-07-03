@@ -1324,40 +1324,34 @@ Il progetto include test unitari sviluppati con **Jest** per verificare il corre
 
 ---
 
-## Middleware di Autenticazione
+## Middleware dei Token
 
-Il middleware controlla la presenza e la validità del token JWT associato alla richiesta HTTP.
+Il middleware controlla la presenza e la validità del token per effettuare transazioni.
 
 I casi di test implementati sono i seguenti:
 
-1. **Token assente**  
-   Il sistema genera l’errore `AUTH_TOKEN_NOTFOUND`.
+1. **Token Amount**  
+   Il sistema genera l’errore  ` restituisce 400 se amount manca ` .
 
-2. **Token scaduto**  
-   Il sistema genera l’errore `JWT_EXPIRED`.
-
-3. **Token non valido**  
-   Il sistema genera l’errore `INVALID_JWT`.
-
-4. **Token valido**  
-   Il middleware associa correttamente il payload JWT all’oggetto `Request` e il sistema richiama il middleware successivo tramite `next()`.
+2. **Token corretto**  
+   Il sistema genera la chiamata `chiama next se amount è valido`.
 
 ---
 
-## Middleware di Autorizzazione
+## Middleware di Vaccino
 
-Il middleware verifica che l’utente autenticato possieda un ruolo autorizzato ad accedere alla risorsa richiesta.
-
+Il middleware verifica che le richieste riguardanti vaccino siano correttamente eseguite.
 I casi di test implementati sono i seguenti:
 
-1. **Ruolo non autorizzato**  
-   Il sistema genera l’errore `UNAUTHORIZED_JWT`.
+1. **Vaccino esiste**  
+   Il sistema genera la chiamata `chiama next se il vaccino esiste`.
 
-2. **Ruolo non consentito per la rotta**  
-   Il sistema genera l’errore `UNAUTHORIZED_JWT`.
+2. **Vaccino con più nomi esiste**  
+   Il sistema genera la chiamata `se la query contiene più nomi li divide e chiama next se tutti esistono`.
 
-3. **Ruolo autorizzato**  
-   Il middleware richiama correttamente la funzione `next()` e consente la prosecuzione della richiesta.
+3. **Vaccino non esiste**  
+   Il sistema richiama correttamente l' errore `restituisce 404 se il vaccino non esiste`.
+
 
 ---
 
