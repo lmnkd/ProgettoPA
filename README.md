@@ -799,18 +799,17 @@ Content-Type: application/json
 }
 ```
 
-## /vaccinazioni/:id da fare per update delete e tutto il resto e all
+## GET /vaccinazioni/:id 
+Rotta utilizzata per vedere una vaccinazione dato un certo id.
 
-Rotta utilizzata per vedere gli utenti con la copertura scaduta.
-
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i nomi di tutti gli utenti con la copertura scaduta.
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione.
 
 ---
 
 ### Richiesta
 
 ```http
-GET /coperturascaduta HTTP/1.1
+GET /vaccinaizoni/1 HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
@@ -819,7 +818,110 @@ Content-Type: application/json
 ### Richiesta con successo
 ```
 {
-    "message": "Vaccino cancellato correttamente"
+    "id": 2,
+    "userCf": "USR03CFTEST03",
+    "vaccinoId": 1,
+    "lottoId": 1,
+    "dataVaccinazione": "2022-01-08T00:00:00.000Z",
+    "createdAt": "2026-07-03T08:11:14.143Z",
+    "updatedAt": "2026-07-03T08:11:14.143Z"
+}
+```
+
+## POST /vaccinazioni
+Rotta utilizzata per creare una vaccinazione.
+
+Il body contiene le informazioni per creare la vaccinazione mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione e il messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+POST /vaccinaizoni HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "cf": "RSSMRA80A01H501U",
+  "lotto_id": 16,
+  "data_vaccinazione": "2026-01-04"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccinazione creata correttamente",
+    "vaccinazione": {
+        "id": 279,
+        "userCf": "RSSMRA80A01H501U",
+        "lottoId": 16,
+        "vaccinoId": 2,
+        "dataVaccinazione": "2026-01-04T00:00:00.000Z",
+        "updatedAt": "2026-07-03T09:24:47.024Z",
+        "createdAt": "2026-07-03T09:24:47.024Z"
+    }
+}
+```
+## PATCH /vaccinazioni/:id
+Rotta utilizzata per aggiornare una vaccinazione dato un certo id.
+
+Il body contiene le informazioni per aggiornare la vaccinazione mentre se la richiesta ha successo il risultato sarà un json con i dati della vaccinazione e il messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+PATCH /vaccinazioni HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+{
+  "userCf": "RSSMRA80A01H501U",
+  "lottoId": 1,
+  "dataVaccinazione": "2027-01-04"
+}
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccizazione aggiornata correttamente",
+    "vaccinazione": {
+        "id": 2,
+        "userCf": "RSSMRA80A01H501U",
+        "vaccinoId": 1,
+        "lottoId": 1,
+        "dataVaccinazione": "2027-01-04T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.366Z",
+        "updatedAt": "2026-07-03T09:56:14.759Z"
+    }
+}
+```
+
+## DELETE /vaccinazioni/:id
+Rotta utilizzata per cancellare una vaccinazione dato un certo id.
+
+Il body è vuoto mentre se la richiesta ha successo il risultato sarà un messaggio di conferma.
+
+---
+
+### Richiesta
+
+```http
+DELETE /vaccinaizoni/1 HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+
+```
+### Richiesta con successo
+```
+{
+    "message": "Vaccinazione cancellatta correttamente"
 }
 ```
 
