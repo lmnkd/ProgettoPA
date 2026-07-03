@@ -1093,28 +1093,145 @@ Content-Type: application/json
 ]
 ```
 
-## /copertura/pdf
+## POST /vaccini/:vaccinoId/lotti
 
-Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
-Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
-Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+Rotta utilizzata per creare un lotto dato un certo vaccino.
+Il body contiene le informazioni del lotto  mentre se la richiesta ha successo il risultato un messaggio di avvenuta creazione e il body.
 ---
 
 ### Richiesta
 
 ```http
-GET /copertura/pdf HTTP/1.1
+POST /vaccini/1/lotti HTTP/1.1
 Content-Type: application/json
 ```
 ### Body
 ```
+{
+    "codiceLotto": "PFZ-2026-001",
+    "quantitaDisponibile": 500,
+    "dataConsegna": "2026-01-10",
+    "dataScadenza": "2027-01-10"
+}
+
 ```
 ### Richiesta con successo
 ```
-immagine
+{
+    "id": 41,
+    "vaccinoId": 1,
+    "codiceLotto": "PFZ-2026-001",
+    "quantitaDisponibile": 500,
+    "dataConsegna": "2026-01-10T00:00:00.000Z",
+    "dataScadenza": "2027-01-10T00:00:00.000Z",
+    "updatedAt": "2026-07-03T10:01:29.346Z",
+    "createdAt": "2026-07-03T10:01:29.346Z"
+}
 ```
 
-## /coperturascaduta 
+## GET /vaccini/:vaccinoId/lotti
+
+Rotta utilizzata per vedere i lotti dato un certo vaccino.
+Il body è vuoto  mentre se la richiesta ha successo il risultato è un json con tutti i lotti che corrispondono alla ricerca.
+---
+
+### Richiesta
+
+```http
+GET /vaccini/1/lotti HTTP/1.1
+Content-Type: application/json
+```
+### Body
+```
+
+```
+### Richiesta con successo
+```
+[
+    {
+        "id": 1,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ001",
+        "quantitaDisponibile": 300,
+        "dataConsegna": "2022-01-05T00:00:00.000Z",
+        "dataScadenza": "2023-01-05T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 2,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ002",
+        "quantitaDisponibile": 450,
+        "dataConsegna": "2023-01-10T00:00:00.000Z",
+        "dataScadenza": "2024-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 3,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ003",
+        "quantitaDisponibile": 500,
+        "dataConsegna": "2024-01-10T00:00:00.000Z",
+        "dataScadenza": "2025-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 13,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ004",
+        "quantitaDisponibile": 650,
+        "dataConsegna": "2025-01-15T00:00:00.000Z",
+        "dataScadenza": "2026-01-15T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 14,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ005",
+        "quantitaDisponibile": 800,
+        "dataConsegna": "2026-01-10T00:00:00.000Z",
+        "dataScadenza": "2027-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 21,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2022",
+        "quantitaDisponibile": 220,
+        "dataConsegna": "2022-01-10T00:00:00.000Z",
+        "dataScadenza": "2023-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 22,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2023",
+        "quantitaDisponibile": 240,
+        "dataConsegna": "2023-01-10T00:00:00.000Z",
+        "dataScadenza": "2024-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    },
+    {
+        "id": 23,
+        "vaccinoId": 1,
+        "codiceLotto": "PFZ2024",
+        "quantitaDisponibile": 260,
+        "dataConsegna": "2024-01-10T00:00:00.000Z",
+        "dataScadenza": "2025-01-10T00:00:00.000Z",
+        "createdAt": "2026-07-03T09:53:34.362Z",
+        "updatedAt": "2026-07-03T09:53:34.362Z"
+    }
+]
+```
+
+## GET /coperturascaduta 
 
 Rotta utilizzata per vedere gli user con una copertura scaduta.
 Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
