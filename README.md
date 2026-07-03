@@ -136,12 +136,9 @@ Questo è un pattern architetturale specifico dell'ecosistema Express/Node, dist
 
 # API Reference
 
+Seguono le API implementate.
 
-## 📡 API Summary
-
-Molte rotte avranno rotte apparentemente simili, in realtà poi con il router gestiamo l'api in modo da evitare conflitti. da modificare
-
-## 📡 API Reference
+## API Summary
 
 | Rotta | Metodo HTTP | Ruolo autorizzato | Descrizione |
 |------|------------|-------------------|-------------|
