@@ -1039,6 +1039,7 @@ Content-Type: application/json
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture ma solo di un dato user tramite pdf.
 Il body è vuoto mentre se la richiesta ha successo il risultato sarà un pdf con tutte le vaccinazioni con le rispettive coperture di un dato user.
 Si può scegliere se mettere in ordine crescente o decrescente le vaccinazioni
+
 ---
 
 ### Richiesta
@@ -1060,6 +1061,7 @@ immagine
 Rotta utilizzata per vedere le vaccinazioni con le rispettive coperture di un dato user tramite un code redis evitando così l'uso di token JWT.
 Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user.
 ?code=88c4b157-7caa-42f1-8226-49161cfa76ed il codice dovrà essere presente nella richiesta http.
+
 ---
 
 ### Richiesta
@@ -1090,6 +1092,7 @@ Content-Type: application/json
 
 Rotta utilizzata per creare un lotto dato un certo vaccino.
 Il body contiene le informazioni del lotto  mentre se la richiesta ha successo il risultato un messaggio di avvenuta creazione e il body.
+
 ---
 
 ### Richiesta
@@ -1126,6 +1129,7 @@ Content-Type: application/json
 
 Rotta utilizzata per vedere i lotti dato un certo vaccino.
 Il body è vuoto  mentre se la richiesta ha successo il risultato è un json con tutti i lotti che corrispondono alla ricerca.
+
 ---
 
 ### Richiesta
@@ -1228,6 +1232,7 @@ Content-Type: application/json
 
 Rotta utilizzata per vedere gli user con una copertura scaduta, specificando i giorni di scadenza (?giorniMin=10&giorniMax=30) (?vaccino=Pfizer&giorniMin=0)
 Il body è vuoto mentre se la richiesta ha successo il risultato saranno tutte le vaccinazioni con le rispettive coperture di un dato user opportunamente filtrate.
+
 ---
 
 ### Richiesta
