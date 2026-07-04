@@ -1505,9 +1505,15 @@ sequenceDiagram
 
 # Istruzioni per l'avvio del backend
 
+Per prima cosa si procede a clonare il repository su Github.
+
 ```
 git clone https://github.com/lmnkd/ProgettoPA
 ```
+
+Procediamo con la creazione di un file .env con queste variabili d'ambiente nella directory principale.
+
+
 ```
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=password
@@ -1521,11 +1527,15 @@ REDIS_HOST=redis
 REDIS_PORT=6379
 ```
 
+Utilizzare successivamente questi comandi da terminale per la creazione delle chiavi private e pubbliche.
+
 ```
 mkdir -p keys
 openssl genrsa -out keys/private.pem 2048
 openssl rsa -in keys/private.pem -pubout -out keys/public.pem
 ```
+
+Infine utilizzare il seguente comando docker per far partire il backend.
 
 ```
 docker compose up --build
