@@ -1,0 +1,1920 @@
+{
+  "info": {
+    "_postman_id": "c2ce9f75-84d4-4432-97fa-465faca99d1d",
+    "name": "Progetto PA finale",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54999513",
+    "_collection_link": "https://go.postman.co/collection/54999513-c2ce9f75-84d4-4432-97fa-465faca99d1d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login utenti",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "let json = {};\r",
+              "try {\r",
+              "    json = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.log(\"Response is not JSON\");\r",
+              "}\r",
+              "\r",
+              "if (json.token) {\r",
+              "    pm.environment.set(\"JWT_TOKEN\", json.token);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"mario@email.it\",\r\n    \"password\": \"password123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Aggiungi token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Aggiornamento token - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"amount\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/admin/addToken/RSSMRA80A01H501U",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "addToken",
+            "RSSMRA80A01H501U"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User non trovato",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"User non trovato - 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"amount\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/admin/addToken/RSSMRA80A01H",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "addToken",
+            "RSSMRA80A01H"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Creazione codice Redis",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is success\", function () {\r",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+              "});\r",
+              "\r",
+              "try {\r",
+              "    const json = pm.response.json();\r",
+              "\r",
+              "    if (json.code) {\r",
+              "        pm.environment.set(\"CODE\", json.code);\r",
+              "        console.log(\"CODE salvato:\", json.code);\r",
+              "    } else {\r",
+              "        console.log(\"La risposta non contiene il campo 'code'\");\r",
+              "    }\r",
+              "} catch (error) {\r",
+              "    console.log(\"Risposta non JSON o parsing fallito:\", error);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"RSSMRA80A01H501U\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/admin/code",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "code"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Creazione utenti",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Creazione utente - Successo\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP88F10A944U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.near@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"operator\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Creazione lotto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Creazione lotto - Successo\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"codiceLotto\": \"PFZ-2026-001\",\r\n    \"quantitaDisponibile\": 500,\r\n    \"dataConsegna\": \"2026-01-10\",\r\n    \"dataScadenza\": \"2027-01-10\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccini/1/lotti",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccini",
+            "1",
+            "lotti"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "data non valida",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per data non valida - 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"codiceLotto\": \"PFZ-2026-101\",\r\n    \"quantitaDisponibile\": 500,\r\n    \"dataConsegna\": \"2026-01-10\",\r\n    \"dataScadenza\": \"2025-01-10\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccini/2/lotti",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccini",
+            "2",
+            "lotti"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ottieni lotto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Visualizzazione lotti - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccini/1/lotti",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccini",
+            "1",
+            "lotti"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Copertura scaduta",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/coperturascaduta?vaccino=Pfizer&giorniMin=0",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "coperturascaduta"
+          ],
+          "query": [
+            {
+              "key": "vaccino",
+              "value": "Pfizer"
+            },
+            {
+              "key": "giorniMin",
+              "value": "0"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ottieni tutti gli user",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ottiene un user solo",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/BNCLCU81B10F205B",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "BNCLCU81B10F205B"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "User non trovato",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Ricerca utente inesistente - 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/BNCLCU81B10F205",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "BNCLCU81B10F205"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cancella utente",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/BNCLCU81B10F205B",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "BNCLCU81B10F205B"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Aggiorna utente",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"VRDGNN87C20H501C\",\r\n  \"name\": \"Giuseppe neriiiiiii\",\r\n  \"role\": \"admin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/users/VRDGNN87C20H501C",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "VRDGNN87C20H501C"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crea vaccinazione",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Creazione vaccinazione - Successo\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"RSSMRA80A01H501U\",\r\n  \"lotto_id\": 16,\r\n  \"data_vaccinazione\": \"2026-01-04\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Lotto scaduto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per conflitto/scadenza - 409\", function () {\r",
+              "    pm.response.to.have.status(409);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"RSSMRA80A01H501U\",\r\n  \"lotto_id\": 16,\r\n  \"data_vaccinazione\": \"2029-01-04\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Vedi vaccinazione",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Visualizzazione dettaglio vaccinazione - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni/1",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Vedi tutte le vaccinazioni",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni/",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Aggiorna vaccinazione",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"RSSMRA80A01H501U\",\r\n  \"vaccinoId\": 1,\r\n  \"lotto_id\": 1,\r\n  \"dataVaccinazione\": \"2027-01-04\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni/2",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cancella vaccinazione",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/vaccinazioni/1",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "vaccinazioni",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Richiedi PDF",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/pdf/?cf=RSSMRA80A01H501U",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "pdf",
+            ""
+          ],
+          "query": [
+            {
+              "key": "cf",
+              "value": "RSSMRA80A01H501U"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filtra vaccinazioni",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/filtrareuseradmin?cf=BNCMRA90C20D612Y&nomeVaccino=Pfizer&dataMin=2023-09-01&dataMax=2026-12-31",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "filtrareuseradmin"
+          ],
+          "query": [
+            {
+              "key": "cf",
+              "value": "BNCMRA90C20D612Y"
+            },
+            {
+              "key": "nomeVaccino",
+              "value": "Pfizer"
+            },
+            {
+              "key": "dataMin",
+              "value": "2023-09-01"
+            },
+            {
+              "key": "dataMax",
+              "value": "2026-12-31"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ottieni coperture/a",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Visualizzazione copertura vaccinale - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/copertura?cf=RSSMRA80A01H501U&order=desc",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "copertura"
+          ],
+          "query": [
+            {
+              "key": "cf",
+              "value": "RSSMRA80A01H501U"
+            },
+            {
+              "key": "order",
+              "value": "desc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Richiedi copertura pdf",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Generazione PDF - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/copertura/pdf?cf=RSSMRA80A01H501U&order=desc",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "copertura",
+            "pdf"
+          ],
+          "query": [
+            {
+              "key": "cf",
+              "value": "RSSMRA80A01H501U"
+            },
+            {
+              "key": "order",
+              "value": "desc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Richiedi copertura tramite Redis",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccinazioni/copertura/code?code={{CODE}}",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccinazioni",
+            "copertura",
+            "code"
+          ],
+          "query": [
+            {
+              "key": "code",
+              "value": "{{CODE}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crea vaccino",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Creazione vaccino - Successo\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nome\": \"Bscottina\",\r\n    \"durataCopertura\": 120\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccino",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccino"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "leggi tutti i vaccini",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/vaccini",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vaccini"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Vaccini filtrati",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vacciniFiltrati?nomeVaccino=Moderna,Pfizer&scadenzaMaggioreDi=2025-01-01&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vacciniFiltrati"
+          ],
+          "query": [
+            {
+              "key": "nomeVaccino",
+              "value": "Moderna,Pfizer"
+            },
+            {
+              "key": "scadenzaMaggioreDi",
+              "value": "2025-01-01"
+            },
+            {
+              "key": "scadenzaMinoreDi",
+              "value": "2026-12-31"
+            },
+            {
+              "key": "disponibilitaMin",
+              "value": "100"
+            },
+            {
+              "key": "disponibilitaMax",
+              "value": "500"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Parametri non validi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Filtri query non validi - 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vacciniFiltrati?nomeVaccino=Moderna&scadenzaMaggioreDi=adsadsad&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vacciniFiltrati"
+          ],
+          "query": [
+            {
+              "key": "nomeVaccino",
+              "value": "Moderna"
+            },
+            {
+              "key": "scadenzaMaggioreDi",
+              "value": "adsadsad"
+            },
+            {
+              "key": "scadenzaMinoreDi",
+              "value": "2026-12-31"
+            },
+            {
+              "key": "disponibilitaMin",
+              "value": "100"
+            },
+            {
+              "key": "disponibilitaMax",
+              "value": "500"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Statistiche vaccini",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Visualizzazione statistiche - Successo\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/statistiche",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "statistiche"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Statistiche coperture",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/statistiche/copertura",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "statistiche",
+            "copertura"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Vedi singolo vaccino",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/2",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Aggiorna vaccino",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nome\": \"Bscottinooo\",\r\n    \"durataCopertura\": 200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/1",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cancella vaccino",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cf\": \"NRAGPP92E18A662U\",\r\n  \"name\": \"Giuseppe neri\",\r\n  \"email\": \"giuseppe.ner@email.it\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}"
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/1",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Input non valido fornito",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per campi mancanti - 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Credenziali errate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per credenziali errate - 401\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"fantasma@sistema.it\",\r\n  \"password\": \"passwordSbagliata123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Token mancante",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per Token Mancante - 401\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vacciniFiltrati?nomeVaccino=Moderna,Pfizer&scadenzaMaggioreDi=2025-01-01&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vacciniFiltrati"
+          ],
+          "query": [
+            {
+              "key": "nomeVaccino",
+              "value": "Moderna,Pfizer"
+            },
+            {
+              "key": "scadenzaMaggioreDi",
+              "value": "2025-01-01"
+            },
+            {
+              "key": "scadenzaMinoreDi",
+              "value": "2026-12-31"
+            },
+            {
+              "key": "disponibilitaMin",
+              "value": "100"
+            },
+            {
+              "key": "disponibilitaMax",
+              "value": "500"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Token non valido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccato per Token Invalido - 401\", function () {\r",
+              "    pm.response.to.have.status(401);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "boh",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://{{PORT}}/api/vacciniFiltrati?nomeVaccino=Moderna,Pfizer&scadenzaMaggioreDi=2025-01-01&scadenzaMinoreDi=2026-12-31&disponibilitaMin=100&disponibilitaMax=500",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "vacciniFiltrati"
+          ],
+          "query": [
+            {
+              "key": "nomeVaccino",
+              "value": "Moderna,Pfizer"
+            },
+            {
+              "key": "scadenzaMaggioreDi",
+              "value": "2025-01-01"
+            },
+            {
+              "key": "scadenzaMinoreDi",
+              "value": "2026-12-31"
+            },
+            {
+              "key": "disponibilitaMin",
+              "value": "100"
+            },
+            {
+              "key": "disponibilitaMax",
+              "value": "500"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Numeri negativi",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Bloccati valori negativi - 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"amount\": -50\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://{{PORT}}/api/admin/addToken/RSSMRA80A01H501U",
+          "protocol": "http",
+          "host": [
+            "{{PORT}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "addToken",
+            "RSSMRA80A01H501U"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{JWT_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "value": ""
+    },
+    {
+      "value": ""
+    },
+    {
+      "value": ""
+    }
+  ]
+}
