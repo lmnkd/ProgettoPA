@@ -1281,6 +1281,14 @@ Content-Type: application/json
 # Progettazione
 ## Casi d'uso
 
+# Attori
+
+![Attori](images/Actors.png)
+
+# UseCase
+
+![UseCase](images/UseCase.png)
+
 ## Diagrammi di sequenza
 
 Creazione della vaccinazione
