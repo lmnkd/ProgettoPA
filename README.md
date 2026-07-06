@@ -1552,6 +1552,7 @@ docker compose up --build
 # Test del progetto
 
 Il progetto include test unitari sviluppati con **Jest** per verificare il corretto funzionamento dei principali middleware dell'applicazione.
+Sono state usate due variabili PORT e JWT_TOKEN per effettuare i test delle API.
 
 ---
 
