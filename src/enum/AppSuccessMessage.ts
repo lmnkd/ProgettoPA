@@ -1,5 +1,9 @@
-
-
+ 
+/*
+    * Messaggi di successo restituiti nelle risposte HTTP (campo "message" del body).
+    * Ogni controller seleziona la voce corrispondente all'operazione appena completata,
+    * seguendo lo stesso schema di AppErrorsMessage per gli errori.
+    */
 
 export enum AppSuccessMessage {
   USER_CREATED = 'User crato correttamente.',

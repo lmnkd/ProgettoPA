@@ -78,19 +78,24 @@ export class VaccinazioneController {
             const lotto = (req as any).lotto;
             const vaccino = (req as any).vaccino;
             const dataVaccinazione = (req as any).dataVaccinazione;
-
+ 
             const vaccinazione = await vaccinazioneService.createVaccinazione({
                 user_cf: targetUser.cf,
                 lotto_id: lotto.id,
                 vaccino_id: vaccino.id,
                 data_vaccinazione: dataVaccinazione,
             });
-
+ 
             res.status(201).json({ message: AppSuccessMessage.VACCINAZIONE_CREATED, vaccinazione });
-        } catch {
+        } catch (error: any) {
+            if (error.name === AppErrorsName.DISPONIBILITA_VACCINO_INSUFFICIENTE) {
+                res.status(409).json({ error: AppErrorsMessage.DISPONIBILITA_VACCINO_INSUFFICIENTE });
+                return;
+            }
             res.status(500).json({ error: AppErrorsMessage.SERVER_ERROR });
         }
     }
+
     
     /*
         * Recupera una vaccinazione specifica in base al suo ID.

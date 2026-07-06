@@ -5,7 +5,14 @@ import { AppJwtPayload } from "../types/jwt-payload";
 import { AppErrorsMessage } from "../enum/AppErrorsMessage";
 
 
-// Funzione per scremare nelle rotte tramite autenticazione JWT
+/*
+    * Middleware di autenticazione: verifica che la richiesta contenga un Bearer JWT valido,
+    * firmato con la chiave privata RS256 corrispondente a publicKey.
+    * Se valido, allega il payload decodificato a req.user e passa al middleware successivo.
+    * @param req - La richiesta HTTP, deve contenere l'header Authorization: Bearer <token>.
+    * @param res - La risposta HTTP, usata per restituire 401 in caso di token mancante/scaduto/non valido.
+    * @param next - Callback per passare al middleware successivo.
+    */
 
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
 
@@ -31,7 +38,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
     }
 }
 
-// Funzione per autenticazione con ruoli
+/*
+    * Middleware factory per l'autorizzazione basata sui ruoli.
+    * @param roles - Uno o più ruoli ammessi per la rotta; basta che l'utente ne possieda uno.
+    * @returns Un middleware Express che restituisce 403 se nessuno dei ruoli richiesti è posseduto.
+    */
 
 export function requireRole(...roles: ("user" | "operator" | "admin" | "both")[]) {
     return (req: Request, res: Response, next: NextFunction): void => {

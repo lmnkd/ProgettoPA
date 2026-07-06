@@ -38,6 +38,6 @@ export enum AppErrorsMessage {
     LOTTO_ALREADY_EXISTS = "Il lotto esiste già.",
     USER_ALREADY_EXISTS = "L'utente esiste già.",
     CF_ALREADY_EXISTS = "Il codice fiscale esiste già",
-    DISPONIBILITA_VACCINO_INSUFFICIENTE = "Vaccino nondisponibile",
+    DISPONIBILITA_VACCINO_INSUFFICIENTE = "Vaccino non disponibile",
     INVALID_NUMBER = "Numero non valido",
 }       

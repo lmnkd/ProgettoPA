@@ -1,10 +1,13 @@
 import {vaccinazioneDao} from "../dao/VaccinazioneDao";
+import {lottoVaccinoDao} from "../dao/LottoVaccinoDao";
 import {AppErrorsName} from "../enum/AppErrorsName";
 import { VaccinazioneAttributes } from "../model/Vaccinazione";
 import PDFDocument from "pdfkit";
 import { userDao } from "../dao/UserDao";
 import redis from "../config/redis";
 import { randomUUID } from "crypto";
+import { sequelize } from "../connector/connector";
+
 
 /*
     * Interfaccia per i dati di input necessari per creare una nuova vaccinazione.
@@ -60,11 +63,27 @@ export class VaccinazioneService {
     }
 
     async createVaccinazione(data: CreateVaccinazioneInput) {
-        return vaccinazioneDao.create({
-            userCf: data.user_cf,
-            lottoId: data.lotto_id,
-            vaccinoId: data.vaccino_id,
-            dataVaccinazione: data.data_vaccinazione,
+        return sequelize.getSequelize().transaction(async (t) => {
+            const disponibile = await lottoVaccinoDao.decrementQuantitaIfAvailable(
+                data.lotto_id,
+                { transaction: t }
+            );
+ 
+            if (!disponibile) {
+                const err = new Error("Nessuna dose disponibile in questo lotto");
+                err.name = AppErrorsName.DISPONIBILITA_VACCINO_INSUFFICIENTE;
+                throw err;
+            }
+ 
+            return vaccinazioneDao.create(
+                {
+                    userCf: data.user_cf,
+                    lottoId: data.lotto_id,
+                    vaccinoId: data.vaccino_id,
+                    dataVaccinazione: data.data_vaccinazione,
+                },
+                { transaction: t }
+            );
         });
     }
 

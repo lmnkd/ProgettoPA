@@ -1,6 +1,6 @@
 import { IDao } from "./IDao";
 import { Vaccinazione, VaccinazioneAttributes, VaccinazioneCreationAttributes } from "../model/Vaccinazione";
-import { Op, WhereOptions } from "sequelize";
+import { Op, WhereOptions, Transaction } from "sequelize";
 import { Vaccino } from "../model/Vaccino";
 import { LottoVaccino } from "../model/LottoVaccino";
 
@@ -8,7 +8,7 @@ import { LottoVaccino } from "../model/LottoVaccino";
 /*
     * Interfaccia per i filtri di ricerca delle vaccinazioni.
     * Contiene campi opzionali per filtrare le vaccinazioni in base al nome del vaccino e alle date.
-    */
+*/
 
 
 interface VaccinazioneFilters {
@@ -25,7 +25,7 @@ interface VaccinazioneFilters {
     * Classe DAO per la gestione delle operazioni CRUD sulle vaccinazioni.
     * Implementa l'interfaccia IDao per le vaccinazioni.
     * Fornisce metodi per creare, leggere, aggiornare e cancellare vaccinazioni, nonché per trovare vaccinazioni filtrate e dettagliate.
-    */
+*/
 
 export class VaccinazioneDao implements IDao<Vaccinazione> {
 
@@ -33,8 +33,8 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
         return await Vaccinazione.findByPk(item.id);
     }
 
-    async create(item: VaccinazioneCreationAttributes): Promise<Vaccinazione> {
-        return await Vaccinazione.create(item);
+    async create(item: VaccinazioneCreationAttributes, options?: { transaction?: Transaction }): Promise<Vaccinazione> {
+        return await Vaccinazione.create(item, options);
     }
 
     async findAll(): Promise<Vaccinazione[]> {
@@ -71,7 +71,7 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
     * @param userCf - Il codice fiscale dell'utente.
     * @param vaccinoId - L'ID del vaccino.
     * @returns La vaccinazione più recente dell'utente per il vaccino specificato, o null se non esiste.
-    */
+*/
 
     async findLastByUserAndVaccino(userCf: string, vaccinoId: number): Promise<Vaccinazione | null> {
         return Vaccinazione.findOne({
@@ -85,7 +85,7 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
         * @param userCf - Il codice fiscale dell'utente.
         * @returns Un array di vaccinazioni dell'utente, ordinate per data di vaccinazione in ordine decrescente.
         * Aggiunto include per ottenere i dettagli del vaccino e del lotto associati a ciascuna vaccinazione.
-        */
+    */
 
     async findAllByUserCf(userCf: string): Promise<Vaccinazione[]> {
     return Vaccinazione.findAll({
@@ -111,7 +111,7 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
         * @returns Un array di vaccinazioni filtrate dell'utente, ordinate per data di vaccinazione in ordine decrescente.
         * Nota: Se entrambi i filtri dataMin e dataMax sono presenti, viene utilizzato il range tra le due date. Altrimenti, vengono applicati i filtri dataGt e dataLt se presenti.
         * I filtri sono opzionali e possono essere combinati per ottenere risultati più specifici.
-        */
+    */
 
     async findFilteredByUserCf(userCf: string, filters: VaccinazioneFilters): Promise<Vaccinazione[]> {
     const where: WhereOptions = { userCf };
@@ -145,7 +145,7 @@ export class VaccinazioneDao implements IDao<Vaccinazione> {
     * Trova tutte le vaccinazioni con dettagli aggiuntivi, inclusi i dati del vaccino e del lotto.
     * @param userCf - (Opzionale) Il codice fiscale dell'utente per filtrare le vaccinazioni. Se non fornito, vengono restituite tutte le vaccinazioni.
     * @returns Un array di vaccinazioni con dettagli aggiuntivi, inclusi i dati del vaccino e del lotto.
-    */
+*/
 
 async findAllWithDetails(userCf?: string): Promise<Vaccinazione[]> {
     const where = userCf ? { userCf } : {};
@@ -162,4 +162,3 @@ async findAllWithDetails(userCf?: string): Promise<Vaccinazione[]> {
 }
 
 export const vaccinazioneDao = new VaccinazioneDao();
-

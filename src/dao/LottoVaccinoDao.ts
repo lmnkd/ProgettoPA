@@ -1,5 +1,5 @@
 import { IDao } from "./IDao";
-import { Op } from "sequelize";
+import { Op, literal, Transaction } from "sequelize";
 import { LottoVaccino } from "../model/LottoVaccino";
 
 
@@ -89,6 +89,24 @@ export class LottoVaccinoDao implements IDao<LottoVaccino> {
 
     async findByCodiceLotto(codiceLotto: string): Promise<LottoVaccino | null> {
         return await LottoVaccino.findOne({ where: { codiceLotto } });
+    }
+
+    /*
+        * Decrementa di 1 la quantità disponibile di un lotto, solo se è maggiore di 0.
+        * L'operazione è atomica a livello di database (UPDATE ... WHERE quantita_disponibile > 0),
+        * quindi resta corretta anche con più richieste concorrenti sullo stesso lotto.
+        * @param id - L'ID del lotto da decrementare.
+        * @param options - Opzioni Sequelize opzionali, ad es. { transaction } per farla rientrare
+        *   nella stessa transazione della creazione della vaccinazione.
+        * @returns true se il decremento è avvenuto, false se il lotto non esiste o è esaurito.
+    */
+
+    async decrementQuantitaIfAvailable(id: number, options?: { transaction?: Transaction }): Promise<boolean> {
+        const [affectedRows] = await LottoVaccino.update(
+            { quantitaDisponibile: literal('"quantita_disponibile" - 1') as any },
+            { where: { id, quantitaDisponibile: { [Op.gt]: 0 } }, ...options }
+        );
+        return affectedRows > 0;
     }
 }
 

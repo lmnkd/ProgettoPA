@@ -1,6 +1,15 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Optional, Model } from 'sequelize';
 
+/*
+    * Modello Sequelize per la tabella "vaccinazioni".
+    * Rappresenta l'evento di somministrazione: collega un utente (userCf) a un vaccino
+    * (vaccinoId) e al lotto concreto da cui è stata prelevata la dose (lottoId).
+    * Le associazioni (belongsTo) sono definite centralmente in Init_models.ts.
+    */
+ 
+// Interfaccia per gli attributi della vaccinazione
+
 export interface VaccinazioneAttributes {
     id: number;
 
@@ -13,8 +22,12 @@ export interface VaccinazioneAttributes {
     dataVaccinazione: Date;
 }
 
+// Interfaccia per la creazione
+
 export interface VaccinazioneCreationAttributes
     extends Optional<VaccinazioneAttributes, 'id'> {}
+
+// Classe modello Vaccinazione, implementa gli attributi definiti sopra
 
 export class Vaccinazione
     extends Model<
@@ -36,6 +49,12 @@ export class Vaccinazione
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
+
+/*
+    * Inizializza il modello Vaccinazione su una determinata istanza di Sequelize.
+    * @param sequelize - L'istanza di Sequelize a cui agganciare il modello.
+    * @returns La classe Vaccinazione inizializzata, pronta per essere usata nelle query.
+    */
 
 export function initVaccinazioneModel(
     sequelize: Sequelize.Sequelize

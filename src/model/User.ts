@@ -1,16 +1,26 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Optional, Model } from 'sequelize';
 
+/*
+    * Modello Sequelize per la tabella "users".
+    * Rappresenta sia gli utenti che gli operatori: il campo "role" stabilisce cosa può fare
+    * chi possiede il token JWT associato a questo record (vedi AuthService.toRolesArray).
+    */
+ 
+// Interfaccia per gli attributi dell'utente
+
 export interface UserAttributes {
     cf: string;
     name: string;
     email: string;
     passwordHash: string;
     token:number;
-    role: 'admin' | 'user' | 'operator' | 'both';
+    role: 'admin' | 'user' | 'operator' | 'both'; // "both" = utente con ruoli sia user che operator
 }
 
 export interface UserCreationAttributes extends Optional<UserAttributes, 'cf' | 'token'> { }
+
+// Classe modello User, implementa gli attributi definiti sopra
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public cf!: string;
@@ -23,6 +33,12 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
+
+/*
+    * Inizializza il modello User su una determinata istanza di Sequelize.
+    * @param sequelize - L'istanza di Sequelize a cui agganciare il modello.
+    * @returns La classe User inizializzata, pronta per essere usata nelle query.
+    */
 
 export function initUserModel(sequelize: Sequelize.Sequelize): typeof User {
     User.init(
