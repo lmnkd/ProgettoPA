@@ -9,7 +9,7 @@ Questo progetto consiste nella realizzazione di un backend che gestisce delle va
 - [API Summary](#api-summary)
 - [API Reference Detail](#api-reference-detail)
 - [Design pattern utilizzati](#design-pattern-utilizzati)
-- [Istruzioni per l'avvio del backend (Docker)](#istruzioni-per-lavvio-del-backend-docker)
+- [Istruzioni per l'avvio del backend](#istruzioni-per-lavvio-del-backend)
 - [Test del Progetto](#test-del-progetto)
 
 # Obiettivo del progetto
@@ -117,7 +117,7 @@ Il progetto include:
 
 
 
-# Design Pattern
+# Design Pattern Utilizzati
 ## Singleton
 
 Questo pattern garantisce un'unica istanza della connessione al database in tutta l'applicazione, evitando connessioni multiple e inutili al DB. Lo stesso principio si applica ai DAO/service: ogni modulo Node, una volta importato, restituisce sempre la stessa istanza evitando di istanziare più volte classi stateless che non hanno bisogno di essere ricreate ad ogni richiesta.
